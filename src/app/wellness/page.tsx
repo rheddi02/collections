@@ -60,8 +60,8 @@ const Wellness = () => {
 
   useEffect(() => {
     if (!isFetched) return;
-    setData(data.data ?? []);
-    setPageCount(Math.ceil(data.total / perPage));
+    setData(data?.data ?? []);
+    setPageCount(Math.ceil(data?.total || 0 / perPage));
   }, [data, isFetched]);
 
   const handleSave = async () => {
@@ -72,7 +72,7 @@ const Wellness = () => {
   };
   const handleUpdate = async () => {
     setIsLoading(true);
-    await update(formData);
+    await update(formData as wellnessOutput);
     setIsLoading(false);
     setModal(false);
   };

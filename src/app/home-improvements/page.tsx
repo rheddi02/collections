@@ -71,8 +71,8 @@ const HomeImprovement = () => {
 
   useEffect(() => {
     if (!isFetched) return;
-    setData(homeImprovements.data ?? []);
-    setPageCount(Math.ceil(homeImprovements.total / perPage));
+    setData(homeImprovements?.data ?? []);
+    setPageCount(Math.ceil(homeImprovements?.total || 0 / perPage));
   }, [homeImprovements, isFetched]);
 
   const handleSave = async () => {
@@ -85,8 +85,9 @@ const HomeImprovement = () => {
     setModal(false);
   };
   const handleUpdate = async () => {
+    const tmpForm = formData as homeImprovementOutput
     setIsLoading(true);
-    await updateHomeImprovement(formData);
+    await updateHomeImprovement(tmpForm);
     setIsLoading(false);
     setModal(false);
   };

@@ -41,7 +41,7 @@ const CustomDialog = ({ title, description, label, action }: Props) => {
       setFormData: state.setFormData,
     }));
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: any) => {
     const key = e.target.id as string;
     const value = e.target.value as string;
 
