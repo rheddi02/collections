@@ -9,7 +9,7 @@ interface State {
   setData: (data: State['data']) => void
 }
 
-const createStore: StateCreator<State & PaginationState, [], [], State> = (set, get) => ({
+const createStore: StateCreator<State & PaginationState, [], [], State> = (set) => ({
   data: [],
   setData: (data) => {
     set({ data })
