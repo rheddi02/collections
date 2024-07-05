@@ -41,7 +41,7 @@ const CustomDialog = ({ title, description, label, action }: Props) => {
       setFormData: state.setFormData,
     }));
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const key = e.target.id
     const value = e.target.value
 

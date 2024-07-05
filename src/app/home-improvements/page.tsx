@@ -7,11 +7,12 @@ import CustomDialog from "~/app/_components/dialog";
 import type { homeImprovementOutput } from "~/server/api/client/types";
 import useHomeImprovementStore from "~/store/home-improvement.store";
 import { Button } from "~/components/ui/button";
-import { HamburgerMenuIcon, PlusIcon } from "@radix-ui/react-icons";
+import { HamburgerMenuIcon, PlusIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { api } from "~/trpc/react";
 import { typeLists } from "~/utils/type-list";
 
 const HomeImprovement = () => {
+  const utils = api.useUtils();
   const [form, setForm] = useState({
     title: "Create New",
     description: "Add new data",
@@ -27,6 +28,7 @@ const HomeImprovement = () => {
     setOpenMenu,
   } = useAppStore((state) => ({
     modal: state.modal,
+    isLoading: state.isLoading,
     setModal: state.setModal,
     setIsLoading: state.setIsLoading,
     formData: state.formData,
@@ -54,29 +56,33 @@ const HomeImprovement = () => {
   const { mutate: createData, isPending: pendingCreate } =
     api.homeImprovement.create.useMutation({
       onSuccess: async () => {
+        await utils.homeImprovement.invalidate()
+      },
+      onSettled: () => {
         setModal(false);
         resetForm();
-        // await refetch();
-        const utils = api.useUtils()
-        console.log("🚀 ~ onSuccess: ~ utils:", utils)
-      },
+      }
     });
 
   const { mutate: updateData, isPending: pendingUpdate } =
     api.homeImprovement.update.useMutation({
       onSuccess: async () => {
+        await utils.homeImprovement.invalidate()
+      },
+      onSettled: () => {
         setModal(false);
         resetForm();
-        await refetch();
-      },
+      }
     });
 
   const { mutate: deleteData, isPending: pendingDelete } =
     api.homeImprovement.delete.useMutation({
       onSuccess: async () => {
-        setModal(false);
-        await refetch();
+        await utils.homeImprovement.invalidate()
       },
+      onSettled: () => {
+        setModal(false);
+      }
     });
 
   useEffect(() => {
@@ -86,8 +92,8 @@ const HomeImprovement = () => {
   }, [data, isFetched]);
 
   useEffect(() => {
-    setIsLoading(pendingCreate || pendingUpdate || pendingDelete);
-  }, [pendingCreate, pendingUpdate, pendingDelete]);
+    setIsLoading(pendingDelete || pendingUpdate || pendingCreate);
+  }, [pendingUpdate, pendingDelete, pendingCreate]);
 
   const handleSave = () => {
     createData({
@@ -129,7 +135,10 @@ const HomeImprovement = () => {
             <span onClick={() => setOpenMenu(!openMenu)}>
               <HamburgerMenuIcon className="block h-5 w-5 sm:hidden" />
             </span>
-            <span className="text-2xl">Home Improvements</span>
+            <div className="flex gap-2 items-center">
+              <span className="text-2xl">Home Improvements</span>
+              {isFetching && <ReloadIcon className="animate-spin" />}
+            </div>
           </div>
           <Button onClick={() => setModal(true)} className="flex gap-2">
             <PlusIcon className="h-4 w-4" />
@@ -137,7 +146,7 @@ const HomeImprovement = () => {
           </Button>
         </div>
         <hr />
-        <Table {...{ onEdit, onDelete, loading: isFetching }} />
+        <Table {...{ onEdit, onDelete, loading: false }} />
       </div>
     </>
   );

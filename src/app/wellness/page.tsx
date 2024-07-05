@@ -6,12 +6,13 @@ import { useEffect, useState } from "react";
 import CustomDialog from "~/app/_components/dialog";
 import type { wellnessOutput } from "~/server/api/client/types";
 import { Button } from "~/components/ui/button";
-import { HamburgerMenuIcon, PlusIcon } from "@radix-ui/react-icons";
+import { HamburgerMenuIcon, PlusIcon, ReloadIcon } from "@radix-ui/react-icons";
 import useWellnessStore from "~/store/wellness.store";
 import { api } from "~/trpc/react";
 import { typeLists } from "~/utils/type-list";
 
 const Wellness = () => {
+  const utils = api.useUtils();
   const [form, setForm] = useState({
     title: "Create New",
     description: "Add new data",
@@ -53,23 +54,32 @@ const Wellness = () => {
 
   const { mutate: createData, isPending: pendingCreate } = api.wellness.create.useMutation({
     onSuccess: async () => {
-      resetForm();
-      await refetch();
+      await utils.wellness.invalidate()
     },
+    onSettled: () => {
+      setModal(false);
+      resetForm();
+    }
   });
 
   const { mutate: updateData, isPending: pendingUpdate } = api.wellness.update.useMutation({
     onSuccess: async () => {
-      resetForm();
-      await refetch();
+      await utils.wellness.invalidate()
     },
+    onSettled: () => {
+      setModal(false);
+      resetForm();
+    }
   });
 
   const { mutate: deleteData, isPending: pendingDelete } = api.wellness.delete.useMutation({
     onSuccess: async () => {
-      resetForm();
-      await refetch();
+      await utils.wellness.invalidate()
     },
+    onSettled: () => {
+      setModal(false);
+      resetForm();
+    }
   });
 
   useEffect(() => {
@@ -124,7 +134,10 @@ const Wellness = () => {
             <span onClick={() => setOpenMenu(!openMenu)}>
               <HamburgerMenuIcon className="block h-5 w-5 sm:hidden" />
             </span>
-            <span className="text-2xl">Wellness</span>
+            <div className="flex gap-2 items-center">
+              <span className="text-2xl">Wellness</span>
+              {isFetching && <ReloadIcon className="animate-spin" />}
+            </div>
           </div>
           <Button onClick={() => setModal(true)} className="flex gap-2">
             <PlusIcon className="h-4 w-4" />
@@ -132,7 +145,7 @@ const Wellness = () => {
           </Button>
         </div>
         <hr />
-        <Table {...{ onEdit, onDelete, loading: isFetching }} />
+        <Table {...{ onEdit, onDelete, loading: false }} />
         </div>
     </>
   );
