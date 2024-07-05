@@ -90,14 +90,14 @@ const Wellness = () => {
   useEffect(() => {
     if (!isFetched) return;
     setData(data?.data ?? []);
-    setPageCount(Math.ceil(data?.total || 0 / perPage));
+    setPageCount(Math.ceil((data?.total || 0) / perPage));
   }, [data, isFetched]);
 
   const handleSave = async () => {
     createData({
       ...formData,
       description: formData.description || formData.title,
-      type: formData.type || typeLists[0]!.value,
+      type: formData.type || "general",
     });
     setModal(false);
   };

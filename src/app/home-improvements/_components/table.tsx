@@ -56,7 +56,7 @@ const Table = ({
       },
       cell: ({ row }) => {
         return (
-          <div className="flex items-center gap-2 justify-end">
+          <div className="items-center gap-2 justify-end group-hover:flex hidden absolute right-10 -mt-3">
             <div
               onClick={() => onEdit(row)}
               className="flex h-7 w-7 items-center justify-center rounded-full text-gray-900 hover:cursor-pointer hover:border-2 hover:border-gray-900 hover:bg-transparent hover:text-gray-900"
@@ -77,7 +77,7 @@ const Table = ({
           </div>
         );
       },
-      size: 20,
+      maxSize: 20,
     },
   ];
 

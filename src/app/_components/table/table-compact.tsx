@@ -126,6 +126,7 @@ export default function DataTableCompact<TData, TValue>({
 
   return (
     <>
+    <div className="max-h-[80vh] overflow-auto">
       <Table className="border">
         <TableHeader className="">
           {table.getHeaderGroups().map((headerGroup) => (
@@ -137,6 +138,12 @@ export default function DataTableCompact<TData, TValue>({
                   <TableHead
                     key={header.id}
                     style={{ width: `${header.getSize()}px` }}
+                    className={
+                      header.column.getCanSort()
+                        ? 'cursor-pointer select-none'
+                        : ''
+                    }
+                    onClick={header.column.getToggleSortingHandler()}
                   >
                     {header.isPlaceholder
                       ? null
@@ -162,6 +169,7 @@ export default function DataTableCompact<TData, TValue>({
                   }}
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className="group"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
@@ -178,7 +186,8 @@ export default function DataTableCompact<TData, TValue>({
             : !loading && <TableRowActions type={"empty"} />}
         </TableBody>
       </Table>
-      {pagination && <DataTablePaginationPage table={table} />}
+    </div>
+    {pagination && <DataTablePaginationPage table={table} />}
     </>
   );
 }

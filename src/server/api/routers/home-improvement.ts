@@ -50,6 +50,9 @@ export const homeImprovementRouter = createTRPCRouter({
       const data = await ctx.db.homeImprovements.findMany({
         skip: (input.page - 1) * input.perPage,
         take: input.perPage,
+        orderBy: {
+          createdAt: 'desc'
+        }
       });
       const total = await ctx.db.homeImprovements.count();
       return { data, total };
