@@ -1,32 +1,59 @@
 "use client";
+import { ReloadIcon } from "@radix-ui/react-icons";
 import { useRouter, useSelectedLayoutSegments } from "next/navigation";
 import React, { useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { cn } from "~/lib/utils";
 import useAppStore from "~/store/app.store";
+import usePaginationStore from "~/store/pagination.store";
+import { api } from "~/trpc/react";
 import { NavigationLists } from "~/utils/navigations";
 import type { NavigationType } from "~/utils/types";
 
-const Navigation = () => {
+export default function Navigation() {
   const [navList] = useState(NavigationLists);
+
+  const { page, perPage } = usePaginationStore((state) => ({
+    perPage: state.perPage,
+    page: state.page,
+  }));
+  const { refetch: fetchHomeImprovement } = api.homeImprovement.get.useQuery({
+    page,
+    perPage,
+  });
+  const { refetch: fetchWellness } = api.wellness.get.useQuery({
+    page,
+    perPage,
+  });
+
+  const handleReload = async (segment: string | undefined) => {
+    if (segment == "dashboard") console.info("dashboard");
+    if (segment == "home-improvements") await fetchHomeImprovement();
+    if (segment == "wellness") await fetchWellness();
+  };
 
   return (
     <div className="flex h-screen flex-col gap-2">
-      <Nav {...{ navList }} />
+      <Nav {...{ navList, handleReload }} />
     </div>
   );
-};
+}
 
-export default Navigation;
+// export default Navigation;
 
 const Nav = ({
   navList,
   isChild = false,
+  handleReload,
 }: {
   navList: NavigationType[];
   isChild?: boolean;
+  handleReload?: (segment: string | undefined) => Promise<void>;
 }) => {
-  const { openMenu } = useAppStore(state => ({openMenu: state.openMenu}))
+  const { openMenu, isLoading } = useAppStore((state) => ({
+    openMenu: state.openMenu,
+    isLoading: state.isLoading,
+  }));
   const router = useRouter();
   const segments = useSelectedLayoutSegments();
   const segment = segments.pop();
@@ -41,13 +68,22 @@ const Nav = ({
     }
   };
 
+  const handleReloadSegment = async () => {
+    if (handleReload) await handleReload(segment);
+  };
+
   return (
-    <div className={cn("flex h-screen flex-col gap-2", openMenu ? 'w-64' : 'hidden')}>
+    <div
+      className={cn(
+        "flex h-screen flex-col gap-2",
+        openMenu ? "w-64" : "hidden",
+      )}
+    >
       {navList.map((navigation) => (
         <React.Fragment key={navigation.route}>
           <div
             className={twMerge(
-              "flex items-center rounded-md p-2 capitalize hover:cursor-pointer hover:bg-gray-300 hover:text-gray-800",
+              "group flex items-center justify-between rounded-md p-2 capitalize hover:cursor-pointer hover:bg-gray-400 hover:text-gray-800",
               navigation.route.includes(segment!) &&
                 !navigation.subRoute.length &&
                 "bg-gray-300 font-semibold text-gray-800",
@@ -56,6 +92,15 @@ const Nav = ({
             onClick={() => handleRoute(navigation)}
           >
             {navigation.title}
+            {segment == navigation.title.replaceAll(" ", "-") && (
+              <ReloadIcon
+                onClick={handleReloadSegment}
+                className={cn(
+                  isLoading && "animate-spin",
+                  "text-gray-500 group-hover:text-gray-800",
+                )}
+              />
+            )}
           </div>
           {!!navigation.subRoute.length && (
             <Nav navList={navigation.subRoute} isChild={true} />

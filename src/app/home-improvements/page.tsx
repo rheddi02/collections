@@ -1,35 +1,21 @@
 "use client";
 import Table from "./_components/table";
 import useAppStore from "~/store/app.store";
-import { DELETE } from "./_actions/api";
 import type { Row } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 import CustomDialog from "~/app/_components/dialog";
 import type { homeImprovementOutput } from "~/server/api/client/types";
 import useHomeImprovementStore from "~/store/home-improvement.store";
-import {
-  useCreateHomeImprovement,
-  useHomeImprovement,
-  useUpdateHomeImprovement,
-} from "~/hooks/useHomeImprovement";
-import useAsyncEffect from "use-async-effect";
 import { Button } from "~/components/ui/button";
 import { HamburgerMenuIcon, PlusIcon } from "@radix-ui/react-icons";
+import { api } from "~/trpc/react";
+import { typeLists } from "~/utils/type-list";
 
 const HomeImprovement = () => {
   const [form, setForm] = useState({
     title: "Create New",
     description: "Add new data",
     label: "Create",
-  });
-  const [recentData, setRecentData] = useState<homeImprovementOutput>({
-    id: 0,
-    title: "",
-    description: "",
-    url: "",
-    type: "",
-    createdAt: new Date(),
-    updatedAt: new Date(),
   });
   const {
     setModal,
@@ -59,46 +45,61 @@ const HomeImprovement = () => {
     }),
   );
   const {
-    data: homeImprovements,
+    data: data,
     isFetched,
+    isFetching,
     refetch,
-  } = useHomeImprovement({ page, perPage });
+  } = api.homeImprovement.get.useQuery({ page, perPage });
 
-  useAsyncEffect(async () => {
-    if (recentData?.id) await refetch();
-    resetForm();
-  }, [recentData]);
+  const { mutate: createData, isPending: pendingCreate } =
+    api.homeImprovement.create.useMutation({
+      onSuccess: async () => {
+        setModal(false);
+        resetForm();
+        // await refetch();
+        const utils = api.useUtils()
+        console.log("🚀 ~ onSuccess: ~ utils:", utils)
+      },
+    });
+
+  const { mutate: updateData, isPending: pendingUpdate } =
+    api.homeImprovement.update.useMutation({
+      onSuccess: async () => {
+        setModal(false);
+        resetForm();
+        await refetch();
+      },
+    });
+
+  const { mutate: deleteData, isPending: pendingDelete } =
+    api.homeImprovement.delete.useMutation({
+      onSuccess: async () => {
+        setModal(false);
+        await refetch();
+      },
+    });
 
   useEffect(() => {
     if (!isFetched) return;
-    setData(homeImprovements?.data ?? []);
-    setPageCount(Math.ceil(homeImprovements?.total || 0 / perPage));
-  }, [homeImprovements, isFetched]);
+    setData(data?.data ?? []);
+    setPageCount(Math.ceil(data?.total || 0 / perPage));
+  }, [data, isFetched]);
 
-  const handleSave = async () => {
-    setIsLoading(true);
-    await createHomeImprovement({
+  useEffect(() => {
+    setIsLoading(pendingCreate || pendingUpdate || pendingDelete);
+  }, [pendingCreate, pendingUpdate, pendingDelete]);
+
+  const handleSave = () => {
+    createData({
       ...formData,
       description: formData.description || formData.title,
+      type: formData.type || typeLists[0]!.value,
     });
-    setIsLoading(false);
-    setModal(false);
   };
-  const handleUpdate = async () => {
-    const tmpForm = formData as homeImprovementOutput
-    setIsLoading(true);
-    await updateHomeImprovement(tmpForm);
-    setIsLoading(false);
-    setModal(false);
+  const handleUpdate = () => {
+    const tmpForm = formData as homeImprovementOutput;
+    updateData(tmpForm);
   };
-
-  const onSuccess = async (data: homeImprovementOutput) => {
-    setRecentData(data);
-  };
-  const { mutateAsync: updateHomeImprovement } =
-    useUpdateHomeImprovement(onSuccess);
-  const { mutateAsync: createHomeImprovement } =
-    useCreateHomeImprovement(onSuccess);
 
   const onEdit = (row: Row<homeImprovementOutput>) => {
     setForm({
@@ -112,10 +113,8 @@ const HomeImprovement = () => {
     setModal(true);
   };
 
-  const onDelete = async (row: Row<homeImprovementOutput>) => {
-    await DELETE(row.original.id);
-    await refetch();
-    setRecentData(row.original);
+  const onDelete = (row: Row<homeImprovementOutput>) => {
+    deleteData(row.original.id);
   };
 
   return (
@@ -125,7 +124,7 @@ const HomeImprovement = () => {
         action={form.label == "update" ? handleUpdate : handleSave}
       />
       <div className="flex flex-col gap-2 p-5">
-        <div className="flex sm:items-center flex-col sm:flex-row sm:justify-between font-bold gap-2">
+        <div className="flex flex-col gap-2 font-bold sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
             <span onClick={() => setOpenMenu(!openMenu)}>
               <HamburgerMenuIcon className="block h-5 w-5 sm:hidden" />
@@ -138,7 +137,7 @@ const HomeImprovement = () => {
           </Button>
         </div>
         <hr />
-        <Table {...{ onEdit, onDelete }} />
+        <Table {...{ onEdit, onDelete, loading: isFetching }} />
       </div>
     </>
   );

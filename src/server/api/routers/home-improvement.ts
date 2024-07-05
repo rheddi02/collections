@@ -7,7 +7,7 @@ export const homeImprovementRouter = createTRPCRouter({
     .input(
       z.object({
         title: z.string().min(1),
-        description: z.string().default(''),
+        description: z.string().default(""),
         url: z.string(),
         type: z.string(),
       }),
@@ -16,7 +16,7 @@ export const homeImprovementRouter = createTRPCRouter({
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       return ctx.db.homeImprovements.create({
-        data: {...input}
+        data: { ...input },
       });
     }),
   update: publicProcedure
@@ -24,7 +24,7 @@ export const homeImprovementRouter = createTRPCRouter({
       z.object({
         id: z.number(),
         title: z.string().min(1),
-        description: z.string().default(''),
+        description: z.string().default(""),
         url: z.string(),
         type: z.string(),
         createdAt: z.date(),
@@ -39,32 +39,33 @@ export const homeImprovementRouter = createTRPCRouter({
         data: { ...input },
       });
     }),
-  get: publicProcedure.input(
-    z.object({
-      page: z.number(),
-      perPage: z.number()
-    })
-  ).query( async ({ ctx,input }) => {
-    const data = await ctx.db.homeImprovements.findMany({ 
-      skip: (input.page-1) * input.perPage,
-      take: input.perPage,
-    })
-    const total = await ctx.db.homeImprovements.count()
-    return { data, total }
-  }),
-  show: publicProcedure.input(z.number()).query(({ ctx,input }) => {
+  get: publicProcedure
+    .input(
+      z.object({
+        page: z.number(),
+        perPage: z.number(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const data = await ctx.db.homeImprovements.findMany({
+        skip: (input.page - 1) * input.perPage,
+        take: input.perPage,
+      });
+      const total = await ctx.db.homeImprovements.count();
+      return { data, total };
+    }),
+  show: publicProcedure.input(z.number()).query(({ ctx, input }) => {
     return ctx.db.homeImprovements.findUnique({
       where: {
-        id: input
-      }
-    })
+        id: input,
+      },
+    });
   }),
-  delete: publicProcedure.input(z.number()).query(({ input, ctx }) => {
-    return ctx.db.homeImprovements.delete({
+  delete: publicProcedure.input(z.number()).mutation(async ({ input, ctx }) => {
+    return await ctx.db.homeImprovements.delete({
       where: {
-        id: input
-      }
-    })
+        id: input,
+      },
+    });
   }),
-
 });

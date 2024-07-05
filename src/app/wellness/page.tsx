@@ -1,16 +1,15 @@
 "use client";
 import Table from "./_components/table";
 import useAppStore from "~/store/app.store";
-import { DELETE } from "./_actions/api";
 import type { Row } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 import CustomDialog from "~/app/_components/dialog";
 import type { wellnessOutput } from "~/server/api/client/types";
-import useAsyncEffect from "use-async-effect";
 import { Button } from "~/components/ui/button";
 import { HamburgerMenuIcon, PlusIcon } from "@radix-ui/react-icons";
 import useWellnessStore from "~/store/wellness.store";
-import { useCreateWellness, useUpdateWellness, useWellness } from "~/hooks/useWellness";
+import { api } from "~/trpc/react";
+import { typeLists } from "~/utils/type-list";
 
 const Wellness = () => {
   const [form, setForm] = useState({
@@ -18,26 +17,24 @@ const Wellness = () => {
     description: "Add new data",
     label: "Create",
   });
-  const [recentData, setRecentData] = useState<wellnessOutput>({
-    id: 0,
-    title: "",
-    description: "",
-    url: "",
-    type: "",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  });
-  const { setModal, setIsLoading, formData, setFormData, resetForm, setOpenMenu, openMenu } =
-    useAppStore((state) => ({
-      modal: state.modal,
-      setModal: state.setModal,
-      setIsLoading: state.setIsLoading,
-      formData: state.formData,
-      setFormData: state.setFormData,
-      resetForm: state.resetForm,
-      setOpenMenu: state.setOpenMenu,
-      openMenu: state.openMenu,
-    }));
+  const {
+    setModal,
+    setIsLoading,
+    formData,
+    setFormData,
+    resetForm,
+    setOpenMenu,
+    openMenu,
+  } = useAppStore((state) => ({
+    modal: state.modal,
+    setModal: state.setModal,
+    setIsLoading: state.setIsLoading,
+    formData: state.formData,
+    setFormData: state.setFormData,
+    resetForm: state.resetForm,
+    setOpenMenu: state.setOpenMenu,
+    openMenu: state.openMenu,
+  }));
 
   const { setData, page, perPage, setPageCount } = useWellnessStore(
     (state) => ({
@@ -50,13 +47,35 @@ const Wellness = () => {
   const {
     data: data,
     isFetched,
+    isFetching,
     refetch,
-  } = useWellness({ page, perPage });
+  } = api.wellness.get.useQuery({ page, perPage });
 
-  useAsyncEffect(async () => {
-    if (recentData?.id) await refetch();
-    resetForm();
-  }, [recentData]);
+  const { mutate: createData, isPending: pendingCreate } = api.wellness.create.useMutation({
+    onSuccess: async () => {
+      resetForm();
+      await refetch();
+    },
+  });
+
+  const { mutate: updateData, isPending: pendingUpdate } = api.wellness.update.useMutation({
+    onSuccess: async () => {
+      resetForm();
+      await refetch();
+    },
+  });
+
+  const { mutate: deleteData, isPending: pendingDelete } = api.wellness.delete.useMutation({
+    onSuccess: async () => {
+      resetForm();
+      await refetch();
+    },
+  });
+
+  useEffect(() => {
+    setIsLoading(pendingCreate || pendingUpdate || pendingDelete);
+  }, [pendingCreate, pendingUpdate, pendingDelete]);
+
 
   useEffect(() => {
     if (!isFetched) return;
@@ -65,25 +84,17 @@ const Wellness = () => {
   }, [data, isFetched]);
 
   const handleSave = async () => {
-    setIsLoading(true);
-    await create({...formData, description: formData.description || formData.title});
-    setIsLoading(false);
+    createData({
+      ...formData,
+      description: formData.description || formData.title,
+      type: formData.type || typeLists[0]!.value,
+    });
     setModal(false);
   };
   const handleUpdate = async () => {
-    setIsLoading(true);
-    await update(formData as wellnessOutput);
-    setIsLoading(false);
+    updateData(formData as wellnessOutput);
     setModal(false);
   };
-
-  const onSuccess = async (data: wellnessOutput) => {
-    setRecentData(data);
-  };
-  const { mutateAsync: update } =
-    useUpdateWellness(onSuccess);
-  const { mutateAsync: create } =
-    useCreateWellness(onSuccess);
 
   const onEdit = (row: Row<wellnessOutput>) => {
     setForm({
@@ -97,10 +108,8 @@ const Wellness = () => {
     setModal(true);
   };
 
-  const onDelete = async (row: Row<wellnessOutput>) => {
-    await DELETE(row.original.id);
-    await refetch();
-    setRecentData(row.original);
+  const onDelete = (row: Row<wellnessOutput>) => {
+    deleteData(row.original.id);
   };
 
   return (
@@ -110,7 +119,7 @@ const Wellness = () => {
         action={form.label == "update" ? handleUpdate : handleSave}
       />
       <div className="flex flex-col gap-2 p-5">
-        <div className="flex sm:items-center flex-col sm:flex-row sm:justify-between font-bold gap-2">
+        <div className="flex flex-col gap-2 font-bold sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
             <span onClick={() => setOpenMenu(!openMenu)}>
               <HamburgerMenuIcon className="block h-5 w-5 sm:hidden" />
@@ -123,8 +132,8 @@ const Wellness = () => {
           </Button>
         </div>
         <hr />
-        <Table {...{ onEdit, onDelete }} />
-      </div>
+        <Table {...{ onEdit, onDelete, loading: isFetching }} />
+        </div>
     </>
   );
 };

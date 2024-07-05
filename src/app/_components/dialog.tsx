@@ -21,10 +21,10 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { typeLists } from "~/utils/type-list";
-import { useState } from "react";
+import React, { useState } from "react";
 
 type Props = {
-  action: () => Promise<void>;
+  action: () => void;
   title: string;
   description: string;
   label: string;
@@ -41,9 +41,9 @@ const CustomDialog = ({ title, description, label, action }: Props) => {
       setFormData: state.setFormData,
     }));
 
-  const handleInputChange = (e: any) => {
-    const key = e.target.id as string;
-    const value = e.target.value as string;
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const key = e.target.id
+    const value = e.target.value
 
     setFormData({
       ...formData,

@@ -9,9 +9,11 @@ import useHomeImprovementStore from "~/store/home-improvement.store";
 const Table = ({
   onEdit,
   onDelete,
+  loading
 }: {
   onEdit: (row: Row<homeImprovementOutput>) => void;
-  onDelete: (row: Row<homeImprovementOutput>) => Promise<void>;
+  onDelete: (row: Row<homeImprovementOutput>) => void;
+  loading: boolean
 }) => {
   const { data, pageCount, setPage } = useHomeImprovementStore((state) => ({
     data: state.data,
@@ -95,7 +97,8 @@ const Table = ({
         onRowClick,
         hiddenColumns: {},
         pagination: true,
-        totalCount: pageCount
+        totalCount: pageCount,
+        loading
       }}
     />
   );

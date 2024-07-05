@@ -9,9 +9,11 @@ import useWellnessStore from "~/store/wellness.store";
 const Table = ({
   onEdit,
   onDelete,
+  loading
 }: {
   onEdit: (row: Row<wellnessOutput>) => void;
-  onDelete: (row: Row<wellnessOutput>) => Promise<void>;
+  onDelete: (row: Row<wellnessOutput>) => void;
+  loading: boolean
 }) => {
   const { data, pageCount, setPage } = useWellnessStore((state) => ({
     data: state.data,
@@ -95,7 +97,8 @@ const Table = ({
         onRowClick,
         hiddenColumns: {},
         pagination: true,
-        totalCount: pageCount
+        totalCount: pageCount,
+        loading
       }}
     />
   );

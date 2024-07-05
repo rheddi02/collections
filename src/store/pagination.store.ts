@@ -1,4 +1,6 @@
 import type { StateCreator } from 'zustand';
+import { create } from "zustand";
+import { subscribeWithSelector } from "zustand/middleware";
 
 export interface PaginationState {
   page: number;
@@ -48,3 +50,11 @@ export const createPaginationStore: StateCreator<PaginationState & any, [], [], 
     set({ pageCount })
   }
 })
+
+const usePaginationStore = create<PaginationState>()(
+  subscribeWithSelector((...a) => ({
+    ...createPaginationStore(...a),
+  })),
+);
+
+export default usePaginationStore;

@@ -59,8 +59,8 @@ export const wellnessRouter = createTRPCRouter({
       }
     })
   }),
-  delete: publicProcedure.input(z.number()).query(({ input, ctx }) => {
-    return ctx.db.wellness.delete({
+  delete: publicProcedure.input(z.number()).mutation( async ({ input, ctx }) => {
+    return await ctx.db.wellness.delete({
       where: {
         id: input
       }
