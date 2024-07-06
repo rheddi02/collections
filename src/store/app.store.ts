@@ -10,6 +10,8 @@ interface State {
   actionable: boolean
   formData: formData
   formDataDefault: State['formData']
+  toastData: {title: string, description?: string}
+  setToastData: (toastData: State['toastData']) => void
   setFormData: (formData: State['formData']) => void
   resetForm: () => void
   setIsLoading: (isLoading: boolean) => void
@@ -35,6 +37,10 @@ const createStore: StateCreator<State, [], [], State> = (set, get) => ({
     description: '',
     url: '',
     type: ''
+  },
+  toastData: { title: '', description: ''},
+  setToastData: (toastData) => {
+    set({ toastData })
   },
   setOpenMenu: (openMenu: State['openMenu']) => {
     set({ openMenu })

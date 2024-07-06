@@ -9,11 +9,8 @@ import useHomeStore from "~/store/home-tips.store";
 import { Button } from "~/components/ui/button";
 import { HamburgerMenuIcon, PlusIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { api } from "~/trpc/react";
-import { ToastAction } from "~/components/ui/toast";
-import { useToast } from "~/components/ui/use-toast";
 
 const HomeTips = () => {
-  const { toast } = useToast();
   const utils = api.useUtils();
   const [form, setForm] = useState({
     title: "Create New",
@@ -21,6 +18,7 @@ const HomeTips = () => {
     label: "Create",
   });
   const {
+    modal,
     setModal,
     setIsLoading,
     formData,
@@ -28,6 +26,7 @@ const HomeTips = () => {
     resetForm,
     openMenu,
     setOpenMenu,
+    setToastData
   } = useAppStore((state) => ({
     modal: state.modal,
     isLoading: state.isLoading,
@@ -38,6 +37,7 @@ const HomeTips = () => {
     resetForm: state.resetForm,
     openMenu: state.openMenu,
     setOpenMenu: state.setOpenMenu,
+    setToastData: state.setToastData,
   }));
 
   const { setData, page, perPage, setPageCount } = useHomeStore((state) => ({
@@ -60,6 +60,7 @@ const HomeTips = () => {
       onSettled: () => {
         setModal(false);
         resetForm();
+        setToastData({title:"Added", description:"Record has been added successfully."})
       },
     });
 
@@ -71,12 +72,8 @@ const HomeTips = () => {
       onSettled: () => {
         setModal(false);
         resetForm();
-        setForm({
-          title: "Create New",
-          description: "Add new data",
-          label: "Create",
-        });
-      },
+      setToastData({title:"Updated", description:"Record has been updated successfully."})
+    },
     });
 
   const { mutate: deleteData, isPending: pendingDelete } =
@@ -86,15 +83,7 @@ const HomeTips = () => {
       },
       onSettled: () => {
         setModal(false);
-        toast({
-          title: "Deleted",
-          description: "Record has been deleted successfully.",
-          action: (
-            <ToastAction onClick={() => null} altText="">
-              Close
-            </ToastAction>
-          ),
-        });
+        setToastData({title:"Deleted", description:"Record has been deleted successfully."})
       },
     });
 
@@ -107,6 +96,10 @@ const HomeTips = () => {
   useEffect(() => {
     setIsLoading(pendingDelete || pendingUpdate || pendingCreate);
   }, [pendingUpdate, pendingDelete, pendingCreate]);
+
+  useEffect( () => {
+    if (!modal) setForm({title: "Create New",description: "Add new data",label: "Create",});
+  },[modal])
 
   const handleSave = () => {
     createData({

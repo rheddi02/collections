@@ -18,6 +18,7 @@ const HealthTips = () => {
     label: "Create",
   });
   const {
+    modal,
     setModal,
     setIsLoading,
     formData,
@@ -25,6 +26,7 @@ const HealthTips = () => {
     resetForm,
     setOpenMenu,
     openMenu,
+    setToastData,
   } = useAppStore((state) => ({
     modal: state.modal,
     setModal: state.setModal,
@@ -34,16 +36,15 @@ const HealthTips = () => {
     resetForm: state.resetForm,
     setOpenMenu: state.setOpenMenu,
     openMenu: state.openMenu,
+    setToastData: state.setToastData,
   }));
 
-  const { setData, page, perPage, setPageCount } = useHealthStore(
-    (state) => ({
-      setData: state.setData,
-      page: state.page,
-      perPage: state.perPage,
-      setPageCount: state.setPageCount,
-    }),
-  );
+  const { setData, page, perPage, setPageCount } = useHealthStore((state) => ({
+    setData: state.setData,
+    page: state.page,
+    perPage: state.perPage,
+    setPageCount: state.setPageCount,
+  }));
   const {
     data: data,
     isFetched,
@@ -51,40 +52,58 @@ const HealthTips = () => {
     refetch,
   } = api.health.get.useQuery({ page, perPage });
 
-  const { mutate: createData, isPending: pendingCreate } = api.health.create.useMutation({
-    onSuccess: async () => {
-      await utils.health.invalidate()
-    },
-    onSettled: () => {
-      setModal(false);
-      resetForm();
-    }
-  });
+  const { mutate: createData, isPending: pendingCreate } =
+    api.health.create.useMutation({
+      onSuccess: async () => {
+        await utils.health.invalidate();
+      },
+      onSettled: () => {
+        setModal(false);
+        resetForm();
+        setToastData({
+          title: "Added",
+          description: "Record has been added successfully.",
+        });
+      },
+    });
 
-  const { mutate: updateData, isPending: pendingUpdate } = api.health.update.useMutation({
-    onSuccess: async () => {
-      await utils.health.invalidate()
-    },
-    onSettled: () => {
-      setModal(false);
-      resetForm();
-    }
-  });
+  const { mutate: updateData, isPending: pendingUpdate } =
+    api.health.update.useMutation({
+      onSuccess: async () => {
+        await utils.health.invalidate();
+      },
+      onSettled: () => {
+        setModal(false);
+        resetForm();
+        setToastData({
+          title: "Updated",
+          description: "Record has been updated successfully.",
+        });
+      },
+    });
 
-  const { mutate: deleteData, isPending: pendingDelete } = api.health.delete.useMutation({
-    onSuccess: async () => {
-      await utils.health.invalidate()
-    },
-    onSettled: () => {
-      setModal(false);
-      resetForm();
-    }
-  });
+  const { mutate: deleteData, isPending: pendingDelete } =
+    api.health.delete.useMutation({
+      onSuccess: async () => {
+        await utils.health.invalidate();
+      },
+      onSettled: () => {
+        setModal(false);
+        resetForm();
+        setToastData({
+          title: "Deleted",
+          description: "Record has been deleted successfully.",
+        });
+      },
+    });
 
   useEffect(() => {
     setIsLoading(pendingCreate || pendingUpdate || pendingDelete);
   }, [pendingCreate, pendingUpdate, pendingDelete]);
 
+  useEffect( () => {
+    if (!modal) setForm({title: "Create New",description: "Add new data",label: "Create",});
+  },[modal])
 
   useEffect(() => {
     if (!isFetched) return;
@@ -133,7 +152,7 @@ const HealthTips = () => {
             <span onClick={() => setOpenMenu(!openMenu)}>
               <HamburgerMenuIcon className="block h-5 w-5 sm:hidden" />
             </span>
-            <div className="flex gap-2 items-center">
+            <div className="flex items-center gap-2">
               <span className="text-2xl">Health Tips</span>
               {isFetching && <ReloadIcon className="animate-spin" />}
             </div>
@@ -145,7 +164,7 @@ const HealthTips = () => {
         </div>
         <hr />
         <Table {...{ onEdit, onDelete, loading: false }} />
-        </div>
+      </div>
     </>
   );
 };

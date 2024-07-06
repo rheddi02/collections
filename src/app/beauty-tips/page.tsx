@@ -18,6 +18,7 @@ const BeautyTips = () => {
     label: "Create",
   });
   const {
+    modal,
     setModal,
     setIsLoading,
     formData,
@@ -25,6 +26,7 @@ const BeautyTips = () => {
     resetForm,
     setOpenMenu,
     openMenu,
+    setToastData
   } = useAppStore((state) => ({
     modal: state.modal,
     setModal: state.setModal,
@@ -34,6 +36,7 @@ const BeautyTips = () => {
     resetForm: state.resetForm,
     setOpenMenu: state.setOpenMenu,
     openMenu: state.openMenu,
+    setToastData: state.setToastData,
   }));
 
   const { setData, page, perPage, setPageCount } = useBeautyStore(
@@ -58,6 +61,7 @@ const BeautyTips = () => {
     onSettled: () => {
       setModal(false);
       resetForm();
+      setToastData({title:"Added", description:"Record has been added successfully."})
     }
   });
 
@@ -68,6 +72,7 @@ const BeautyTips = () => {
     onSettled: () => {
       setModal(false);
       resetForm();
+      setToastData({title:"Updated", description:"Record has been updated successfully."})
     }
   });
 
@@ -78,6 +83,7 @@ const BeautyTips = () => {
     onSettled: () => {
       setModal(false);
       resetForm();
+      setToastData({title:"Deleted", description:"Record has been deleted successfully."})
     }
   });
 
@@ -85,6 +91,9 @@ const BeautyTips = () => {
     setIsLoading(pendingCreate || pendingUpdate || pendingDelete);
   }, [pendingCreate, pendingUpdate, pendingDelete]);
 
+  useEffect( () => {
+    if (!modal) setForm({title: "Create New",description: "Add new data",label: "Create",});
+  },[modal])
 
   useEffect(() => {
     if (!isFetched) return;

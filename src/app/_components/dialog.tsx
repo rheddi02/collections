@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { typeLists } from "~/utils/type-list";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 type Props = {
   action: () => void;
@@ -31,8 +31,9 @@ type Props = {
 };
 const CustomDialog = ({ title, description, label, action }: Props) => {
   const [lists] = useState(typeLists);
-  const { modal, setModal, isLoading, actionable, formData, setFormData } =
+  const { resetForm, modal, setModal, isLoading, actionable, formData, setFormData } =
     useAppStore((state) => ({
+      resetForm: state.resetForm,
       modal: state.modal,
       setModal: state.setModal,
       isLoading: state.isLoading,
@@ -40,6 +41,10 @@ const CustomDialog = ({ title, description, label, action }: Props) => {
       formData: state.formData,
       setFormData: state.setFormData,
     }));
+
+    useEffect( () => {
+      if (!modal) resetForm()
+    },[modal])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const key = e.target.id
