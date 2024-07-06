@@ -37,3 +37,36 @@ model Wellness {
 
     @@index([id])
 }
+model BeautyTips {
+    id          Int      @id @default(autoincrement())
+    title       String
+    description String
+    type        String
+    url         String
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    @@index([id])
+}
+model EquipmentTips {
+    id          Int      @id @default(autoincrement())
+    title       String
+    description String
+    type        String
+    url         String
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    @@index([id])
+}
+model HealthTips {
+    id          Int      @id @default(autoincrement())
+    title       String
+    description String
+    type        String
+    url         String
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    @@index([id])
+}
