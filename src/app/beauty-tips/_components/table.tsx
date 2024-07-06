@@ -2,25 +2,25 @@
 import DataTableCompact from "~/app/_components/table/table-compact";
 import type { ColumnDef, Row } from "@tanstack/react-table";
 import { EyeOpenIcon, Pencil1Icon, TrashIcon } from "@radix-ui/react-icons";
-import type { homeImprovementOutput } from "~/server/api/client/types";
+import type { beautyOutput } from "~/server/api/client/types";
 import Link from "next/link";
-import useHomeImprovementStore from "~/store/home-improvement.store";
+import useBeautyStore from "~/store/beauty-tips.store";
 
 const Table = ({
   onEdit,
   onDelete,
   loading
 }: {
-  onEdit: (row: Row<homeImprovementOutput>) => void;
-  onDelete: (row: Row<homeImprovementOutput>) => void;
+  onEdit: (row: Row<beautyOutput>) => void;
+  onDelete: (row: Row<beautyOutput>) => void;
   loading: boolean
 }) => {
-  const { data, pageCount, setPage } = useHomeImprovementStore((state) => ({
+  const { data, pageCount, setPage } = useBeautyStore((state) => ({
     data: state.data,
     pageCount: state.pageCount,
     setPage: state.setPage,
   }));
-  const columns: ColumnDef<homeImprovementOutput>[] = [
+  const columns: ColumnDef<beautyOutput>[] = [
     {
       accessorKey: "title",
       header: () => {
@@ -56,7 +56,7 @@ const Table = ({
       },
       cell: ({ row }) => {
         return (
-          <div className="items-center gap-2 justify-end group-hover:flex hidden absolute right-10 -mt-3">
+          <div className="flex items-center gap-2 justify-end">
             <div
               onClick={() => onEdit(row)}
               className="flex h-7 w-7 items-center justify-center rounded-full text-gray-900 hover:cursor-pointer hover:border-2 hover:border-gray-900 hover:bg-transparent hover:text-gray-900"
@@ -77,7 +77,7 @@ const Table = ({
           </div>
         );
       },
-      maxSize: 20,
+      size: 20,
     },
   ];
 

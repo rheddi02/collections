@@ -2,13 +2,13 @@ import _ from "lodash";
 import type { StateCreator } from "zustand";
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
-import type { homeImprovementInput, homeImprovementOutput } from "~/server/api/client/types";
+import type { formData } from "~/server/api/client/types";
 
 interface State {
   modal: boolean;
   isLoading: boolean
   actionable: boolean
-  formData: homeImprovementInput | homeImprovementOutput
+  formData: formData
   formDataDefault: State['formData']
   setFormData: (formData: State['formData']) => void
   resetForm: () => void

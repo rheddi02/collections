@@ -2,25 +2,25 @@
 import DataTableCompact from "~/app/_components/table/table-compact";
 import type { ColumnDef, Row } from "@tanstack/react-table";
 import { EyeOpenIcon, Pencil1Icon, TrashIcon } from "@radix-ui/react-icons";
-import type { wellnessOutput } from "~/server/api/client/types";
+import type { equipmentOutput } from "~/server/api/client/types";
 import Link from "next/link";
-import useWellnessStore from "~/store/wellness.store";
+import useEquipmentStore from "~/store/equipment-tips.store";
 
 const Table = ({
   onEdit,
   onDelete,
   loading
 }: {
-  onEdit: (row: Row<wellnessOutput>) => void;
-  onDelete: (row: Row<wellnessOutput>) => void;
+  onEdit: (row: Row<equipmentOutput>) => void;
+  onDelete: (row: Row<equipmentOutput>) => void;
   loading: boolean
 }) => {
-  const { data, pageCount, setPage } = useWellnessStore((state) => ({
+  const { data, pageCount, setPage } = useEquipmentStore((state) => ({
     data: state.data,
     pageCount: state.pageCount,
     setPage: state.setPage,
   }));
-  const columns: ColumnDef<wellnessOutput>[] = [
+  const columns: ColumnDef<equipmentOutput>[] = [
     {
       accessorKey: "title",
       header: () => {

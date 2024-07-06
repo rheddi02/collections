@@ -1,6 +1,9 @@
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
-import { homeImprovementRouter } from "./routers/home-improvement";
-import { wellnessRouter } from "./routers/wellness";
+import { homeRouter } from "./routers/home-tip";
+import { beautyRouter } from "./routers/beauty-tip";
+import { healthRouter } from "./routers/health-tip";
+import { equipmentRouter } from "./routers/equipment-tip";
+import { dashboardRouter } from "./routers/dashboard";
 
 /**
  * This is the primary router for your server.
@@ -8,8 +11,11 @@ import { wellnessRouter } from "./routers/wellness";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  homeImprovement: homeImprovementRouter,
-  wellness: wellnessRouter,
+  home: homeRouter,
+  beauty: beautyRouter,
+  health: healthRouter,
+  equipment: equipmentRouter,
+  dashboard: dashboardRouter,
 });
 
 // export type definition of API

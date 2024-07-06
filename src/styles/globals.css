@@ -74,3 +74,15 @@
       @apply bg-background text-foreground;
     }
   }
+
+  @layer components {
+    .center-fixed {
+      @apply absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
+    }
+    .right-fixed {
+      @apply absolute top-1/2 right-0 transform -translate-y-1/2
+    }
+    .left-fixed {
+      @apply absolute top-1/2 left-0 transform -translate-y-1/2
+    }
+  }

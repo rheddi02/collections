@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
-export const wellnessRouter = createTRPCRouter({
+export const equipmentRouter = createTRPCRouter({
   create: publicProcedure
     .input(
       z.object({
@@ -15,7 +15,7 @@ export const wellnessRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      return ctx.db.wellness.create({
+      return ctx.db.equipmentTips.create({
         data: {...input}
       });
     }),
@@ -34,7 +34,7 @@ export const wellnessRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      return ctx.db.wellness.update({
+      return ctx.db.equipmentTips.update({
         where: { id: input.id },
         data: { ...input },
       });
@@ -45,22 +45,22 @@ export const wellnessRouter = createTRPCRouter({
       perPage: z.number()
     })
   ).query( async ({ ctx,input }) => {
-    const data = await ctx.db.wellness.findMany({ 
+    const data = await ctx.db.equipmentTips.findMany({ 
       skip: (input.page-1) * input.perPage,
       take: input.perPage,
     })
-    const total = await ctx.db.wellness.count()
+    const total = await ctx.db.equipmentTips.count()
     return { data, total }
   }),
   show: publicProcedure.input(z.number()).query(({ ctx,input }) => {
-    return ctx.db.wellness.findUnique({
+    return ctx.db.equipmentTips.findUnique({
       where: {
         id: input
       }
     })
   }),
   delete: publicProcedure.input(z.number()).mutation( async ({ input, ctx }) => {
-    return await ctx.db.wellness.delete({
+    return await ctx.db.equipmentTips.delete({
       where: {
         id: input
       }

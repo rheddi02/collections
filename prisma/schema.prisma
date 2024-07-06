@@ -15,28 +15,28 @@ datasource db {
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
-model HomeImprovements {
-    id          Int      @id @default(autoincrement())
-    title       String
-    description String
-    type        String
-    url         String
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+// model HomeImprovements {
+//     id          Int      @id @default(autoincrement())
+//     title       String
+//     description String
+//     type        String
+//     url         String
+//     createdAt   DateTime @default(now())
+//     updatedAt   DateTime @updatedAt
 
-    @@index([id])
-}
-model Wellness {
-    id          Int      @id @default(autoincrement())
-    title       String
-    description String
-    type        String
-    url         String
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+//     @@index([id])
+// }
+// model Wellness {
+//     id          Int      @id @default(autoincrement())
+//     title       String
+//     description String
+//     type        String
+//     url         String
+//     createdAt   DateTime @default(now())
+//     updatedAt   DateTime @updatedAt
 
-    @@index([id])
-}
+//     @@index([id])
+// }
 model BeautyTips {
     id          Int      @id @default(autoincrement())
     title       String
@@ -60,6 +60,17 @@ model EquipmentTips {
     @@index([id])
 }
 model HealthTips {
+    id          Int      @id @default(autoincrement())
+    title       String
+    description String
+    type        String
+    url         String
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    @@index([id])
+}
+model HomeTips {
     id          Int      @id @default(autoincrement())
     title       String
     description String

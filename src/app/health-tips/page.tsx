@@ -4,16 +4,13 @@ import useAppStore from "~/store/app.store";
 import type { Row } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 import CustomDialog from "~/app/_components/dialog";
-import type { homeImprovementOutput } from "~/server/api/client/types";
-import useHomeImprovementStore from "~/store/home-improvement.store";
 import { Button } from "~/components/ui/button";
 import { HamburgerMenuIcon, PlusIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { api } from "~/trpc/react";
-import { ToastAction } from "~/components/ui/toast";
-import { useToast } from "~/components/ui/use-toast";
+import useHealthStore from "~/store/health-tips.store";
+import type { healthOutput } from "~/server/api/client/types";
 
-const HomeImprovement = () => {
-  const { toast } = useToast();
+const HealthTips = () => {
   const utils = api.useUtils();
   const [form, setForm] = useState({
     title: "Create New",
@@ -26,21 +23,20 @@ const HomeImprovement = () => {
     formData,
     setFormData,
     resetForm,
-    openMenu,
     setOpenMenu,
+    openMenu,
   } = useAppStore((state) => ({
     modal: state.modal,
-    isLoading: state.isLoading,
     setModal: state.setModal,
     setIsLoading: state.setIsLoading,
     formData: state.formData,
     setFormData: state.setFormData,
     resetForm: state.resetForm,
-    openMenu: state.openMenu,
     setOpenMenu: state.setOpenMenu,
+    openMenu: state.openMenu,
   }));
 
-  const { setData, page, perPage, setPageCount } = useHomeImprovementStore(
+  const { setData, page, perPage, setPageCount } = useHealthStore(
     (state) => ({
       setData: state.setData,
       page: state.page,
@@ -52,53 +48,43 @@ const HomeImprovement = () => {
     data: data,
     isFetched,
     isFetching,
-  } = api.homeImprovement.get.useQuery({ page, perPage });
+    refetch,
+  } = api.health.get.useQuery({ page, perPage });
 
-  const { mutate: createData, isPending: pendingCreate } =
-    api.homeImprovement.create.useMutation({
-      onSuccess: async () => {
-        await utils.homeImprovement.invalidate();
-      },
-      onSettled: () => {
-        setModal(false);
-        resetForm();
-      },
-    });
+  const { mutate: createData, isPending: pendingCreate } = api.health.create.useMutation({
+    onSuccess: async () => {
+      await utils.health.invalidate()
+    },
+    onSettled: () => {
+      setModal(false);
+      resetForm();
+    }
+  });
 
-  const { mutate: updateData, isPending: pendingUpdate } =
-    api.homeImprovement.update.useMutation({
-      onSuccess: async () => {
-        await utils.homeImprovement.invalidate();
-      },
-      onSettled: () => {
-        setModal(false);
-        resetForm();
-        setForm({
-          title: "Create New",
-          description: "Add new data",
-          label: "Create",
-        });
-      },
-    });
+  const { mutate: updateData, isPending: pendingUpdate } = api.health.update.useMutation({
+    onSuccess: async () => {
+      await utils.health.invalidate()
+    },
+    onSettled: () => {
+      setModal(false);
+      resetForm();
+    }
+  });
 
-  const { mutate: deleteData, isPending: pendingDelete } =
-    api.homeImprovement.delete.useMutation({
-      onSuccess: async () => {
-        await utils.homeImprovement.invalidate();
-      },
-      onSettled: () => {
-        setModal(false);
-        toast({
-          title: 'Deleted',
-          description: 'Record has been deleted successfully.',
-          action: (
-            <ToastAction onClick={() => null} altText="">
-              Close
-            </ToastAction>
-          ),
-        });
-      },
-    });
+  const { mutate: deleteData, isPending: pendingDelete } = api.health.delete.useMutation({
+    onSuccess: async () => {
+      await utils.health.invalidate()
+    },
+    onSettled: () => {
+      setModal(false);
+      resetForm();
+    }
+  });
+
+  useEffect(() => {
+    setIsLoading(pendingCreate || pendingUpdate || pendingDelete);
+  }, [pendingCreate, pendingUpdate, pendingDelete]);
+
 
   useEffect(() => {
     if (!isFetched) return;
@@ -106,23 +92,20 @@ const HomeImprovement = () => {
     setPageCount(Math.ceil((data?.total || 0) / perPage));
   }, [data, isFetched]);
 
-  useEffect(() => {
-    setIsLoading(pendingDelete || pendingUpdate || pendingCreate);
-  }, [pendingUpdate, pendingDelete, pendingCreate]);
-
-  const handleSave = () => {
+  const handleSave = async () => {
     createData({
       ...formData,
       description: formData.description || formData.title,
       type: formData.type || "general",
     });
+    setModal(false);
   };
-  const handleUpdate = () => {
-    const tmpForm = formData as homeImprovementOutput;
-    updateData(tmpForm);
+  const handleUpdate = async () => {
+    updateData(formData as healthOutput);
+    setModal(false);
   };
 
-  const onEdit = (row: Row<homeImprovementOutput>) => {
+  const onEdit = (row: Row<healthOutput>) => {
     setForm({
       title: "Edit Data",
       description: "Edit selected data",
@@ -134,7 +117,7 @@ const HomeImprovement = () => {
     setModal(true);
   };
 
-  const onDelete = (row: Row<homeImprovementOutput>) => {
+  const onDelete = (row: Row<healthOutput>) => {
     deleteData(row.original.id);
   };
 
@@ -150,8 +133,8 @@ const HomeImprovement = () => {
             <span onClick={() => setOpenMenu(!openMenu)}>
               <HamburgerMenuIcon className="block h-5 w-5 sm:hidden" />
             </span>
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">Home Improvements</span>
+            <div className="flex gap-2 items-center">
+              <span className="text-2xl">Health Tips</span>
               {isFetching && <ReloadIcon className="animate-spin" />}
             </div>
           </div>
@@ -162,9 +145,9 @@ const HomeImprovement = () => {
         </div>
         <hr />
         <Table {...{ onEdit, onDelete, loading: false }} />
-      </div>
+        </div>
     </>
   );
 };
 
-export default HomeImprovement;
+export default HealthTips;

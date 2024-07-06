@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
-export const homeImprovementRouter = createTRPCRouter({
+export const homeRouter = createTRPCRouter({
   create: publicProcedure
     .input(
       z.object({
@@ -15,7 +15,7 @@ export const homeImprovementRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      return ctx.db.homeImprovements.create({
+      return ctx.db.homeTips.create({
         data: { ...input },
       });
     }),
@@ -34,7 +34,7 @@ export const homeImprovementRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      return ctx.db.homeImprovements.update({
+      return ctx.db.homeTips.update({
         where: { id: input.id },
         data: { ...input },
       });
@@ -47,25 +47,25 @@ export const homeImprovementRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      const data = await ctx.db.homeImprovements.findMany({
+      const data = await ctx.db.homeTips.findMany({
         skip: (input.page - 1) * input.perPage,
         take: input.perPage,
         orderBy: {
           createdAt: 'desc'
         }
       });
-      const total = await ctx.db.homeImprovements.count();
+      const total = await ctx.db.homeTips.count();
       return { data, total };
     }),
   show: publicProcedure.input(z.number()).query(({ ctx, input }) => {
-    return ctx.db.homeImprovements.findUnique({
+    return ctx.db.homeTips.findUnique({
       where: {
         id: input,
       },
     });
   }),
   delete: publicProcedure.input(z.number()).mutation(async ({ input, ctx }) => {
-    return await ctx.db.homeImprovements.delete({
+    return await ctx.db.homeTips.delete({
       where: {
         id: input,
       },

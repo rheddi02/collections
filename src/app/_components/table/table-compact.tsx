@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import {
   Table,
@@ -28,6 +28,7 @@ import {
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { DataTablePaginationPage } from "./pagination";
+import { cn } from "~/lib/utils";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -126,68 +127,70 @@ export default function DataTableCompact<TData, TValue>({
 
   return (
     <>
-    <div className="max-h-[80vh] overflow-auto">
-      <Table className="border">
-        <TableHeader className="">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow
-              key={headerGroup.id}
-            >
-              {headerGroup.headers.map((header) => {
-                return (  
-                  <TableHead
-                    key={header.id}
-                    style={{ width: `${header.getSize()}px` }}
-                    className={
-                      header.column.getCanSort()
-                        ? 'cursor-pointer select-none'
-                        : ''
-                    }
-                    onClick={header.column.getToggleSortingHandler()}
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </TableHead>
-                );
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {loading && <TableRowActions type={"loading"} />}
-          {table.getRowModel().rows?.length
-            ? table.getRowModel().rows.map((row) => (
-                <TableRow
-                  onClick={() => {
-                    if (onRowClick) {
-                      onRowClick(row);
-                    }
-                  }}
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  className="group"
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
+      <div className="max-h-[80vh] overflow-auto">
+        <Table className="border">
+          <TableHeader className="">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead
+                      key={header.id}
+                      style={{ width: `${header.getSize()}px` }}
+                      className={cn(
+                        header.column.getCanSort()
+                          ? "cursor-pointer select-none"
+                          : "",
                       )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            : !loading && <TableRowActions type={"empty"} />}
-        </TableBody>
-      </Table>
-    </div>
-    {pagination && <DataTablePaginationPage table={table} />}
+                      onClick={header.column.getToggleSortingHandler()}
+                    >
+                      <div className="flex gap-2">
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                        {{
+                          asc: " 🔼",
+                          desc: " 🔽",
+                        }[header.column.getIsSorted() as string] ?? null}
+                      </div>
+                    </TableHead>
+                  );
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {loading && <TableRowActions type={"loading"} />}
+            {table.getRowModel().rows?.length
+              ? table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    onClick={() => {
+                      if (onRowClick) {
+                        onRowClick(row);
+                      }
+                    }}
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                    className="group"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              : !loading && <TableRowActions type={"empty"} />}
+          </TableBody>
+        </Table>
+      </div>
+      {pagination && <DataTablePaginationPage table={table} />}
     </>
   );
 }

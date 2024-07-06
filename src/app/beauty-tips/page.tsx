@@ -4,14 +4,13 @@ import useAppStore from "~/store/app.store";
 import type { Row } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 import CustomDialog from "~/app/_components/dialog";
-import type { wellnessOutput } from "~/server/api/client/types";
+import type { beautyOutput } from "~/server/api/client/types";
 import { Button } from "~/components/ui/button";
 import { HamburgerMenuIcon, PlusIcon, ReloadIcon } from "@radix-ui/react-icons";
-import useWellnessStore from "~/store/wellness.store";
 import { api } from "~/trpc/react";
-import { typeLists } from "~/utils/type-list";
+import useBeautyStore from "~/store/beauty-tips.store";
 
-const Wellness = () => {
+const BeautyTips = () => {
   const utils = api.useUtils();
   const [form, setForm] = useState({
     title: "Create New",
@@ -37,7 +36,7 @@ const Wellness = () => {
     openMenu: state.openMenu,
   }));
 
-  const { setData, page, perPage, setPageCount } = useWellnessStore(
+  const { setData, page, perPage, setPageCount } = useBeautyStore(
     (state) => ({
       setData: state.setData,
       page: state.page,
@@ -50,11 +49,11 @@ const Wellness = () => {
     isFetched,
     isFetching,
     refetch,
-  } = api.wellness.get.useQuery({ page, perPage });
+  } = api.beauty.get.useQuery({ page, perPage });
 
-  const { mutate: createData, isPending: pendingCreate } = api.wellness.create.useMutation({
+  const { mutate: createData, isPending: pendingCreate } = api.beauty.create.useMutation({
     onSuccess: async () => {
-      await utils.wellness.invalidate()
+      await utils.beauty.invalidate()
     },
     onSettled: () => {
       setModal(false);
@@ -62,9 +61,9 @@ const Wellness = () => {
     }
   });
 
-  const { mutate: updateData, isPending: pendingUpdate } = api.wellness.update.useMutation({
+  const { mutate: updateData, isPending: pendingUpdate } = api.beauty.update.useMutation({
     onSuccess: async () => {
-      await utils.wellness.invalidate()
+      await utils.beauty.invalidate()
     },
     onSettled: () => {
       setModal(false);
@@ -72,9 +71,9 @@ const Wellness = () => {
     }
   });
 
-  const { mutate: deleteData, isPending: pendingDelete } = api.wellness.delete.useMutation({
+  const { mutate: deleteData, isPending: pendingDelete } = api.beauty.delete.useMutation({
     onSuccess: async () => {
-      await utils.wellness.invalidate()
+      await utils.beauty.invalidate()
     },
     onSettled: () => {
       setModal(false);
@@ -102,11 +101,11 @@ const Wellness = () => {
     setModal(false);
   };
   const handleUpdate = async () => {
-    updateData(formData as wellnessOutput);
+    updateData(formData as beautyOutput);
     setModal(false);
   };
 
-  const onEdit = (row: Row<wellnessOutput>) => {
+  const onEdit = (row: Row<beautyOutput>) => {
     setForm({
       title: "Edit Data",
       description: "Edit selected data",
@@ -118,7 +117,7 @@ const Wellness = () => {
     setModal(true);
   };
 
-  const onDelete = (row: Row<wellnessOutput>) => {
+  const onDelete = (row: Row<beautyOutput>) => {
     deleteData(row.original.id);
   };
 
@@ -135,7 +134,7 @@ const Wellness = () => {
               <HamburgerMenuIcon className="block h-5 w-5 sm:hidden" />
             </span>
             <div className="flex gap-2 items-center">
-              <span className="text-2xl">Wellness</span>
+              <span className="text-2xl">Beauty Tips</span>
               {isFetching && <ReloadIcon className="animate-spin" />}
             </div>
           </div>
@@ -151,4 +150,4 @@ const Wellness = () => {
   );
 };
 
-export default Wellness;
+export default BeautyTips;

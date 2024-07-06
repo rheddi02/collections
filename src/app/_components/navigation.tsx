@@ -17,19 +17,30 @@ export default function Navigation() {
     perPage: state.perPage,
     page: state.page,
   }));
-  const { refetch: fetchHomeImprovement } = api.homeImprovement.get.useQuery({
+  const { refetch: fetchHome } = api.home.get.useQuery({
     page,
     perPage,
   });
-  const { refetch: fetchWellness } = api.wellness.get.useQuery({
+  const { refetch: fetchBeauty } = api.beauty.get.useQuery({
     page,
     perPage,
   });
+  const { refetch: fetchHealth } = api.health.get.useQuery({
+    page,
+    perPage,
+  });
+  const { refetch: fetchEquipment } = api.equipment.get.useQuery({
+    page,
+    perPage,
+  });
+  const { refetch: fetchDashboard } = api.dashboard.get.useQuery();
 
   const handleReload = async (segment: string | undefined) => {
-    if (segment == "dashboard") console.info("dashboard");
-    if (segment == "home-improvements") await fetchHomeImprovement();
-    if (segment == "wellness") await fetchWellness();
+    if (segment == "dashboard") await fetchDashboard()
+    if (segment == "home-tips") await fetchHome();
+    if (segment == "beauty-tips") await fetchBeauty();
+    if (segment == "health-tips") await fetchHealth();
+    if (segment == "equipment-tips") await fetchEquipment();
   };
 
   return (
@@ -60,10 +71,8 @@ const Nav = ({
 
   const handleRoute = (route: NavigationType) => {
     if (route.subRoute.length) {
-      localStorage.setItem("route", JSON.stringify(route.subRoute[0]));
       router.push(route.subRoute[0]!.route);
     } else {
-      localStorage.setItem("route", JSON.stringify(route));
       router.push(route.route);
     }
   };
