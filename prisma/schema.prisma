@@ -81,3 +81,91 @@ model HomeTips {
 
     @@index([id])
 }
+model FoodTips {
+    id          Int      @id @default(autoincrement())
+    title       String
+    description String
+    type        String
+    url         String
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    @@index([id])
+}
+model PetTips {
+    id          Int      @id @default(autoincrement())
+    title       String
+    description String
+    type        String
+    url         String
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    @@index([id])
+}
+model ClothTips {
+    id          Int      @id @default(autoincrement())
+    title       String
+    description String
+    type        String
+    url         String
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    @@index([id])
+}
+model PlantTips {
+    id          Int      @id @default(autoincrement())
+    title       String
+    description String
+    type        String
+    url         String
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    @@index([id])
+}
+model MachineryTips {
+    id          Int      @id @default(autoincrement())
+    title       String
+    description String
+    type        String
+    url         String
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    @@index([id])
+}
+model RideTips {
+    id          Int      @id @default(autoincrement())
+    title       String
+    description String
+    type        String
+    url         String
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    @@index([id])
+}
+model LeisureTips {
+    id          Int      @id @default(autoincrement())
+    title       String
+    description String
+    type        String
+    url         String
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    @@index([id])
+}
+model EnergyTips {
+    id          Int      @id @default(autoincrement())
+    title       String
+    description String
+    type        String
+    url         String
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    @@index([id])
+}

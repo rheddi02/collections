@@ -4,6 +4,7 @@ import { beautyRouter } from "./routers/beauty-tip";
 import { healthRouter } from "./routers/health-tip";
 import { equipmentRouter } from "./routers/equipment-tip";
 import { dashboardRouter } from "./routers/dashboard";
+import { foodRouter } from "./routers/food-tip";
 
 /**
  * This is the primary router for your server.
@@ -16,6 +17,7 @@ export const appRouter = createTRPCRouter({
   health: healthRouter,
   equipment: equipmentRouter,
   dashboard: dashboardRouter,
+  food: foodRouter
 });
 
 // export type definition of API

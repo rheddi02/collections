@@ -37,5 +37,12 @@ export function NavigationLists(): NavigationType[] {
       },
       subRoute: [],
     },
+    {
+      title: "food tips",
+      get route() {
+        return '/'+(this.title.replaceAll(' ', '-'));
+      },
+      subRoute: [],
+    },
   ];
 }
