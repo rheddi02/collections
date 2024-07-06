@@ -4,13 +4,12 @@ import useAppStore from "~/store/app.store";
 import type { Row } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 import CustomDialog from "~/app/_components/dialog";
+import type { CommonOutputType } from "~/server/api/client/types";
 import { Button } from "~/components/ui/button";
 import { HamburgerMenuIcon, PlusIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { api } from "~/trpc/react";
-import useHealthStore from "~/store/health-tips.store";
-import type { healthOutput } from "~/server/api/client/types";
 
-const HealthTips = () => {
+const Page = () => {
   const utils = api.useUtils();
   const [form, setForm] = useState({
     title: "Create New",
@@ -24,22 +23,25 @@ const HealthTips = () => {
     formData,
     setFormData,
     resetForm,
-    setOpenMenu,
     openMenu,
-    setToastData,
+    setOpenMenu,
+    setToastType,
+    setDeleteId
   } = useAppStore((state) => ({
     modal: state.modal,
+    isLoading: state.isLoading,
     setModal: state.setModal,
     setIsLoading: state.setIsLoading,
     formData: state.formData,
     setFormData: state.setFormData,
     resetForm: state.resetForm,
-    setOpenMenu: state.setOpenMenu,
     openMenu: state.openMenu,
-    setToastData: state.setToastData,
+    setOpenMenu: state.setOpenMenu,
+    setToastType: state.setToastType,
+    setDeleteId: state.setDeleteId,
   }));
 
-  const { setData, page, perPage, setPageCount } = useHealthStore((state) => ({
+  const { setData, page, perPage, setPageCount } = useAppStore((state) => ({
     setData: state.setData,
     page: state.page,
     perPage: state.perPage,
@@ -49,61 +51,43 @@ const HealthTips = () => {
     data: data,
     isFetched,
     isFetching,
-    refetch,
-  } = api.health.get.useQuery({ page, perPage });
+  } = api.list.listClothTip.useQuery({ page, perPage });
 
   const { mutate: createData, isPending: pendingCreate } =
-    api.health.create.useMutation({
+    api.create.createClothTip.useMutation({
       onSuccess: async () => {
-        await utils.health.invalidate();
+        await invalidateList()
       },
       onSettled: () => {
         setModal(false);
         resetForm();
-        setToastData({
-          title: "Added",
-          description: "Record has been added successfully.",
-        });
+        setToastType('create')
       },
     });
 
   const { mutate: updateData, isPending: pendingUpdate } =
-    api.health.update.useMutation({
+    api.update.updateClothTip.useMutation({
       onSuccess: async () => {
-        await utils.health.invalidate();
+        await invalidateList()
       },
       onSettled: () => {
         setModal(false);
         resetForm();
-        setToastData({
-          title: "Updated",
-          description: "Record has been updated successfully.",
-        });
+        setToastType('updated')
       },
     });
 
   const { mutate: deleteData, isPending: pendingDelete } =
-    api.health.delete.useMutation({
+    api.delete.deleteClothTip.useMutation({
       onSuccess: async () => {
-        await utils.health.invalidate();
+        await invalidateList()
       },
       onSettled: () => {
         setModal(false);
-        resetForm();
-        setToastData({
-          title: "Deleted",
-          description: "Record has been deleted successfully.",
-        });
+        setToastType('delete')
+        setDeleteId(0)
       },
     });
-
-  useEffect(() => {
-    setIsLoading(pendingCreate || pendingUpdate || pendingDelete);
-  }, [pendingCreate, pendingUpdate, pendingDelete]);
-
-  useEffect( () => {
-    if (!modal) setForm({title: "Create New",description: "Add new data",label: "Create",});
-  },[modal])
 
   useEffect(() => {
     if (!isFetched) return;
@@ -111,20 +95,30 @@ const HealthTips = () => {
     setPageCount(Math.ceil((data?.total || 0) / perPage));
   }, [data, isFetched]);
 
-  const handleSave = async () => {
+  useEffect(() => {
+    setIsLoading(pendingDelete || pendingUpdate || pendingCreate);
+  }, [pendingUpdate, pendingDelete, pendingCreate]);
+
+  useEffect( () => {
+    if (!modal) setForm({title: "Create New",description: "Add new data",label: "Create",});
+  },[modal])
+
+  const invalidateList = async () => {
+    await utils.list.listClothTip.invalidate();
+  }
+  const handleSave = () => {
     createData({
       ...formData,
       description: formData.description || formData.title,
       type: formData.type || "general",
     });
-    setModal(false);
   };
-  const handleUpdate = async () => {
-    updateData(formData as healthOutput);
-    setModal(false);
+  const handleUpdate = () => {
+    const tmpForm = formData as CommonOutputType;
+    updateData(tmpForm);
   };
 
-  const onEdit = (row: Row<healthOutput>) => {
+  const onEdit = (row: Row<CommonOutputType>) => {
     setForm({
       title: "Edit Data",
       description: "Edit selected data",
@@ -136,7 +130,8 @@ const HealthTips = () => {
     setModal(true);
   };
 
-  const onDelete = (row: Row<healthOutput>) => {
+  const onDelete = (row: Row<CommonOutputType>) => {
+    setDeleteId(row.original.id)
     deleteData(row.original.id);
   };
 
@@ -153,7 +148,7 @@ const HealthTips = () => {
               <HamburgerMenuIcon className="block h-5 w-5 sm:hidden" />
             </span>
             <div className="flex items-center gap-2">
-              <span className="text-2xl">Health Tips</span>
+              <span className="text-2xl">Cloth</span>
               {isFetching && <ReloadIcon className="animate-spin" />}
             </div>
           </div>
@@ -169,4 +164,4 @@ const HealthTips = () => {
   );
 };
 
-export default HealthTips;
+export default Page;

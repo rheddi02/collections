@@ -11,35 +11,75 @@ import { NavigationLists } from "~/utils/navigations";
 import type { NavigationType } from "~/utils/types";
 
 export default function Navigation() {
-  const [navList] = useState(NavigationLists);
+  const [navList] = useState<NavigationType[]>(NavigationLists);
 
   const { page, perPage } = usePaginationStore((state) => ({
     perPage: state.perPage,
     page: state.page,
   }));
-  const { refetch: fetchHome } = api.home.get.useQuery({
-    page,
-    perPage,
-  });
-  const { refetch: fetchBeauty } = api.beauty.get.useQuery({
-    page,
-    perPage,
-  });
-  const { refetch: fetchHealth } = api.health.get.useQuery({
-    page,
-    perPage,
-  });
-  const { refetch: fetchEquipment } = api.equipment.get.useQuery({
-    page,
-    perPage,
-  });
   const { refetch: fetchDashboard } = api.dashboard.get.useQuery();
+  const { refetch: fetchHome } = api.list.listHomeTip.useQuery(
+    { page, perPage },
+    { enabled: false },
+  );
+  const { refetch: fetchBeauty } = api.list.listBeautyTip.useQuery(
+    { page, perPage },
+    { enabled: false },
+  );
+  const { refetch: fetchHealth } = api.list.listHealthTip.useQuery(
+    { page, perPage },
+    { enabled: false },
+  );
+  const { refetch: fetchEquipment } = api.list.listEquipmentTip.useQuery(
+    { page, perPage },
+    { enabled: false },
+  );
+  const { refetch: fetchEnergy } = api.list.listEnergyTip.useQuery(
+    { page, perPage },
+    { enabled: false },
+  );
+  const { refetch: fetchLeisure } = api.list.listLeisureTip.useQuery(
+    { page, perPage },
+    { enabled: false },
+  );
+  const { refetch: fetchRide } = api.list.listRideTip.useQuery(
+    { page, perPage },
+    { enabled: false },
+  );
+  const { refetch: fetchMachinery } = api.list.listMachineryTip.useQuery(
+    { page, perPage },
+    { enabled: false },
+  );
+  const { refetch: fetchPlant } = api.list.listPlantTip.useQuery(
+    { page, perPage },
+    { enabled: false },
+  );
+  const { refetch: fetchCloth } = api.list.listClothTip.useQuery(
+    { page, perPage },
+    { enabled: false },
+  );
+  const { refetch: fetchPet } = api.list.listPetTip.useQuery(
+    { page, perPage },
+    { enabled: false },
+  );
+  const { refetch: fetchFood } = api.list.listFoodTip.useQuery(
+    { page, perPage },
+    { enabled: false },
+  );
 
   const handleReload = async (segment: string | undefined) => {
-    if (segment == "dashboard") await fetchDashboard()
+    if (segment == "dashboard") await fetchDashboard();
     if (segment == "home-tips") await fetchHome();
     if (segment == "beauty-tips") await fetchBeauty();
     if (segment == "health-tips") await fetchHealth();
+    if (segment == "food-tips") await fetchFood();
+    if (segment == "pet-tips") await fetchPet();
+    if (segment == "cloth-tips") await fetchCloth();
+    if (segment == "plant-tips") await fetchPlant();
+    if (segment == "machinery-tips") await fetchMachinery();
+    if (segment == "ride-tips") await fetchRide();
+    if (segment == "leisure-tips") await fetchLeisure();
+    if (segment == "energy-tips") await fetchEnergy();
     if (segment == "equipment-tips") await fetchEquipment();
   };
 
@@ -85,7 +125,7 @@ const Nav = ({
     <div
       className={cn(
         "flex h-screen flex-col gap-2",
-        openMenu ? "w-64" : "hidden",
+        openMenu ? "w-40" : "hidden",
       )}
     >
       {navList.map((navigation) => (

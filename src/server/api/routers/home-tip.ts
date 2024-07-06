@@ -13,8 +13,6 @@ export const homeRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
       return ctx.db.homeTips.create({
         data: { ...input },
       });
@@ -32,8 +30,6 @@ export const homeRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
       return ctx.db.homeTips.update({
         where: { id: input.id },
         data: { ...input },

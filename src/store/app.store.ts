@@ -1,8 +1,9 @@
+import { type PaginationState, createPaginationStore } from './pagination.store';
 import _ from "lodash";
 import type { StateCreator } from "zustand";
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
-import type { formData } from "~/server/api/client/types";
+import type { CommonOutputType, formData } from "~/server/api/client/types";
 
 interface State {
   modal: boolean;
@@ -10,8 +11,8 @@ interface State {
   actionable: boolean
   formData: formData
   formDataDefault: State['formData']
-  toastData: {title: string, description?: string}
-  setToastData: (toastData: State['toastData']) => void
+  toastType: string
+  setToastType: (toastType: State['toastType']) => void
   setFormData: (formData: State['formData']) => void
   resetForm: () => void
   setIsLoading: (isLoading: boolean) => void
@@ -19,9 +20,14 @@ interface State {
   setModal: (modal: State["modal"]) => void;
   openMenu: boolean
   setOpenMenu: (openMenu: State['openMenu']) => void
+  data: CommonOutputType[]
+  setData: (data: State['data']) => void
+  deleteId: number
+  setDeleteId: (deleteId: State['deleteId']) => void
 }
 
 const createStore: StateCreator<State, [], [], State> = (set, get) => ({
+  data: [],
   modal: false,
   openMenu: true,
   isLoading: false,
@@ -38,9 +44,16 @@ const createStore: StateCreator<State, [], [], State> = (set, get) => ({
     url: '',
     type: ''
   },
-  toastData: { title: '', description: ''},
-  setToastData: (toastData) => {
-    set({ toastData })
+  toastType: 'create',
+  deleteId: 0,
+  setDeleteId: (deleteId) => {
+    set({ deleteId })
+  },
+  setData: (data) => {
+    set({ data })
+  },
+  setToastType: (toastType) => {
+    set({ toastType })
   },
   setOpenMenu: (openMenu: State['openMenu']) => {
     set({ openMenu })
@@ -64,9 +77,10 @@ const createStore: StateCreator<State, [], [], State> = (set, get) => ({
   },
 });
 
-const useAppStore = create<State>()(
+const useAppStore = create<State & PaginationState>()(
   subscribeWithSelector((...a) => ({
     ...createStore(...a),
+    ...createPaginationStore(...a),
   })),
 );
 

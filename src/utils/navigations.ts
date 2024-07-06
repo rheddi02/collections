@@ -1,48 +1,95 @@
 import type { NavigationType } from "./types";
 
-export function NavigationLists(): NavigationType[] {
-  return [
-    {
-      title: "dashboard",
-      get route() {
-        return '/'+(this.title.replaceAll(' ', '-'));
-      },
-      subRoute: [],
+export const NavigationLists: NavigationType[] = [
+  {
+    title: "dashboard",
+    get route() {
+      return "/" + this.title.replaceAll(" ", "-");
     },
-    {
-      title: "home tips",
-      get route() {
-        return '/'+(this.title.replaceAll(' ', '-'));
-      },
-      subRoute: [],
+    subRoute: [],
+  },
+  {
+    title: "beauty",
+    get route() {
+      return "/" + this.title.replaceAll(" ", "-");
     },
-    {
-      title: "health tips",
-      get route() {
-        return '/'+(this.title.replaceAll(' ', '-'));
-      },
-      subRoute: [],
+    subRoute: [],
+  },
+  {
+    title: "cloth",
+    get route() {
+      return "/" + this.title.replaceAll(" ", "-");
     },
-    {
-      title: "beauty tips",
-      get route() {
-        return '/'+(this.title.replaceAll(' ', '-'));
-      },
-      subRoute: [],
+    subRoute: [],
+  },
+  {
+    title: "energy",
+    get route() {
+      return "/" + this.title.replaceAll(" ", "-");
     },
-    {
-      title: "equipment tips",
-      get route() {
-        return '/'+(this.title.replaceAll(' ', '-'));
-      },
-      subRoute: [],
+    subRoute: [],
+  },
+  {
+    title: "equipment",
+    get route() {
+      return "/" + this.title.replaceAll(" ", "-");
     },
-    {
-      title: "food tips",
-      get route() {
-        return '/'+(this.title.replaceAll(' ', '-'));
-      },
-      subRoute: [],
+    subRoute: [],
+  },
+  {
+    title: "food",
+    get route() {
+      return "/" + this.title.replaceAll(" ", "-");
     },
-  ];
-}
+    subRoute: [],
+  },
+  {
+    title: "health",
+    get route() {
+      return "/" + this.title.replaceAll(" ", "-");
+    },
+    subRoute: [],
+  },
+  {
+    title: "home",
+    get route() {
+      return "/" + this.title.replaceAll(" ", "-");
+    },
+    subRoute: [],
+  },
+  {
+    title: "leisure",
+    get route() {
+      return "/" + this.title.replaceAll(" ", "-");
+    },
+    subRoute: [],
+  },
+  {
+    title: "machinery",
+    get route() {
+      return "/" + this.title.replaceAll(" ", "-");
+    },
+    subRoute: [],
+  },
+  {
+    title: "plant",
+    get route() {
+      return "/" + this.title.replaceAll(" ", "-");
+    },
+    subRoute: [],
+  },
+  {
+    title: "pet",
+    get route() {
+      return "/" + this.title.replaceAll(" ", "-");
+    },
+    subRoute: [],
+  },
+  {
+    title: "ride",
+    get route() {
+      return "/" + this.title.replaceAll(" ", "-");
+    },
+    subRoute: [],
+  },
+];
