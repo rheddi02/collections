@@ -14,6 +14,7 @@ import { ToastTypes } from "~/utils/types";
 const Page = () => {
   const path = usePathname();
   const [pageTitle] = useState(path.split('/')[1])
+  const [deleteRow, setDeleteRow] = useState(0)
   const utils = api.useUtils();
   const [form, setForm] = useState({
     title: "Create New",
@@ -45,11 +46,13 @@ const Page = () => {
     setDeleteId: state.setDeleteId,
   }));
 
-  const { setData, page, perPage, setPageCount } = useAppStore((state) => ({
+  const { setData, page, perPage, setPageCount, deleteCode, setDeleteCodeModal } = useAppStore((state) => ({
     setData: state.setData,
     page: state.page,
     perPage: state.perPage,
     setPageCount: state.setPageCount,
+    setDeleteCodeModal: state.setDeleteCodeModal,
+    deleteCode: state.deleteCode,
   }));
   const {
     data: data,
@@ -103,6 +106,10 @@ const Page = () => {
     setIsLoading(pendingDelete || pendingUpdate || pendingCreate);
   }, [pendingUpdate, pendingDelete, pendingCreate]);
 
+  useEffect( ()=> {
+    if (deleteCode) onDelete()
+  },[deleteCode])
+
   useEffect( () => {
     if (!modal) setForm({title: "Create New",description: "Add new data",label: "Create",});
   },[modal])
@@ -134,9 +141,15 @@ const Page = () => {
     setModal(true);
   };
 
-  const onDelete = (row: Row<CommonOutputType>) => {
-    setDeleteId(row.original.id)
-    deleteData(row.original.id);
+  const onDeleteCheck = (row: Row<CommonOutputType>) => {
+    setDeleteRow(row.original.id)
+    if (process.env.NEXT_PUBLIC_DELETE as unknown as string == 'true') setDeleteCodeModal(true)
+    else onDelete()
+  }
+  // const onDelete = (row: Row<CommonOutputType>) => {
+  const onDelete = () => {
+    setDeleteId(deleteRow)
+    deleteData(deleteRow);
   };
 
   return (
@@ -162,7 +175,7 @@ const Page = () => {
           </Button>
         </div>
         <hr />
-        <Table {...{ onEdit, onDelete, loading: false }} />
+        <Table {...{ onEdit, onDelete: onDeleteCheck, loading: false }} />
       </div>
     </>
   );

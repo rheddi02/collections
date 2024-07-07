@@ -5,6 +5,7 @@ import { TRPCReactProvider } from "~/trpc/react";
 import Navigation from "./_components/navigation";
 import { Toaster } from "~/components/ui/toaster"
 import Passcode from "./_components/passcode";
+import DeleteCode from "./_components/delete-code";
 
 export default function RootLayout({
   children,
@@ -20,6 +21,7 @@ export default function RootLayout({
             <div className="h-[98vh] w-full overflow-auto rounded-md p-2 bg-gray-50 text-gray-800">{children}</div>
             <Toaster />
             <Passcode />
+            <DeleteCode /> 
           </div>
         </TRPCReactProvider>
       </body>
