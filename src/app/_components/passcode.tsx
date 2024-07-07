@@ -15,7 +15,7 @@ import { Input } from "~/components/ui/input";
 import useAppStore from "~/store/app.store";
 
 const Passcode = () => {
-  const passcodeRef = useRef<HTMLInputElement | null>();
+  const passcodeRef = useRef<HTMLInputElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { setPasscodeModal, passcodeModal, setPasscode } = useAppStore((state) => ({
     setPasscodeModal: state.setPasscodeModal,
