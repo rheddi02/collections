@@ -61,6 +61,7 @@ const createStore: StateCreator<State, [], [], State> = (set, get) => ({
     set({ deleteId: [...get().deleteId, deleteId] })
   },
   setData: (data) => {
+    set({ toastType: ToastTypes.DEFAULT })
     set({ data })
   },
   setToastType: (toastType) => {
