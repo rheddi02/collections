@@ -9,18 +9,18 @@ const Dashboard = () => {
   if (isFetching) return <PageLoader />
   return (
     <div className='grid grid-cols-3 gap-2'>
-      <CardTemplate {...{count: data!.totalHealthTips, label:'health'}} url='health'/>
-      <CardTemplate {...{count: data!.totalBeautyTips, label:'beauty'}} url='beauty'/>
-      <CardTemplate {...{count: data!.totalEquipmentTips, label:'equipment'}} url='equipment'/>
-      <CardTemplate {...{count: data!.totalHomeTips, label:'home'}} url='home'/>
-      <CardTemplate {...{count: data!.totalFoodTips, label:'food'}} url='food'/>
-      <CardTemplate {...{count: data!.totalPetTips, label:'pet'}} url='pet'/>
-      <CardTemplate {...{count: data!.totalClothTips, label:'cloth'}} url='cloth'/>
-      <CardTemplate {...{count: data!.totalPlantTips, label:'plant'}} url='plant'/>
-      <CardTemplate {...{count: data!.totalMachineryTips, label:'machinery'}} url='machinery'/>
-      <CardTemplate {...{count: data!.totalRideTips, label:'ride'}} url='ride'/>
-      <CardTemplate {...{count: data!.totalLeisureTips, label:'leisure'}} url='leisure'/>
-      <CardTemplate {...{count: data!.totalEnergyTips, label:'energy'}} url='energy'/>
+      <CardTemplate {...{count: data?.totalHealthTips ?? 0, label:'health'}} url='health'/>
+      <CardTemplate {...{count: data?.totalBeautyTips ?? 0, label:'beauty'}} url='beauty'/>
+      <CardTemplate {...{count: data?.totalEquipmentTips ?? 0, label:'equipment'}} url='equipment'/>
+      <CardTemplate {...{count: data?.totalHomeTips ?? 0, label:'home'}} url='home'/>
+      <CardTemplate {...{count: data?.totalFoodTips ?? 0, label:'food'}} url='food'/>
+      <CardTemplate {...{count: data?.totalPetTips ?? 0, label:'pet'}} url='pet'/>
+      <CardTemplate {...{count: data?.totalClothTips ?? 0, label:'cloth'}} url='cloth'/>
+      <CardTemplate {...{count: data?.totalPlantTips ?? 0, label:'plant'}} url='plant'/>
+      <CardTemplate {...{count: data?.totalMachineryTips ?? 0, label:'machinery'}} url='machinery'/>
+      <CardTemplate {...{count: data?.totalRideTips ?? 0, label:'ride'}} url='ride'/>
+      <CardTemplate {...{count: data?.totalLeisureTips ?? 0, label:'leisure'}} url='leisure'/>
+      <CardTemplate {...{count: data?.totalEnergyTips ?? 0, label:'energy'}} url='energy'/>
     </div>
   )
 }
