@@ -2,33 +2,34 @@
 import React, { useEffect, type ReactNode } from "react";
 import { useToast } from "~/components/ui/use-toast";
 import useAppStore from "~/store/app.store";
+import { ToastTypes } from "~/utils/types";
 
 const Template = ({ children }: { children: ReactNode }) => {
   const { toast } = useToast();
   const toastType = useAppStore((state) => state.toastType);
 
   useEffect(() => {
-    if (!toastType) return
+    if (!toastType) return;
     showToast(toastType);
   }, [toastType]);
 
-  const showToast = (type: string) => {
+  const showToast = (type: ToastTypes) => {
     const toastData = {
-      title: '',
-      description: ''
-    }
+      title: "",
+      description: "",
+    };
     switch (type) {
-      case 'create':
-        toastData.title = 'Added'
-        toastData.description = 'Record has been added successfully.'
+      case ToastTypes.ADDED:
+        toastData.title = "Added";
+        toastData.description = "Record has been added successfully.";
         break;
-      case 'update':
-        toastData.title = 'Updated'
-        toastData.description = 'Record has been updated successfully.'
+      case ToastTypes.UPDATED:
+        toastData.title = "Updated";
+        toastData.description = "Record has been updated successfully.";
         break;
-      case 'delete':
-        toastData.title = 'Deleted'
-        toastData.description = 'Record has been deleted successfully.'
+      case ToastTypes.DELETED:
+        toastData.title = "Deleted";
+        toastData.description = "Record has been deleted successfully.";
         break;
       // default:
       //   toastData.title = 'Title'
@@ -36,8 +37,14 @@ const Template = ({ children }: { children: ReactNode }) => {
       //   break;
     }
     toast({
+      variant:
+        toastType == ToastTypes.ADDED
+          ? "success"
+          : toastType == ToastTypes.DELETED
+            ? "destructive"
+            : "default",
       title: toastData.title,
-      description: toastData.description
+      description: toastData.description,
       // action: (
       //   <ToastAction onClick={() => null} altText="">
       //     Close

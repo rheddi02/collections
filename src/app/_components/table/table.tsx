@@ -68,7 +68,7 @@ export default function DataTable<TData, TValue>({
     if (onPaginationChange) {
       onPaginationChange(page.pageIndex + 1);
     }
-  }, [onPaginationChange, page.pageIndex]);
+  }, [page.pageIndex]);
 
   useEffect(() => {
     setColumnVisibility({ ...hiddenColumns });
@@ -127,6 +127,7 @@ export default function DataTable<TData, TValue>({
 
   return (
     <>
+    <div className="max-h-[80vh] overflow-auto">
       <Table className="-mt-20 border-separate border-spacing-y-3 sm:-mt-5 sm:px-2">
         <TableHeader className="[&_tr]:border-none [&_tr]:hover:bg-transparent">
           {table.getHeaderGroups().map((headerGroup) => (
@@ -139,14 +140,26 @@ export default function DataTable<TData, TValue>({
                   <TableHead
                     key={header.id}
                     style={{ width: `${header.getSize()}px` }}
+                    className={cn(
+                      header.column.getCanSort()
+                        ? "cursor-pointer select-none"
+                        : "",
+                    )}
+                    onClick={header.column.getToggleSortingHandler()}
                   >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </TableHead>
+                      <div className="flex gap-2">
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                        {{
+                          asc: " 🔼",
+                          desc: " 🔽",
+                        }[header.column.getIsSorted() as string] ?? null}
+                      </div>
+                      </TableHead>
                 );
               })}
             </TableRow>
@@ -158,6 +171,7 @@ export default function DataTable<TData, TValue>({
             ? table.getRowModel().rows.map((row) => (
                 <TableRow
                   className={cn(
+                    'group',
                     "sm:rounded-xl sm:outline sm:outline-1",
                     "[&_td]:px-5 [&_td]:sm:px-8 [&_td]:sm:py-[18px]",
                     row.getIsSelected()
@@ -188,7 +202,8 @@ export default function DataTable<TData, TValue>({
             : !loading && <TableRowActions type={"empty"} />}
         </TableBody>
       </Table>
-      {pagination && <DataTablePaginationPage table={table} />}
+    </div>
+    {pagination && <DataTablePaginationPage table={table} />}
     </>
   );
 }

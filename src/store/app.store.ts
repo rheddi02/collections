@@ -4,6 +4,7 @@ import type { StateCreator } from "zustand";
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 import type { CommonOutputType, formData } from "~/server/api/client/types";
+import type { ToastTypes } from '~/utils/types';
 
 interface State {
   modal: boolean;
@@ -11,7 +12,7 @@ interface State {
   actionable: boolean
   formData: formData
   formDataDefault: State['formData']
-  toastType: string
+  toastType: ToastTypes
   setToastType: (toastType: State['toastType']) => void
   setFormData: (formData: State['formData']) => void
   resetForm: () => void

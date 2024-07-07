@@ -9,6 +9,7 @@ import { Button } from "~/components/ui/button";
 import { HamburgerMenuIcon, PlusIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { api } from "~/trpc/react";
 import { usePathname } from "next/navigation";
+import { ToastTypes } from "~/utils/types";
 
 const Page = () => {
   const path = usePathname();
@@ -64,7 +65,7 @@ const Page = () => {
       onSettled: () => {
         setModal(false);
         resetForm();
-        setToastType('create')
+        setToastType(ToastTypes.ADDED)
       },
     });
 
@@ -76,7 +77,7 @@ const Page = () => {
       onSettled: () => {
         setModal(false);
         resetForm();
-        setToastType('updated')
+        setToastType(ToastTypes.UPDATED)
       },
     });
 
@@ -87,7 +88,7 @@ const Page = () => {
       },
       onSettled: () => {
         setModal(false);
-        setToastType('delete')
+        setToastType(ToastTypes.DELETED)
         setDeleteId(0)
       },
     });

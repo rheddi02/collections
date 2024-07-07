@@ -11,3 +11,9 @@ export type PageType = {
   page: number
   perPage: number
 }
+
+export enum ToastTypes {
+  ADDED = 'added',
+  UPDATED = 'updated',
+  DELETED = 'deleted',
+}
