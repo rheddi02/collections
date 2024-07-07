@@ -23,8 +23,8 @@ interface State {
   setOpenMenu: (openMenu: State['openMenu']) => void
   data: CommonOutputType[]
   setData: (data: State['data']) => void
-  deleteId: number
-  setDeleteId: (deleteId: State['deleteId']) => void
+  deleteId: number[]
+  setDeleteId: (deleteId:number) => void
 }
 
 const createStore: StateCreator<State, [], [], State> = (set, get) => ({
@@ -46,9 +46,9 @@ const createStore: StateCreator<State, [], [], State> = (set, get) => ({
     type: ''
   },
   toastType: ToastTypes.DEFAULT,
-  deleteId: 0,
+  deleteId: [],
   setDeleteId: (deleteId) => {
-    set({ deleteId })
+    set({ deleteId: [...get().deleteId, deleteId] })
   },
   setData: (data) => {
     set({ data })

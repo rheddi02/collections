@@ -62,7 +62,7 @@ const Table = ({
         return (
           <div className="items-center gap-2 justify-center p-1 flex">
             {
-              deleteId === row.getValue('id') ? <div className="border rounded-full px-2 py-1 flex items-center gap-1">
+              deleteId.includes(row.getValue('id')) ? <div className="border rounded-full px-2 py-1 flex items-center gap-1">
                 <ReloadIcon className="animate-spin" />
                 Deleting ...
               </div> : <>
