@@ -18,51 +18,51 @@ export default function Navigation() {
     page: state.page,
   }));
   const { refetch: fetchDashboard } = api.dashboard.get.useQuery();
-  const { refetch: fetchHome } = api.list.listHomeTip.useQuery(
+  const { refetch: fetchHome } = api.list.homeTip.useQuery(
     { page, perPage },
     { enabled: false },
   );
-  const { refetch: fetchBeauty } = api.list.listBeautyTip.useQuery(
+  const { refetch: fetchBeauty } = api.list.beautyTip.useQuery(
     { page, perPage },
     { enabled: false },
   );
-  const { refetch: fetchHealth } = api.list.listHealthTip.useQuery(
+  const { refetch: fetchHealth } = api.list.healthTip.useQuery(
     { page, perPage },
     { enabled: false },
   );
-  const { refetch: fetchEquipment } = api.list.listEquipmentTip.useQuery(
+  const { refetch: fetchEquipment } = api.list.equipmentTip.useQuery(
     { page, perPage },
     { enabled: false },
   );
-  const { refetch: fetchEnergy } = api.list.listEnergyTip.useQuery(
+  const { refetch: fetchEnergy } = api.list.energyTip.useQuery(
     { page, perPage },
     { enabled: false },
   );
-  const { refetch: fetchLeisure } = api.list.listLeisureTip.useQuery(
+  const { refetch: fetchLeisure } = api.list.leisureTip.useQuery(
     { page, perPage },
     { enabled: false },
   );
-  const { refetch: fetchRide } = api.list.listRideTip.useQuery(
+  const { refetch: fetchRide } = api.list.rideTip.useQuery(
     { page, perPage },
     { enabled: false },
   );
-  const { refetch: fetchMachinery } = api.list.listMachineryTip.useQuery(
+  const { refetch: fetchMachinery } = api.list.machineryTip.useQuery(
     { page, perPage },
     { enabled: false },
   );
-  const { refetch: fetchPlant } = api.list.listPlantTip.useQuery(
+  const { refetch: fetchPlant } = api.list.plantTip.useQuery(
     { page, perPage },
     { enabled: false },
   );
-  const { refetch: fetchCloth } = api.list.listClothTip.useQuery(
+  const { refetch: fetchCloth } = api.list.clothTip.useQuery(
     { page, perPage },
     { enabled: false },
   );
-  const { refetch: fetchPet } = api.list.listPetTip.useQuery(
+  const { refetch: fetchPet } = api.list.petTip.useQuery(
     { page, perPage },
     { enabled: false },
   );
-  const { refetch: fetchFood } = api.list.listFoodTip.useQuery(
+  const { refetch: fetchFood } = api.list.foodTip.useQuery(
     { page, perPage },
     { enabled: false },
   );
