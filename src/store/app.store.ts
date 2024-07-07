@@ -25,6 +25,10 @@ interface State {
   setData: (data: State['data']) => void
   deleteId: number[]
   setDeleteId: (deleteId:number) => void
+  passcode: string
+  setPasscode: (passcode: State['passcode']) => void
+  passcodeModal: boolean
+  setPasscodeModal: (passcodeModal: State['passcodeModal']) => void
 }
 
 const createStore: StateCreator<State, [], [], State> = (set, get) => ({
@@ -47,6 +51,8 @@ const createStore: StateCreator<State, [], [], State> = (set, get) => ({
   },
   toastType: ToastTypes.DEFAULT,
   deleteId: [],
+  passcodeModal: false,
+  passcode: '',
   setDeleteId: (deleteId) => {
     set({ deleteId: [...get().deleteId, deleteId] })
   },
@@ -76,6 +82,12 @@ const createStore: StateCreator<State, [], [], State> = (set, get) => ({
   setModal: (modal) => {
     set({ modal });
   },
+  setPasscodeModal: (passcodeModal) => {
+    set({ passcodeModal })
+  },
+  setPasscode: (passcode) => {
+    set({ passcode })
+  }
 });
 
 const useAppStore = create<State & PaginationState>()(

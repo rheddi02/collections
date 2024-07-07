@@ -4,6 +4,7 @@ import { GeistSans } from "geist/font/sans";
 import { TRPCReactProvider } from "~/trpc/react";
 import Navigation from "./_components/navigation";
 import { Toaster } from "~/components/ui/toaster"
+import Passcode from "./_components/passcode";
 
 export default function RootLayout({
   children,
@@ -18,6 +19,7 @@ export default function RootLayout({
             <Navigation />
             <div className="h-[98vh] w-full overflow-auto rounded-md p-2 bg-gray-50 text-gray-800">{children}</div>
             <Toaster />
+            <Passcode />
           </div>
         </TRPCReactProvider>
       </body>

@@ -6,12 +6,35 @@ import { ToastTypes } from "~/utils/types";
 
 const Template = ({ children }: { children: ReactNode }) => {
   const { toast } = useToast();
-  const toastType = useAppStore((state) => state.toastType);
+  const { toastType, passcode, setPasscode, setPasscodeModal } = useAppStore(
+    (state) => ({
+      toastType: state.toastType,
+      passcode: state.passcode,
+      setPasscode: state.setPasscode,
+      setPasscodeModal: state.setPasscodeModal,
+    }),
+  );
 
   useEffect(() => {
     if (toastType == ToastTypes.DEFAULT) return;
     showToast(toastType);
   }, [toastType]);
+
+  useEffect(() => {
+    const tmpPasscode = localStorage.getItem("passcode");
+    if (!tmpPasscode) return setPasscode('')
+    if (tmpPasscode == process.env.NEXT_PUBLIC_PASSCODE) {
+      setPasscode(tmpPasscode)
+      localStorage.setItem('passcode', tmpPasscode)
+    } else {
+      setPasscode('')
+    }
+  }, []);
+
+  useEffect( () => {
+    if (passcode) setPasscodeModal(false)
+    else setPasscodeModal(true)
+  },[passcode])
 
   const showToast = (type: ToastTypes) => {
     const toastData = {
