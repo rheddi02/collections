@@ -3,7 +3,7 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const listRouter = createTRPCRouter({
-  listBeautyTip: publicProcedure
+  beautyTip: publicProcedure
     .input(
       z.object({
         page: z.number(),
@@ -21,7 +21,7 @@ export const listRouter = createTRPCRouter({
       const total = await ctx.db.beautyTips.count();
       return { data, total };
     }),
-  listEquipmentTip: publicProcedure
+  equipmentTip: publicProcedure
     .input(
       z.object({
         page: z.number(),
@@ -39,7 +39,7 @@ export const listRouter = createTRPCRouter({
       const total = await ctx.db.equipmentTips.count();
       return { data, total };
     }),
-  listFoodTip: publicProcedure
+  foodTip: publicProcedure
     .input(
       z.object({
         page: z.number(),
@@ -57,7 +57,7 @@ export const listRouter = createTRPCRouter({
       const total = await ctx.db.foodTips.count();
       return { data, total };
     }),
-  listHealthTip: publicProcedure
+  healthTip: publicProcedure
     .input(
       z.object({
         page: z.number(),
@@ -75,7 +75,7 @@ export const listRouter = createTRPCRouter({
       const total = await ctx.db.healthTips.count();
       return { data, total };
     }),
-  listHomeTip: publicProcedure
+  homeTip: publicProcedure
     .input(
       z.object({
         page: z.number(),
@@ -93,7 +93,7 @@ export const listRouter = createTRPCRouter({
       const total = await ctx.db.homeTips.count();
       return { data, total };
     }),
-  listPetTip: publicProcedure
+  petTip: publicProcedure
     .input(
       z.object({
         page: z.number(),
@@ -111,7 +111,7 @@ export const listRouter = createTRPCRouter({
       const total = await ctx.db.petTips.count();
       return { data, total };
     }),
-  listClothTip: publicProcedure
+  clothTip: publicProcedure
     .input(
       z.object({
         page: z.number(),
@@ -129,7 +129,7 @@ export const listRouter = createTRPCRouter({
       const total = await ctx.db.clothTips.count();
       return { data, total };
     }),
-  listPlantTip: publicProcedure
+  plantTip: publicProcedure
     .input(
       z.object({
         page: z.number(),
@@ -147,7 +147,7 @@ export const listRouter = createTRPCRouter({
       const total = await ctx.db.plantTips.count();
       return { data, total };
     }),
-  listMachineryTip: publicProcedure
+  machineryTip: publicProcedure
     .input(
       z.object({
         page: z.number(),
@@ -165,7 +165,7 @@ export const listRouter = createTRPCRouter({
       const total = await ctx.db.machineryTips.count();
       return { data, total };
     }),
-  listRideTip: publicProcedure
+  rideTip: publicProcedure
     .input(
       z.object({
         page: z.number(),
@@ -183,7 +183,7 @@ export const listRouter = createTRPCRouter({
       const total = await ctx.db.rideTips.count();
       return { data, total };
     }),
-  listLeisureTip: publicProcedure
+  leisureTip: publicProcedure
     .input(
       z.object({
         page: z.number(),
@@ -201,7 +201,7 @@ export const listRouter = createTRPCRouter({
       const total = await ctx.db.leisureTips.count();
       return { data, total };
     }),
-  listEnergyTip: publicProcedure
+  energyTip: publicProcedure
     .input(
       z.object({
         page: z.number(),

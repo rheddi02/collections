@@ -54,10 +54,10 @@ const Page = () => {
     data: data,
     isFetched,
     isFetching,
-  } = api.list.clothTip.useQuery({ page, perPage });
+  } = api.list.rideTip.useQuery({ page, perPage });
 
   const { mutate: createData, isPending: pendingCreate } =
-    api.create.clothTip.useMutation({
+    api.create.rideTip.useMutation({
       onSuccess: async () => {
         await invalidateList()
       },
@@ -69,7 +69,7 @@ const Page = () => {
     });
 
   const { mutate: updateData, isPending: pendingUpdate } =
-    api.update.clothTip.useMutation({
+    api.update.rideTip.useMutation({
       onSuccess: async () => {
         await invalidateList()
       },
@@ -81,7 +81,7 @@ const Page = () => {
     });
 
   const { mutate: deleteData, isPending: pendingDelete } =
-    api.delete.clothTip.useMutation({
+    api.delete.rideTip.useMutation({
       onSuccess: async () => {
         await invalidateList()
       },
@@ -107,7 +107,7 @@ const Page = () => {
   },[modal])
 
   const invalidateList = async () => {
-    await utils.list.clothTip.invalidate();
+    await utils.list.rideTip.invalidate();
   }
   const handleSave = () => {
     createData({

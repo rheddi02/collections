@@ -3,7 +3,7 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const getRouter = createTRPCRouter({
-  getBeautyTip: publicProcedure
+  beautyTip: publicProcedure
     .input(z.number())
     .query(async ({ ctx, input }) => {
       return await ctx.db.beautyTips.findUnique({
@@ -12,7 +12,7 @@ export const getRouter = createTRPCRouter({
         },
       });
     }),
-  getEquipmentTip: publicProcedure
+  equipmentTip: publicProcedure
     .input(z.number())
     .query(async ({ ctx, input }) => {
       return await ctx.db.equipmentTips.findUnique({
@@ -21,7 +21,7 @@ export const getRouter = createTRPCRouter({
         },
       });
     }),
-  getFoodTip: publicProcedure
+  foodTip: publicProcedure
     .input(z.number())
     .query(async ({ ctx, input }) => {
       return await ctx.db.foodTips.findUnique({
@@ -30,7 +30,7 @@ export const getRouter = createTRPCRouter({
         },
       });
     }),
-  getHealthTip: publicProcedure
+  healthTip: publicProcedure
     .input(z.number())
     .query(async ({ ctx, input }) => {
       return await ctx.db.healthTips.findUnique({
@@ -39,7 +39,7 @@ export const getRouter = createTRPCRouter({
         },
       });
     }),
-  getHomeTip: publicProcedure
+  homeTip: publicProcedure
     .input(z.number())
     .query(async ({ ctx, input }) => {
       return await ctx.db.homeTips.findUnique({
@@ -48,7 +48,7 @@ export const getRouter = createTRPCRouter({
         },
       });
     }),
-  getPetTip: publicProcedure
+  petTip: publicProcedure
     .input(z.number())
     .query(async ({ ctx, input }) => {
       return await ctx.db.petTips.findUnique({
@@ -57,7 +57,7 @@ export const getRouter = createTRPCRouter({
         },
       });
     }),
-  getClothTip: publicProcedure
+  clothTip: publicProcedure
     .input(z.number())
     .query(async ({ ctx, input }) => {
       return await ctx.db.clothTips.findUnique({
@@ -66,7 +66,7 @@ export const getRouter = createTRPCRouter({
         },
       });
     }),
-  getPlantTip: publicProcedure
+  plantTip: publicProcedure
     .input(z.number())
     .query(async ({ ctx, input }) => {
       return await ctx.db.plantTips.findUnique({
@@ -75,7 +75,7 @@ export const getRouter = createTRPCRouter({
         },
       });
     }),
-  getMachineryTip: publicProcedure
+  machineryTip: publicProcedure
     .input(z.number())
     .query(async ({ ctx, input }) => {
       return await ctx.db.machineryTips.findUnique({
@@ -84,7 +84,7 @@ export const getRouter = createTRPCRouter({
         },
       });
     }),
-  getRideTip: publicProcedure
+  rideTip: publicProcedure
     .input(z.number())
     .query(async ({ ctx, input }) => {
       return await ctx.db.rideTips.findUnique({
@@ -93,7 +93,7 @@ export const getRouter = createTRPCRouter({
         },
       });
     }),
-  getLeisureTip: publicProcedure
+  leisureTip: publicProcedure
     .input(z.number())
     .query(async ({ ctx, input }) => {
       return await ctx.db.leisureTips.findUnique({
@@ -102,7 +102,7 @@ export const getRouter = createTRPCRouter({
         },
       });
     }),
-  getEnergyTip: publicProcedure
+  energyTip: publicProcedure
     .input(z.number())
     .query(async ({ ctx, input }) => {
       return await ctx.db.energyTips.findUnique({

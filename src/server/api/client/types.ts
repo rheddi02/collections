@@ -33,14 +33,14 @@ export type formData =
   | healthInput
   | healthOutput;
 
-export type homeInput = RouterInput["create"]["createHomeTip"];
-export type homeOutput = RouterOutput["create"]['createHomeTip'];
+export type homeInput = RouterInput["create"]["homeTip"];
+export type homeOutput = RouterOutput["create"]['homeTip'];
 
-export type beautyInput = RouterInput["create"]['createBeautyTip'];
-export type beautyOutput = RouterOutput["create"]['createBeautyTip'];
+export type beautyInput = RouterInput["create"]['beautyTip'];
+export type beautyOutput = RouterOutput["create"]['beautyTip'];
 
-export type equipmentInput = RouterInput["create"]['createEquipmentTip'];
-export type equipmentOutput = RouterOutput["create"]['createEquipmentTip'];
+export type equipmentInput = RouterInput["create"]['equipmentTip'];
+export type equipmentOutput = RouterOutput["create"]['equipmentTip'];
 
-export type healthInput = RouterInput["create"]['createHealthTip'];
-export type healthOutput = RouterOutput["create"]['createHealthTip'];
+export type healthInput = RouterInput["create"]['healthTip'];
+export type healthOutput = RouterOutput["create"]['healthTip'];

@@ -3,7 +3,7 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const createRouter = createTRPCRouter({
-  createBeautyTip: publicProcedure
+  beautyTip: publicProcedure
     .input(
       z.object({
         title: z.string().min(1),
@@ -17,7 +17,7 @@ export const createRouter = createTRPCRouter({
         data: {...input}
       });
     }),
-  createEquipmentTip: publicProcedure
+  equipmentTip: publicProcedure
     .input(
       z.object({
         title: z.string().min(1),
@@ -31,7 +31,7 @@ export const createRouter = createTRPCRouter({
         data: {...input}
       });
     }),
-  createFoodTip: publicProcedure
+  foodTip: publicProcedure
     .input(
       z.object({
         title: z.string().min(1),
@@ -45,7 +45,7 @@ export const createRouter = createTRPCRouter({
         data: {...input}
       });
     }),
-  createHealthTip: publicProcedure
+  healthTip: publicProcedure
     .input(
       z.object({
         title: z.string().min(1),
@@ -59,7 +59,7 @@ export const createRouter = createTRPCRouter({
         data: {...input}
       });
     }),
-  createHomeTip: publicProcedure
+  homeTip: publicProcedure
     .input(
       z.object({
         title: z.string().min(1),
@@ -73,7 +73,7 @@ export const createRouter = createTRPCRouter({
         data: {...input}
       });
     }),
-  createPetTip: publicProcedure
+  petTip: publicProcedure
     .input(
       z.object({
         title: z.string().min(1),
@@ -87,7 +87,7 @@ export const createRouter = createTRPCRouter({
         data: {...input}
       });
     }),
-  createClothTip: publicProcedure
+  clothTip: publicProcedure
     .input(
       z.object({
         title: z.string().min(1),
@@ -101,7 +101,7 @@ export const createRouter = createTRPCRouter({
         data: {...input}
       });
     }),
-  createPlantTip: publicProcedure
+  plantTip: publicProcedure
     .input(
       z.object({
         title: z.string().min(1),
@@ -115,7 +115,7 @@ export const createRouter = createTRPCRouter({
         data: {...input}
       });
     }),
-  createMachineryTip: publicProcedure
+  machineryTip: publicProcedure
     .input(
       z.object({
         title: z.string().min(1),
@@ -129,7 +129,7 @@ export const createRouter = createTRPCRouter({
         data: {...input}
       });
     }),
-  createRideTip: publicProcedure
+  rideTip: publicProcedure
     .input(
       z.object({
         title: z.string().min(1),
@@ -143,7 +143,7 @@ export const createRouter = createTRPCRouter({
         data: {...input}
       });
     }),
-  createLeisureTip: publicProcedure
+  leisureTip: publicProcedure
     .input(
       z.object({
         title: z.string().min(1),
@@ -157,7 +157,7 @@ export const createRouter = createTRPCRouter({
         data: {...input}
       });
     }),
-  createEnergyTip: publicProcedure
+  energyTip: publicProcedure
     .input(
       z.object({
         title: z.string().min(1),

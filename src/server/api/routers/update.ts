@@ -3,7 +3,7 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const updateRouter = createTRPCRouter({
-  updateBeautyTip: publicProcedure
+  beautyTip: publicProcedure
     .input(
       z.object({
         id: z.number(),
@@ -21,7 +21,7 @@ export const updateRouter = createTRPCRouter({
         data: { ...input },
       });
     }),
-  updateEquipmentTip: publicProcedure
+  equipmentTip: publicProcedure
     .input(
       z.object({
         id: z.number(),
@@ -39,7 +39,7 @@ export const updateRouter = createTRPCRouter({
         data: { ...input },
       });
     }),
-  updateFoodTip: publicProcedure
+  foodTip: publicProcedure
     .input(
       z.object({
         id: z.number(),
@@ -57,7 +57,7 @@ export const updateRouter = createTRPCRouter({
         data: { ...input },
       });
     }),
-  updateHealthTip: publicProcedure
+  healthTip: publicProcedure
     .input(
       z.object({
         id: z.number(),
@@ -75,7 +75,7 @@ export const updateRouter = createTRPCRouter({
         data: { ...input },
       });
     }),
-  updateHomeTip: publicProcedure
+  homeTip: publicProcedure
     .input(
       z.object({
         id: z.number(),
@@ -93,7 +93,7 @@ export const updateRouter = createTRPCRouter({
         data: { ...input },
       });
     }),
-  updatePetTip: publicProcedure
+  petTip: publicProcedure
     .input(
       z.object({
         id: z.number(),
@@ -111,7 +111,7 @@ export const updateRouter = createTRPCRouter({
         data: { ...input },
       });
     }),
-  updateClothTip: publicProcedure
+  clothTip: publicProcedure
     .input(
       z.object({
         id: z.number(),
@@ -129,7 +129,7 @@ export const updateRouter = createTRPCRouter({
         data: { ...input },
       });
     }),
-  updatePlantTip: publicProcedure
+  plantTip: publicProcedure
     .input(
       z.object({
         id: z.number(),
@@ -147,7 +147,7 @@ export const updateRouter = createTRPCRouter({
         data: { ...input },
       });
     }),
-  updateMachineryTip: publicProcedure
+  machineryTip: publicProcedure
     .input(
       z.object({
         id: z.number(),
@@ -165,7 +165,7 @@ export const updateRouter = createTRPCRouter({
         data: { ...input },
       });
     }),
-  updateRideTip: publicProcedure
+  rideTip: publicProcedure
     .input(
       z.object({
         id: z.number(),
@@ -183,7 +183,7 @@ export const updateRouter = createTRPCRouter({
         data: { ...input },
       });
     }),
-  updateLeisureTip: publicProcedure
+  leisureTip: publicProcedure
     .input(
       z.object({
         id: z.number(),
@@ -201,7 +201,7 @@ export const updateRouter = createTRPCRouter({
         data: { ...input },
       });
     }),
-  updateEnergyTip: publicProcedure
+  energyTip: publicProcedure
     .input(
       z.object({
         id: z.number(),

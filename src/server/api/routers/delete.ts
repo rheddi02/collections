@@ -3,7 +3,7 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const deleteRouter = createTRPCRouter({
-  deleteBeautyTip: publicProcedure
+  beautyTip: publicProcedure
     .input(z.number())
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.beautyTips.delete({
@@ -12,7 +12,7 @@ export const deleteRouter = createTRPCRouter({
         },
       });
     }),
-  deleteEquipmentTip: publicProcedure
+  equipmentTip: publicProcedure
     .input(z.number())
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.equipmentTips.delete({
@@ -21,7 +21,7 @@ export const deleteRouter = createTRPCRouter({
         },
       });
     }),
-  deleteFoodTip: publicProcedure
+  foodTip: publicProcedure
     .input(z.number())
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.foodTips.delete({
@@ -30,7 +30,7 @@ export const deleteRouter = createTRPCRouter({
         },
       });
     }),
-  deleteHealthTip: publicProcedure
+  healthTip: publicProcedure
     .input(z.number())
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.healthTips.delete({
@@ -39,7 +39,7 @@ export const deleteRouter = createTRPCRouter({
         },
       });
     }),
-  deleteHomeTip: publicProcedure
+  homeTip: publicProcedure
     .input(z.number())
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.homeTips.delete({
@@ -48,7 +48,7 @@ export const deleteRouter = createTRPCRouter({
         },
       });
     }),
-  deletePetTip: publicProcedure
+  petTip: publicProcedure
     .input(z.number())
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.petTips.delete({
@@ -57,7 +57,7 @@ export const deleteRouter = createTRPCRouter({
         },
       });
     }),
-  deleteClothTip: publicProcedure
+  clothTip: publicProcedure
     .input(z.number())
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.clothTips.delete({
@@ -66,7 +66,7 @@ export const deleteRouter = createTRPCRouter({
         },
       });
     }),
-  deletePlantTip: publicProcedure
+  plantTip: publicProcedure
     .input(z.number())
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.plantTips.delete({
@@ -75,7 +75,7 @@ export const deleteRouter = createTRPCRouter({
         },
       });
     }),
-  deleteMachineryTip: publicProcedure
+  machineryTip: publicProcedure
     .input(z.number())
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.machineryTips.delete({
@@ -84,7 +84,7 @@ export const deleteRouter = createTRPCRouter({
         },
       });
     }),
-  deleteRideTip: publicProcedure
+  rideTip: publicProcedure
     .input(z.number())
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.rideTips.delete({
@@ -93,7 +93,7 @@ export const deleteRouter = createTRPCRouter({
         },
       });
     }),
-  deleteLeisureTip: publicProcedure
+  leisureTip: publicProcedure
     .input(z.number())
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.leisureTips.delete({
@@ -102,7 +102,7 @@ export const deleteRouter = createTRPCRouter({
         },
       });
     }),
-  deleteEnergyTip: publicProcedure
+  energyTip: publicProcedure
     .input(z.number())
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.energyTips.delete({
