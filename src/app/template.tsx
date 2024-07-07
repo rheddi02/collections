@@ -8,6 +8,7 @@ const Template = ({ children }: { children: ReactNode }) => {
   const toastType = useAppStore((state) => state.toastType);
 
   useEffect(() => {
+    if (!toastType) return
     showToast(toastType);
   }, [toastType]);
 
