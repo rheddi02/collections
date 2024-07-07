@@ -13,8 +13,8 @@ import { ToastTypes } from "~/utils/types";
 
 const Page = () => {
   const path = usePathname();
-  const [pageTitle] = useState(path.split('/')[1])
-  const [deleteRow, setDeleteRow] = useState(0)
+  const [pageTitle] = useState(path.split("/")[1]);
+  const [deleteRow, setDeleteRow] = useState(0);
   const utils = api.useUtils();
   const [form, setForm] = useState({
     title: "Create New",
@@ -31,29 +31,17 @@ const Page = () => {
     openMenu,
     setOpenMenu,
     setToastType,
-    setDeleteId
-  } = useAppStore((state) => ({
-    modal: state.modal,
-    isLoading: state.isLoading,
-    setModal: state.setModal,
-    setIsLoading: state.setIsLoading,
-    formData: state.formData,
-    setFormData: state.setFormData,
-    resetForm: state.resetForm,
-    openMenu: state.openMenu,
-    setOpenMenu: state.setOpenMenu,
-    setToastType: state.setToastType,
-    setDeleteId: state.setDeleteId,
-  }));
+    setDeleteId,
+  } = useAppStore();
 
-  const { setData, page, perPage, setPageCount, deleteCode, setDeleteCodeModal } = useAppStore((state) => ({
-    setData: state.setData,
-    page: state.page,
-    perPage: state.perPage,
-    setPageCount: state.setPageCount,
-    setDeleteCodeModal: state.setDeleteCodeModal,
-    deleteCode: state.deleteCode,
-  }));
+  const {
+    setData,
+    page,
+    perPage,
+    setPageCount,
+    deleteCode,
+    setDeleteCodeModal,
+  } = useAppStore();
   const {
     data: data,
     isFetched,
@@ -63,36 +51,36 @@ const Page = () => {
   const { mutate: createData, isPending: pendingCreate } =
     api.create.beautyTip.useMutation({
       onSuccess: async () => {
-        await invalidateList()
+        await invalidateList();
       },
       onSettled: () => {
         setModal(false);
         resetForm();
-        setToastType(ToastTypes.ADDED)
+        setToastType(ToastTypes.ADDED);
       },
     });
 
   const { mutate: updateData, isPending: pendingUpdate } =
     api.update.beautyTip.useMutation({
       onSuccess: async () => {
-        await invalidateList()
+        await invalidateList();
       },
       onSettled: () => {
         setModal(false);
         resetForm();
-        setToastType(ToastTypes.UPDATED)
+        setToastType(ToastTypes.UPDATED);
       },
     });
 
   const { mutate: deleteData, isPending: pendingDelete } =
     api.delete.beautyTip.useMutation({
       onSuccess: async () => {
-        await invalidateList()
+        await invalidateList();
       },
       onSettled: () => {
         setModal(false);
-        setToastType(ToastTypes.DELETED)
-        setDeleteId(0)
+        setToastType(ToastTypes.DELETED);
+        setDeleteId(0);
       },
     });
 
@@ -106,17 +94,22 @@ const Page = () => {
     setIsLoading(pendingDelete || pendingUpdate || pendingCreate);
   }, [pendingUpdate, pendingDelete, pendingCreate]);
 
-  useEffect( ()=> {
-    if (deleteCode) onDelete()
-  },[deleteCode])
+  useEffect(() => {
+    if (deleteCode) onDelete();
+  }, [deleteCode]);
 
-  useEffect( () => {
-    if (!modal) setForm({title: "Create New",description: "Add new data",label: "Create",});
-  },[modal])
+  useEffect(() => {
+    if (!modal)
+      setForm({
+        title: "Create New",
+        description: "Add new data",
+        label: "Create",
+      });
+  }, [modal]);
 
   const invalidateList = async () => {
     await utils.list.beautyTip.invalidate();
-  }
+  };
   const handleSave = () => {
     createData({
       ...formData,
@@ -142,13 +135,14 @@ const Page = () => {
   };
 
   const onDeleteCheck = (row: Row<CommonOutputType>) => {
-    setDeleteRow(row.original.id)
-    if (process.env.NEXT_PUBLIC_DELETE as unknown as string == 'true') setDeleteCodeModal(true)
-    else onDelete()
-  }
+    setDeleteRow(row.original.id);
+    if ((process.env.NEXT_PUBLIC_DELETE as unknown as string) == "true")
+      setDeleteCodeModal(true);
+    else onDelete();
+  };
   // const onDelete = (row: Row<CommonOutputType>) => {
   const onDelete = () => {
-    setDeleteId(deleteRow)
+    setDeleteId(deleteRow);
     deleteData(deleteRow);
   };
 
