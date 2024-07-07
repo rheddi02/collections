@@ -9,7 +9,7 @@ const Template = ({ children }: { children: ReactNode }) => {
   const toastType = useAppStore((state) => state.toastType);
 
   useEffect(() => {
-    if (!toastType) return;
+    if (toastType == ToastTypes.DEFAULT) return;
     showToast(toastType);
   }, [toastType]);
 
