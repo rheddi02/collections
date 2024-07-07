@@ -2,31 +2,34 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const dashboardRouter = createTRPCRouter({
   get: publicProcedure.query(async ({ ctx }) => {
-    const totalHomeTips = await ctx.db.homeTips.count();
-    const totalHealthTips = await ctx.db.healthTips.count();
-    const totalEquipmentTips = await ctx.db.equipmentTips.count();
-    const totalBeautyTips = await ctx.db.beautyTips.count();
-    const totalFoodTips = await ctx.db.foodTips.count();
-    const totalPetTips = await ctx.db.petTips.count();
-    const totalClothTips = await ctx.db.clothTips.count();
-    const totalPlantTips = await ctx.db.plantTips.count();
-    const totalMachineryTips = await ctx.db.machineryTips.count();
-    const totalRideTips = await ctx.db.rideTips.count();
-    const totalLeisureTips = await ctx.db.leisureTips.count();
-    const totalEnergyTips = await ctx.db.energyTips.count();
-    return {
-      totalHomeTips,
-      totalHealthTips,
-      totalEquipmentTips,
-      totalBeautyTips,
-      totalFoodTips,
-      totalPetTips,
-      totalClothTips,
-      totalPlantTips,
-      totalMachineryTips,
-      totalRideTips,
-      totalLeisureTips,
-      totalEnergyTips,
-    };
+    const counts = await ctx.db.$transaction( async (db) => {
+      const totalHomeTips = await db.homeTips.count();
+      const totalHealthTips = await db.healthTips.count();
+      const totalEquipmentTips = await db.equipmentTips.count();
+      const totalBeautyTips = await db.beautyTips.count();
+      const totalFoodTips = await db.foodTips.count();
+      const totalPetTips = await db.petTips.count();
+      const totalClothTips = await db.clothTips.count();
+      const totalPlantTips = await db.plantTips.count();
+      const totalMachineryTips = await db.machineryTips.count();
+      const totalRideTips = await db.rideTips.count();
+      const totalLeisureTips = await db.leisureTips.count();
+      const totalEnergyTips = await db.energyTips.count();
+      return {
+        totalHomeTips,
+        totalHealthTips,
+        totalEquipmentTips,
+        totalBeautyTips,
+        totalFoodTips,
+        totalPetTips,
+        totalClothTips,
+        totalPlantTips,
+        totalMachineryTips,
+        totalRideTips,
+        totalLeisureTips,
+        totalEnergyTips,
+      };
+    })
+    return counts
   }),
 });
