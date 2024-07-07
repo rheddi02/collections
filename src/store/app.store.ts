@@ -4,7 +4,7 @@ import type { StateCreator } from "zustand";
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 import type { CommonOutputType, formData } from "~/server/api/client/types";
-import type { ToastTypes } from '~/utils/types';
+import { ToastTypes } from '~/utils/types';
 
 interface State {
   modal: boolean;
@@ -45,7 +45,7 @@ const createStore: StateCreator<State, [], [], State> = (set, get) => ({
     url: '',
     type: ''
   },
-  toastType: '',
+  toastType: ToastTypes.DEFAULT,
   deleteId: 0,
   setDeleteId: (deleteId) => {
     set({ deleteId })
