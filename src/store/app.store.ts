@@ -44,7 +44,7 @@ const createStore: StateCreator<State, [], [], State> = (set, get) => ({
     url: '',
     type: ''
   },
-  toastType: 'create',
+  toastType: '',
   deleteId: 0,
   setDeleteId: (deleteId) => {
     set({ deleteId })

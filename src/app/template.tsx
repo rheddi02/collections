@@ -29,10 +29,10 @@ const Template = ({ children }: { children: ReactNode }) => {
         toastData.title = 'Deleted'
         toastData.description = 'Record has been deleted successfully.'
         break;
-      default:
-        toastData.title = 'Title'
-        toastData.description = 'Title description.'
-        break;
+      // default:
+      //   toastData.title = 'Title'
+      //   toastData.description = 'Title description.'
+      //   break;
     }
     toast({
       title: toastData.title,

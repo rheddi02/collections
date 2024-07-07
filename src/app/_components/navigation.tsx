@@ -69,18 +69,18 @@ export default function Navigation() {
 
   const handleReload = async (segment: string | undefined) => {
     if (segment == "dashboard") await fetchDashboard();
-    if (segment == "home-tips") await fetchHome();
-    if (segment == "beauty-tips") await fetchBeauty();
-    if (segment == "health-tips") await fetchHealth();
-    if (segment == "food-tips") await fetchFood();
-    if (segment == "pet-tips") await fetchPet();
-    if (segment == "cloth-tips") await fetchCloth();
-    if (segment == "plant-tips") await fetchPlant();
-    if (segment == "machinery-tips") await fetchMachinery();
-    if (segment == "ride-tips") await fetchRide();
-    if (segment == "leisure-tips") await fetchLeisure();
-    if (segment == "energy-tips") await fetchEnergy();
-    if (segment == "equipment-tips") await fetchEquipment();
+    if (segment == "home") await fetchHome();
+    if (segment == "beauty") await fetchBeauty();
+    if (segment == "health") await fetchHealth();
+    if (segment == "food") await fetchFood();
+    if (segment == "pet") await fetchPet();
+    if (segment == "cloth") await fetchCloth();
+    if (segment == "plant") await fetchPlant();
+    if (segment == "machinery") await fetchMachinery();
+    if (segment == "ride") await fetchRide();
+    if (segment == "leisure") await fetchLeisure();
+    if (segment == "energy") await fetchEnergy();
+    if (segment == "equipment") await fetchEquipment();
   };
 
   return (
