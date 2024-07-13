@@ -41,7 +41,7 @@ interface DataTableProps<TData, TValue> {
   onPaginationChange?: (page: number) => void;
   onRowClick?: (row: Row<TData>) => void;
   onRowChange?: (row: TData[]) => void;
-  hiddenColumns?: object;
+  hiddenColumns?: Record<string, boolean>;
 }
 
 export default function DataTableCompact<TData, TValue>({
