@@ -75,7 +75,7 @@ export default function DataTableCompact<TData, TValue>({
 
   useEffect(() => {
     if (isMobile) {
-      Object.keys(hiddenColumns).map(key=>hiddenColumns[key] = !hiddenColumns[key])
+      Object.keys(hiddenColumns).map((key: string)=>hiddenColumns[key] = !hiddenColumns[key])
       setColumnVisibility({ ...hiddenColumns, id: false, actions: false, mobile: true })
       // setColumnVisibility({ title: false, id:false ,description: false, type: false, actions: false })
     }
