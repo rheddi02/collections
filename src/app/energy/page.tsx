@@ -33,6 +33,7 @@ const Page = () => {
     setOpenMenu,
     setToastType,
     setDeleteId,
+setDeleteCode
   } = useAppStore();
 
   const {
@@ -82,6 +83,7 @@ const Page = () => {
         setModal(false);
         setToastType(ToastTypes.DELETED);
         setDeleteId(0);
+setDeleteCode(false)
       },
     });
 

@@ -28,7 +28,7 @@ const DeleteCode = () => {
 
   useEffect( () => {
     if (deleteCodeRef.current) deleteCodeRef.current.value = ''
-  },[])
+  },[deleteCodeModal])
 
   const handleDeleteCode = () => {
     if (!deleteCodeRef?.current?.value) return
@@ -37,10 +37,11 @@ const DeleteCode = () => {
       deleteCodeRef?.current &&
       deleteCodeRef.current.value == process.env.NEXT_PUBLIC_DELETE_CODE
     ) {
-      setDeleteCode(deleteCodeRef.current.value);
+      setDeleteCode(true);
       setDeleteCodeModal(false);
       setFailed(false);
-    } else {
+  } else {
+      setDeleteCode(false);
       setFailed(true);
     }
     setIsLoading(false);

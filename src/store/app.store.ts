@@ -31,7 +31,7 @@ interface State {
   setPasscode: (passcode: State['passcode']) => void
   passcodeModal: boolean
   deleteCodeModal: boolean
-  deleteCode: string
+  deleteCode: boolean
   setDeleteCode: (deleteCode: State['deleteCode']) => void
   setPasscodeModal: (passcodeModal: State['passcodeModal']) => void
   setDeleteCodeModal: (deleteCodeModal: State['deleteCodeModal']) => void
@@ -100,7 +100,7 @@ const createStore: StateCreator<State, [], [], State> = (set, get) => ({
   setPasscode: (passcode) => {
     set({ passcode, isAuth: !!passcode.trim() })
   },
-  deleteCode: '',
+  deleteCode: false,
   setDeleteCode: (deleteCode) => {
     set({ deleteCode })
   },
