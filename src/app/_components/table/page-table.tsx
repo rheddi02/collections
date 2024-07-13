@@ -159,8 +159,9 @@ const PageTable = ({
   const onRowChange = () => {
     null;
   };
-  const onRowClick = (e) => {
-    console.log("🚀 ~ onRowClick ~ e:", e)
+  const onRowClick = (row: Row<CommonOutputType>) => {
+    if (isMobileView)
+      window.open(row.original.url, '_blank')
   };
 
   if (isMobileView)
