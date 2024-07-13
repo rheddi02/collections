@@ -1,7 +1,7 @@
 "use client";
 
 import { ReloadIcon } from "@radix-ui/react-icons";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -25,6 +25,10 @@ const DeleteCode = () => {
       setDeleteCode: state.setDeleteCode,
     }),
   );
+
+  useEffect( () => {
+    if (deleteCodeRef.current) deleteCodeRef.current.value = ''
+  },[])
 
   const handleDeleteCode = () => {
     if (!deleteCodeRef?.current?.value) return

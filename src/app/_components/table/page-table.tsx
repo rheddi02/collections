@@ -26,7 +26,7 @@ const PageTable = ({
   onDelete: (row: Row<CommonOutputType>) => void;
   loading: boolean;
 }) => {
-  const [isMobileView, setIsMobileView] = useState(false)
+  const [isMobileView, setIsMobileView] = useState(false);
   const { data, pageCount, setPage, deleteId } = useAppStore((state) => ({
     data: state.data,
     pageCount: state.pageCount,
@@ -105,29 +105,42 @@ const PageTable = ({
       },
       cell: ({ row }) => {
         return (
-          <div className="flex flex-col justify-center gap-2 p-1">
+          <div className="flex flex-col justify-center gap-2 p-1" onClick={onRowClick}>
             <Label>{row.getValue("title")}</Label>
             <div>{row.getValue("description")}</div>
             <div className="flex justify-between">
               <Badge variant="default" className="uppercase">
                 {row.getValue("type")}
               </Badge>
-              <ToggleGroup type="single" size="sm">
-                <ToggleGroupItem
-                  value="edit"
-                  aria-label="Toggle edit"
-                  onClick={() => onEdit(row)}
-                >
-                  <Pencil1Icon className="flex size-5 hover:cursor-pointer hover:text-red-600" />
-                </ToggleGroupItem>
-                <ToggleGroupItem
-                  value="delete"
-                  aria-label="Toggle delete"
-                  onClick={() => onDelete(row)}
-                >
-                  <TrashIcon className="flex size-5 hover:cursor-pointer hover:text-red-600" />
-                </ToggleGroupItem>
-              </ToggleGroup>
+              {deleteId.includes(row.getValue("id")) ? (
+                <div className="flex items-center gap-1">
+                  <ReloadIcon className="animate-spin" />
+                  Deleting...
+                </div>
+              ) : (
+                <ToggleGroup type="single" size="sm">
+                  <ToggleGroupItem
+                    value="edit"
+                    aria-label="Toggle edit"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onEdit(row)
+                    }}
+                  >
+                    <Pencil1Icon className="flex size-5 hover:cursor-pointer hover:text-red-600" />
+                  </ToggleGroupItem>
+                  <ToggleGroupItem
+                    value="delete"
+                    aria-label="Toggle delete"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onDelete(row)
+                    }}
+                  >
+                    <TrashIcon className="flex size-5 hover:cursor-pointer hover:text-red-600" />
+                  </ToggleGroupItem>
+                </ToggleGroup>
+              )}
             </div>
           </div>
         );
@@ -137,17 +150,17 @@ const PageTable = ({
   ];
 
   useEffect(() => {
-    setIsMobileView(true)
-  }, [isMobile])
-  
+    setIsMobileView(true);
+  }, [isMobile]);
+
   const onPaginationChange = (page: number) => {
     setPage(page);
   };
   const onRowChange = () => {
     null;
   };
-  const onRowClick = () => {
-    null;
+  const onRowClick = (e) => {
+    console.log("🚀 ~ onRowClick ~ e:", e)
   };
 
   if (isMobileView)
