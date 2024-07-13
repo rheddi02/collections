@@ -105,7 +105,7 @@ const PageTable = ({
       },
       cell: ({ row }) => {
         return (
-          <div className="flex flex-col justify-center gap-2 p-1" onClick={onRowClick}>
+          <div className="flex flex-col justify-center gap-2 p-1" onClick={() => onRowDivClick(row)}>
             <Label>{row.getValue("title")}</Label>
             <div>{row.getValue("description")}</div>
             <div className="flex justify-between">
@@ -159,9 +159,11 @@ const PageTable = ({
   const onRowChange = () => {
     null;
   };
+  const onRowDivClick = (row: Row<CommonOutputType>) => {
+    if (isMobileView) window.open(row.original.url, '_blank')
+  }
   const onRowClick = (row: Row<CommonOutputType>) => {
-    if (isMobileView)
-      window.open(row.original.url, '_blank')
+    null
   };
 
   if (isMobileView)
