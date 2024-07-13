@@ -9,10 +9,12 @@ import { ToastTypes } from '~/utils/types';
 interface State {
   modal: boolean;
   isLoading: boolean
+  isAuth: boolean
   actionable: boolean
   formData: formData
   formDataDefault: State['formData']
   toastType: ToastTypes
+  setIsAuth: (isAuth: State['isAuth']) => void
   setToastType: (toastType: State['toastType']) => void
   setFormData: (formData: State['formData']) => void
   resetForm: () => void
@@ -38,6 +40,7 @@ interface State {
 const createStore: StateCreator<State, [], [], State> = (set, get) => ({
   data: [],
   modal: false,
+  isAuth: false,
   openMenu: true,
   isLoading: false,
   actionable: false,
@@ -57,6 +60,9 @@ const createStore: StateCreator<State, [], [], State> = (set, get) => ({
   deleteId: [],
   passcodeModal: false,
   passcode: '',
+  setIsAuth: (isAuth) => {
+    set({ isAuth })
+  },
   setDeleteId: (deleteId) => {
     set({ deleteId: [...get().deleteId, deleteId] })
   },
@@ -85,13 +91,14 @@ const createStore: StateCreator<State, [], [], State> = (set, get) => ({
     set({ isLoading })
   },
   setModal: (modal) => {
-    set({ modal });
+    if (get().isAuth) set({ modal });
+    else set({ modal: false })
   },
   setPasscodeModal: (passcodeModal) => {
     set({ passcodeModal })
   },
   setPasscode: (passcode) => {
-    set({ passcode })
+    set({ passcode, isAuth: !!passcode.trim() })
   },
   deleteCode: '',
   setDeleteCode: (deleteCode) => {

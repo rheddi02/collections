@@ -29,6 +29,7 @@ import * as React from "react";
 import { useEffect, useState } from "react";
 import { DataTablePaginationPage } from "./pagination";
 import { cn } from "~/lib/utils";
+import useAppStore from "~/store/app.store";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -53,6 +54,7 @@ export default function DataTable<TData, TValue>({
   onRowChange,
   hiddenColumns = {},
 }: DataTableProps<TData, TValue>) {
+  const isAuth = useAppStore(state=>state.isAuth)
   const [rowSelection, setRowSelection] = useState({});
   const [page, setPage] = useState<PaginationState>({
     pageIndex: 0,
@@ -71,7 +73,7 @@ export default function DataTable<TData, TValue>({
   }, [page.pageIndex]);
 
   useEffect(() => {
-    setColumnVisibility({ ...hiddenColumns });
+    setColumnVisibility({ ...hiddenColumns, actions: isAuth });
   }, [hiddenColumns]);
 
   const table = useReactTable({
