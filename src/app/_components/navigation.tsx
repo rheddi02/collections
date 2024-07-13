@@ -3,6 +3,7 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 import { useRouter, useSelectedLayoutSegments } from "next/navigation";
 import React, { useState } from "react";
 import { twMerge } from "tailwind-merge";
+import { Label } from "~/components/ui/label";
 import { cn } from "~/lib/utils";
 import useAppStore from "~/store/app.store";
 import usePaginationStore from "~/store/pagination.store";
@@ -140,7 +141,7 @@ const Nav = ({
             )}
             onClick={() => handleRoute(navigation)}
           >
-            {navigation.title}
+            <Label className="select-none">{navigation.title}</Label>
             {segment == navigation.title.replaceAll(" ", "-") && (
               <ReloadIcon
                 onClick={handleReloadSegment}

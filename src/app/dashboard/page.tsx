@@ -8,7 +8,7 @@ const Dashboard = () => {
 
   if (isFetching) return <PageLoader />
   return (
-    <div className='grid grid-cols-3 gap-2'>
+    <div className='grid sm:grid-cols-3 gap-2'>
       <CardTemplate {...{count: data?.totalHealthTips ?? 0, label:'health'}} url='health'/>
       <CardTemplate {...{count: data?.totalBeautyTips ?? 0, label:'beauty'}} url='beauty'/>
       <CardTemplate {...{count: data?.totalEquipmentTips ?? 0, label:'equipment'}} url='equipment'/>

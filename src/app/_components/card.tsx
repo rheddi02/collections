@@ -29,14 +29,14 @@ const CardTemplate = ({
       <CardHeader className="relative bg-gray-200 capitalize">
         <CardTitle>
           {label}
-          <div className="right-fixed right-10 p-3 rounded-full hover:bg-white hover:cursor-pointer" onClick={handleRoute}>
+          <div className="right-fixed sm:right-10 p-3 rounded-full hover:bg-white hover:cursor-pointer" onClick={handleRoute}>
             <LinkNone2Icon />
           </div>
         </CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent className="flex items-end justify-between p-2">
-        <p className="text-4xl ">{count}</p>
+        <p className="text-4xl pl-3">{count}</p>
         <p className="text-sm uppercase text-gray-500">total record</p>
       </CardContent>
       {/* <CardFooter className="bg-red-200 p-10">

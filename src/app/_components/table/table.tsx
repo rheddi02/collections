@@ -30,6 +30,7 @@ import { useEffect, useState } from "react";
 import { DataTablePaginationPage } from "./pagination";
 import { cn } from "~/lib/utils";
 import useAppStore from "~/store/app.store";
+import { isMobile } from 'react-device-detect';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -73,7 +74,12 @@ export default function DataTable<TData, TValue>({
   }, [page.pageIndex]);
 
   useEffect(() => {
-    setColumnVisibility({ ...hiddenColumns, actions: isAuth });
+    if (isMobile) {
+      Object.keys(hiddenColumns).map(key=>hiddenColumns[key] = !hiddenColumns[key])
+      setColumnVisibility({ ...hiddenColumns, id: false, actions: false, mobile: true })
+      // setColumnVisibility({ title: false, id:false ,description: false, type: false, actions: false })
+    }
+    else setColumnVisibility({ ...hiddenColumns, actions: isAuth })
   }, [hiddenColumns]);
 
   const table = useReactTable({

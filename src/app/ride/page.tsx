@@ -10,6 +10,7 @@ import { HamburgerMenuIcon, PlusIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { api } from "~/trpc/react";
 import { usePathname } from "next/navigation";
 import { ToastTypes } from "~/utils/types";
+import PageTable from "../_components/table/page-table";
 
 const Page = () => {
   const path = usePathname();
@@ -169,7 +170,7 @@ const Page = () => {
           </Button>
         </div>
         <hr />
-        <Table {...{ onEdit, onDelete: onDeleteCheck, loading: false }} />
+        <PageTable {...{ onEdit, onDelete: onDeleteCheck, loading: false }} />
       </div>
     </>
   );
