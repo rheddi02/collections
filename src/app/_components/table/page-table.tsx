@@ -15,6 +15,7 @@ import { Label } from "~/components/ui/label";
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 import DataTable from "./table";
 import { isMobile } from "react-device-detect";
+import { useEffect, useState } from "react";
 
 const PageTable = ({
   onEdit,
@@ -25,6 +26,7 @@ const PageTable = ({
   onDelete: (row: Row<CommonOutputType>) => void;
   loading: boolean;
 }) => {
+  const [isMobileView, setIsMobileView] = useState(false)
   const { data, pageCount, setPage, deleteId } = useAppStore((state) => ({
     data: state.data,
     pageCount: state.pageCount,
@@ -134,6 +136,10 @@ const PageTable = ({
     },
   ];
 
+  useEffect(() => {
+    setIsMobileView(true)
+  }, [isMobile])
+  
   const onPaginationChange = (page: number) => {
     setPage(page);
   };
@@ -144,7 +150,7 @@ const PageTable = ({
     null;
   };
 
-  if (isMobile)
+  if (isMobileView)
     return (
       <DataTable
         {...{
