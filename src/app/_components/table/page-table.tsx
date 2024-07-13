@@ -114,26 +114,17 @@ const PageTable = ({
                 <ToggleGroupItem
                   value="edit"
                   aria-label="Toggle edit"
-                  onClick={() => console.info("edit")}
+                  onClick={() => onEdit(row)}
                 >
-                 <Pencil1Icon
-                  className="flex size-5 hover:cursor-pointer hover:text-red-600"
-                  // onClick={() => onEdit(row)}
-                />
+                  <Pencil1Icon className="flex size-5 hover:cursor-pointer hover:text-red-600" />
                 </ToggleGroupItem>
-                <ToggleGroupItem value="delete" aria-label="Toggle delete"
-                  onClick={() => console.info("delete")}
-                  >
-                  <TrashIcon
-                  className="flex size-5 hover:cursor-pointer hover:text-red-600"
-                  // onClick={() => onDelete(row)}
-                />
+                <ToggleGroupItem
+                  value="delete"
+                  aria-label="Toggle delete"
+                  onClick={() => onDelete(row)}
+                >
+                  <TrashIcon className="flex size-5 hover:cursor-pointer hover:text-red-600" />
                 </ToggleGroupItem>
-                {/* <ToggleGroupItem value="show" aria-label="Toggle show"
-                  onClick={() => console.info("show")}
-                  >
-                  <Label>Show</Label>
-                </ToggleGroupItem> */}
               </ToggleGroup>
             </div>
           </div>
@@ -153,28 +144,28 @@ const PageTable = ({
     null;
   };
 
-  if (isMobile) 
-  return (
-    <DataTable
-      {...{
-        data: data,
-        columns: columns,
-        onPaginationChange,
-        onRowChange,
-        onRowClick,
-        hiddenColumns: {
-          id: false,
-          title: true,
-          description: true,
-          type: true,
-          actions: true,
-        },
-        pagination: true,
-        totalCount: pageCount,
-        loading,
-      }}
-    />
-  );
+  if (isMobile)
+    return (
+      <DataTable
+        {...{
+          data: data,
+          columns: columns,
+          onPaginationChange,
+          onRowChange,
+          onRowClick,
+          hiddenColumns: {
+            id: false,
+            title: true,
+            description: true,
+            type: true,
+            actions: true,
+          },
+          pagination: true,
+          totalCount: pageCount,
+          loading,
+        }}
+      />
+    );
   return (
     <DataTableCompact
       {...{
@@ -189,7 +180,7 @@ const PageTable = ({
           description: true,
           type: true,
           actions: true,
-          mobile: false
+          mobile: false,
         },
         pagination: true,
         totalCount: pageCount,
