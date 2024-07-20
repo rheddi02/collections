@@ -42,20 +42,25 @@ export const listRouter = createTRPCRouter({
   foodTip: publicProcedure
     .input(
       z.object({
-        page: z.number(),
-        perPage: z.number(),
+        page: z.number().optional(),
+        perPage: z.number().default(20),
       }),
     )
     .query(async ({ ctx, input }) => {
-      const data = await ctx.db.foodTips.findMany({
-        skip: (input.page - 1) * input.perPage,
-        take: input.perPage,
-        orderBy: {
-          createdAt: 'desc'
-        }
-      });
       const total = await ctx.db.foodTips.count();
-      return { data, total };
+      if (input.page) {
+        const data = await ctx.db.foodTips.findMany({
+          skip: (input.page - 1) * input.perPage,
+          take: input.perPage,
+          orderBy: {
+            createdAt: 'desc'
+          }
+        });
+        return { data, total };
+      } else {
+        const data =  await ctx.db.foodTips.findMany()
+        return { data, total };
+      }
     }),
   healthTip: publicProcedure
     .input(
