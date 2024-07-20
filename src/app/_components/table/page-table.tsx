@@ -109,7 +109,7 @@ const PageTable = ({
             <Label>{row.getValue("title")}</Label>
             <div>{row.getValue("description")}</div>
             <div className="flex justify-between">
-              <Badge variant="default" className="uppercase">
+              <Badge variant="default" className="uppercase text-[10px]">
                 {row.getValue("type")}
               </Badge>
               {deleteId.includes(row.getValue("id")) ? (

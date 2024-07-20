@@ -1,5 +1,16 @@
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
+export const homeTips = createTRPCRouter({
+  get: publicProcedure.query(async ({ ctx }) => {
+    return await ctx.db.homeTips.count()
+  }),
+});
+export const healthTips = createTRPCRouter({
+  get: publicProcedure.query(async ({ ctx }) => {
+    return await ctx.db.healthTips.count()
+  }),
+});
+
 export const dashboardRouter = createTRPCRouter({
   get: publicProcedure.query(async ({ ctx }) => {
     const counts = await ctx.db.$transaction( async (db) => {
