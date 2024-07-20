@@ -4,8 +4,6 @@ import type { AppRouter } from "../root";
 type RouterInput = inferRouterInputs<AppRouter>;
 type RouterOutput = inferRouterOutputs<AppRouter>;
 
-export type dashboardOutput = RouterOutput["dashboard"]["get"];
-
 export type CommonInputType = {
   title: string;
   description: string;
