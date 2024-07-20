@@ -181,6 +181,7 @@ const PageTable = ({
             description: true,
             type: true,
             actions: true,
+            mobile: false,
           },
           pagination: true,
           totalCount: pageCount,
