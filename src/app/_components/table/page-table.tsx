@@ -63,7 +63,6 @@ const PageTable = ({
       cell: ({ row }) => {
         return <div className="">{row.getValue("type")}</div>;
       },
-      size: 20,
     },
     {
       accessorKey: "actions",
@@ -81,22 +80,21 @@ const PageTable = ({
             ) : (
               <>
                 <Pencil1Icon
-                  className="hidden size-5 hover:cursor-pointer hover:text-red-600 group-hover:flex "
+                  className=" size-5 hover:cursor-pointer hover:text-red-600 group-hover:flex "
                   onClick={() => onEdit(row)}
                 />
                 <TrashIcon
-                  className="hidden size-5 hover:cursor-pointer hover:text-red-600 group-hover:flex "
+                  className=" size-5 hover:cursor-pointer hover:text-red-600 group-hover:flex "
                   onClick={() => onDelete(row)}
                 />
                 <Link href={row.original.url} target="_blank">
-                  <EyeOpenIcon className="hidden size-5 hover:cursor-pointer hover:text-red-600 group-hover:flex " />
+                  <EyeOpenIcon className=" size-5 hover:cursor-pointer hover:text-red-600 group-hover:flex " />
                 </Link>
               </>
             )}
           </div>
         );
       },
-      maxSize: 100,
     },
     {
       accessorKey: "mobile",
@@ -145,7 +143,6 @@ const PageTable = ({
           </div>
         );
       },
-      maxSize: 100,
     },
   ];
 
