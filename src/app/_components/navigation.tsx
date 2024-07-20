@@ -18,7 +18,6 @@ export default function Navigation() {
     perPage: state.perPage,
     page: state.page,
   }));
-  const { refetch: fetchDashboard } = api.dashboard.get.useQuery();
   const { refetch: fetchHome } = api.list.homeTip.useQuery(
     { page, perPage },
     { enabled: false },
@@ -69,7 +68,6 @@ export default function Navigation() {
   );
 
   const handleReload = async (segment: string | undefined) => {
-    if (segment == "dashboard") await fetchDashboard();
     if (segment == "home") await fetchHome();
     if (segment == "beauty") await fetchBeauty();
     if (segment == "health") await fetchHealth();
