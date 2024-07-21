@@ -1,10 +1,15 @@
-// import Link from "next/link";
+"use client";
 import { redirect } from "next/navigation";
+import { useEffect } from "react";
 
-// import { CreatePost } from "~/app/admin/_components/create-post";
-// import { api } from "~/trpc/server";
-
-export default async function Home() {
+export default function Home() {
+  useEffect(() => {
+    const passcode = localStorage.getItem("passcode");
+    if (passcode?.trim()) {
+      if (passcode == process.env.NEXT_PUBLIC_PASSCODE) redirect("/admin");
+    }
+    redirect("/client");
+  }, []);
   // const hello = await api.post.hello({ text: "from tRPC" });
-  redirect('/client')
+  // redirect('/admin')
 }

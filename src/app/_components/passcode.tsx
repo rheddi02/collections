@@ -1,6 +1,7 @@
 "use client";
 
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { Button } from "~/components/ui/button";
 import {
@@ -15,6 +16,7 @@ import { Input } from "~/components/ui/input";
 import useAppStore from "~/store/app.store";
 
 const Passcode = () => {
+  const router = useRouter()
   const passcodeRef = useRef<HTMLInputElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { setPasscodeModal, passcodeModal, setPasscode } = useAppStore((state) => ({
@@ -32,9 +34,14 @@ const Passcode = () => {
       localStorage.setItem("passcode", passcodeRef.current.value);
       setPasscode(passcodeRef.current.value)
       setPasscodeModal(false);
+      router.push('/admin/dashboard')
     }
     setIsLoading(false);
   };
+
+  const handlePasscodeClose = () => {
+    setPasscodeModal(false)
+  }
   return (
     <Dialog open={passcodeModal}>
       <DialogContent className="sm:max-w-[425px]" hideCloseButton={true}>
@@ -54,6 +61,14 @@ const Passcode = () => {
           </div>
         </div>
         <DialogFooter>
+          <Button
+            disabled={isLoading}
+            onClick={handlePasscodeClose}
+            className="flex items-center gap-2"
+            variant={'secondary'}
+          >
+            Cancel
+          </Button>
           <Button
             disabled={isLoading}
             onClick={handlePasscode}

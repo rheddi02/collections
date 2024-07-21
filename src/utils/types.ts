@@ -1,6 +1,7 @@
 export type NavigationType = {
   title: string
   route: string
+  image?: string
   subRoute: NavigationType[]
 }
 export type TypeListType = {

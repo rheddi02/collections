@@ -33,10 +33,10 @@ const Template = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  useEffect( () => {
-    if (passcode) setPasscodeModal(false)
-    else setPasscodeModal(true)
-  },[passcode])
+  // useEffect( () => {
+  //   if (passcode) setPasscodeModal(false)
+  //   else setPasscodeModal(true)
+  // },[passcode])
 
   const showToast = (type: ToastTypes) => {
     const toastData = {

@@ -35,6 +35,8 @@ interface State {
   setDeleteCode: (deleteCode: State['deleteCode']) => void
   setPasscodeModal: (passcodeModal: State['passcodeModal']) => void
   setDeleteCodeModal: (deleteCodeModal: State['deleteCodeModal']) => void
+  isFetching: boolean
+  setIsFetching: (isFetching: State['isFetching']) => void
 }
 
 const createStore: StateCreator<State, [], [], State> = (set, get) => ({
@@ -107,6 +109,10 @@ const createStore: StateCreator<State, [], [], State> = (set, get) => ({
   deleteCodeModal: false,
   setDeleteCodeModal: (deleteCodeModal) => {
     set({ deleteCodeModal })
+  },
+  isFetching: false,
+  setIsFetching: (isFetching) => {
+    set({ isFetching })
   }
 });
 

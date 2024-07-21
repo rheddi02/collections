@@ -1,45 +1,33 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import type { CommonOutputType } from "~/server/api/client/types";
-import useAppStore from "~/store/app.store";
-import { api } from "~/trpc/react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Label } from "~/components/ui/label";
+import { NavigationLists } from "~/utils/navigations";
 
 const Page = () => {
-  const appStore = useAppStore();
-  const [loaded, setLoaded] = useState(false)
-  // const [result, setResult] = useState([])
-  const [food, setFood] = useState<CommonOutputType[]>([])
+  const [lists] = useState(NavigationLists);
+  const router = useRouter()
 
-  const {data: result} = api.list.foodTip.useQuery({},{
-    enabled: loaded
-  })
-  useEffect( () => {
-    // setResult(res.data)
-    setLoaded(true)
-  },[])
-  useEffect( () => {
-    setFood(result?.data || [])
-  },[result?.data])
+  const handleOpenPage = (title: string) => {
+    router.push(`/client/ui?page=${title}`)
+  }
   return (
     <div className="p-5">
-      <div className="flex flex-col gap-5">
-        <span className="text-3xl font-bold">
-        Home
-        </span>
-        <div className="flex gap-2 flex-wrap text-gray-100">
-          {food.map((data) => (
-            <div className="rounded-md bg-gray-500 p-2 w-96" key={data.id}>
-              <Link href={data.url}>
-              {
-                data.title
-              }
-              </Link>
-            </div>
-          ))}
+      <div className="flex gap-5 text-gray-100 flex-wrap">
+        {lists.map((list,i) => {
+          if (i !== 0) return <div
+            className="flex h-96 w-64 items-center justify-center rounded-md bg-gray-500 relative overflow-hidden [&_*]:cursor-pointer hover:shadow-lg hover:border-2"
+            key={list.title}
+            onClick={() => handleOpenPage(list.title)}
+          >
+            <Image src={list.image!} alt="list.title" fill={true} className="object-cover" />
+            <Label className="text-2xl capitalize z-10 tracking-widest bg-gray-900 px-5 py-1 rounded-full shadow-md">{list.title}</Label>
+          </div>
+          }
+        )}
         </div>
-      </div>
     </div>
   );
 };

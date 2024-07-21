@@ -7,6 +7,7 @@ export const NavigationLists: NavigationType[] = [
       return "/admin/" + this.title.replaceAll(" ", "-");
     },
     subRoute: [],
+    image: ''
   },
   {
     title: "beauty",
@@ -14,6 +15,7 @@ export const NavigationLists: NavigationType[] = [
       return "/admin/" + this.title.replaceAll(" ", "-");
     },
     subRoute: [],
+    image: 'https://picsum.photos/id/64/500/700'
   },
   {
     title: "cloth",
@@ -21,6 +23,7 @@ export const NavigationLists: NavigationType[] = [
       return "/admin/" + this.title.replaceAll(" ", "-");
     },
     subRoute: [],
+    image: 'https://picsum.photos/id/535/500/700'
   },
   {
     title: "energy",
@@ -28,6 +31,7 @@ export const NavigationLists: NavigationType[] = [
       return "/admin/" + this.title.replaceAll(" ", "-");
     },
     subRoute: [],
+    image: 'https://picsum.photos/id/222/500/700'
   },
   {
     title: "equipment",
@@ -35,6 +39,7 @@ export const NavigationLists: NavigationType[] = [
       return "/admin/" + this.title.replaceAll(" ", "-");
     },
     subRoute: [],
+    image: 'https://picsum.photos/id/491/500/700'
   },
   {
     title: "food",
@@ -42,6 +47,7 @@ export const NavigationLists: NavigationType[] = [
       return "/admin/" + this.title.replaceAll(" ", "-");
     },
     subRoute: [],
+    image: 'https://picsum.photos/id/292/500/700'
   },
   {
     title: "health",
@@ -49,6 +55,7 @@ export const NavigationLists: NavigationType[] = [
       return "/admin/" + this.title.replaceAll(" ", "-");
     },
     subRoute: [],
+    image: 'https://picsum.photos/id/326/500/700'
   },
   {
     title: "home",
@@ -56,6 +63,7 @@ export const NavigationLists: NavigationType[] = [
       return "/admin/" + this.title.replaceAll(" ", "-");
     },
     subRoute: [],
+    image: 'https://picsum.photos/id/428/500/700'
   },
   {
     title: "leisure",
@@ -63,6 +71,7 @@ export const NavigationLists: NavigationType[] = [
       return "/admin/" + this.title.replaceAll(" ", "-");
     },
     subRoute: [],
+    image: 'https://picsum.photos/id/175/500/700'
   },
   {
     title: "machinery",
@@ -70,6 +79,7 @@ export const NavigationLists: NavigationType[] = [
       return "/admin/" + this.title.replaceAll(" ", "-");
     },
     subRoute: [],
+    image: 'https://picsum.photos/id/617/500/700'
   },
   {
     title: "plant",
@@ -77,6 +87,7 @@ export const NavigationLists: NavigationType[] = [
       return "/admin/" + this.title.replaceAll(" ", "-");
     },
     subRoute: [],
+    image: 'https://picsum.photos/id/248/500/700'
   },
   {
     title: "pet",
@@ -84,6 +95,7 @@ export const NavigationLists: NavigationType[] = [
       return "/admin/" + this.title.replaceAll(" ", "-");
     },
     subRoute: [],
+    image: 'https://picsum.photos/id/237/500/700'
   },
   {
     title: "ride",
@@ -91,5 +103,6 @@ export const NavigationLists: NavigationType[] = [
       return "/admin/" + this.title.replaceAll(" ", "-");
     },
     subRoute: [],
+    image: 'https://picsum.photos/id/146/500/700'
   },
 ];
