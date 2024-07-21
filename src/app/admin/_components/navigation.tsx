@@ -1,5 +1,5 @@
 "use client";
-import { ReloadIcon } from "@radix-ui/react-icons";
+import { ArrowTopRightIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { useRouter, useSelectedLayoutSegments } from "next/navigation";
 import React, { useState } from "react";
 import { twMerge } from "tailwind-merge";
@@ -127,6 +127,17 @@ const Nav = ({
         openMenu ? "w-40" : "hidden",
       )}
     >
+      <div
+        className={twMerge(
+          "flex items-center justify-between rounded-md p-2 capitalize hover:cursor-pointer hover:bg-gray-400 hover:text-gray-800",
+          "bg-gray-300 font-semibold text-gray-800",
+          
+        )}
+        onClick={() => router.push("/client")}
+      >
+        Client Page
+        <ArrowTopRightIcon />
+      </div>
       {navList.map((navigation) => (
         <React.Fragment key={navigation.route}>
           <div
