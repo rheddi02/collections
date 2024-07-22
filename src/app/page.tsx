@@ -6,7 +6,7 @@ export default function Home() {
   useEffect(() => {
     const passcode = localStorage.getItem("passcode");
     if (passcode?.trim()) {
-      if (passcode == process.env.NEXT_PUBLIC_PASSCODE) redirect("/admin");
+      if (passcode == process.env.NEXT_PUBLIC_PASSCODE) redirect("/admin/dashboard");
     }
     redirect("/client");
   }, []);
