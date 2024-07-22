@@ -10,6 +10,7 @@ import type { Row } from "@tanstack/react-table";
 import type { videoOutput } from "~/server/api/client/types";
 import VideoPlayer from "./_components/video-player";
 import PageTableMe from "../admin/_components/table/page-table-me";
+import CustomDialog from "../admin/_components/dialog";
 
 const Page = () => {
   const router = useRouter();
@@ -18,7 +19,11 @@ const Page = () => {
   const utils = api.useUtils();
   const [show, setShow] = useState(false);
   const [videos, setVideos] = useState<videoOutput[]>([])
-
+  const [form, setForm] = useState({
+    title: "Create New",
+    description: "Add new data",
+    label: "Create",
+  });
   const { setPageCount, page, perPage } = useAppStore();
   const { data: data } = api.list.video.useQuery({ page, perPage });
 
@@ -30,6 +35,7 @@ const Page = () => {
       onSettled: () => {
         setIsLoading(!isLoading);
         setShow(false);
+        appStore.setModal(false)
         appStore.setToastType(ToastTypes.ADDED);
       },
     });
@@ -52,16 +58,24 @@ const Page = () => {
   }, [data]);
 
   useEffect(() => {
+    if (!appStore.modal)
+      setForm({
+        title: "Create New",
+        description: "Add new data",
+        label: "Create",
+      });
+  }, [appStore.modal]);
+
+  useEffect(() => {
     appStore.setPasscodeModal(false);
     if (!appStore.isMe) redirect("/client");
   }, []);
 
-  const handleSave = (url: string) => {
-    setIsLoading(!isLoading);
-    setShow(!show);
+  const handleSave = () => {
     createData({
-      url,
-      title: url.split("/")[4] ?? url,
+      ...appStore.formData,
+      description: appStore.formData.description || appStore.formData.title,
+      type: appStore.formData.type || "general",
     });
   };
 
@@ -70,7 +84,8 @@ const Page = () => {
   };
 
   const handleShowDialog = () => {
-    setShow(!show);
+    appStore.setModal(true)
+    // setShow(!show);
   };
 
   const onRowClick = (row: Row<videoOutput>) => {
@@ -87,7 +102,11 @@ const Page = () => {
 
   return (
     <>
-      <MeDialog {...{ isLoading, show, setShow, action: handleSave }} />
+      {/* <MeDialog {...{ isLoading, show, setShow, action: handleSave }} /> */}
+      <CustomDialog
+        {...{ ...form }}
+        action={handleSave}
+      />
       <div>
         <div className="flex items-center justify-between gap-2 bg-red-700 p-5 text-red-50">
           <div

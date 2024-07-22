@@ -18,7 +18,7 @@ const VideoPlayer = ({data}:{data: videoOutput[]}) => {
   return (
     <div className="flex gap-5 p-5">
       <div className="w-full">
-        <div className="relative h-[500px] w-full bg-gray-200">
+        <div className="relative h-[720px] w-full bg-gray-200">
           <ReactPlayer url={video?.url} width="100%" height="100%" />
         </div>
       </div>
