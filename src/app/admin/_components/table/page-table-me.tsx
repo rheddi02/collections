@@ -62,7 +62,10 @@ const PageTableMe = ({
               <>
                 <TrashIcon
                   className=" size-5 hover:cursor-pointer hover:text-red-600 flex "
-                  onClick={() => onDelete(row)}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onDelete(row)
+                  }}
                 />
               </>
             )}

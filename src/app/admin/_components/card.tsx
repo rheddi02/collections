@@ -1,5 +1,5 @@
 "use client";
-import { LinkNone2Icon, ReloadIcon } from "@radix-ui/react-icons";
+import { ArrowTopRightIcon, LinkNone2Icon, ReloadIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
 import {
   Card,
@@ -32,10 +32,10 @@ const CardTemplate = ({
         <CardTitle>
           {label}
           <div
-            className="right-fixed rounded-full p-3 hover:cursor-pointer hover:bg-white sm:right-10"
+            className="right-fixed rounded-full p-3 hover:cursor-pointer hover:bg-white sm:right-2"
             onClick={handleRoute}
           >
-            <LinkNone2Icon />
+            <ArrowTopRightIcon />
           </div>
         </CardTitle>
         <CardDescription>{description}</CardDescription>
