@@ -15,10 +15,10 @@ const Page = () => {
   }
   return (
     <div className="p-5">
-      <div className="flex gap-5 text-gray-100 flex-wrap">
+      <div className="flex text-gray-100 flex-wrap">
         {lists.map((list,i) => {
           if (i !== 0) return <div
-            className="flex h-96 w-64 items-center justify-center rounded-md bg-gray-500 relative overflow-hidden [&_*]:cursor-pointer hover:shadow-lg hover:border-2"
+            className="flex h-[34rem] w-full md:w-1/2 lg:w-1/3 xl:w-1/4 2xl:w-1/5 3xl:w-1/6 items-center justify-center rounded-md bg-gray-500 relative overflow-hidden [&_*]:cursor-pointer hover:shadow-lg hover:border-2"
             key={list.title}
             onClick={() => handleOpenPage(list.title)}
           >

@@ -120,7 +120,7 @@ const ClientPage = () => {
   }, []);
 
   const handleReturnPage = () => {
-    router.back();
+    router.push('/client');
   };
 
   return (
@@ -138,15 +138,15 @@ const ClientPage = () => {
         {data.map((item) => (
           <div
             key={item.id}
-            className="3xl:w-1/6 w-full overflow-hidden rounded-lg p-1 md:w-1/2 lg:w-1/3 xl:w-1/4 2xl:w-1/5"
+            className="overflow-hidden rounded-lg p-1 w-full md:w-1/2 lg:w-1/3 xl:w-1/4 2xl:w-1/5 3xl:w-1/6"
           >
             <Link href={item.url} target="_blank">
-              <div className="h-[34rem] rounded-lg bg-gray-600 p-2 hover:border-2">
+              <div className="rounded-lg bg-gray-600 p-2 hover:border-2">
                 <div className="flex justify-between">
-                  <Label className="text-xl font-bold">{item.title}</Label>
-                  <ArrowTopRightIcon />
+                  <Label className="text-5xl sm:text-xl font-bold">{item.title}</Label>
+                  <ArrowTopRightIcon className="h-10 w-10 sm:h-7 sm:w-7" />
                 </div>
-                <div>{item.description}</div>
+                <div className="text-xl sm:text-base">{item.description}</div>
               </div>
             </Link>
           </div>
