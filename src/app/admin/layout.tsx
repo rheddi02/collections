@@ -13,7 +13,7 @@ export default function RootLayout({
 }) {
   const passcode = useAppStore((state) => state.passcode);
   return (
-    passcode.trim().length &&
+    passcode.trim().length > 0 &&
     passcode == process.env.NEXT_PUBLIC_PASSCODE && (
       <>
         <div className="flex gap-2 bg-gray-800 p-2 text-gray-300">
