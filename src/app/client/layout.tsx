@@ -1,6 +1,6 @@
 'use client'
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 import { Button } from "~/components/ui/button";
 import PageModal from "./_components/page-modal";
 import useAppStore from "~/store/app.store";
@@ -22,7 +22,9 @@ const Layout = ({ children }: { children: ReactNode }) => {
         </div>
         <Button variant={'ghost'} onClick={handleChangeRole}>admin</Button>
       </div>
-      {children}
+      <Suspense>
+        {children}
+      </Suspense>
       <PageModal />
     </div>
   );
