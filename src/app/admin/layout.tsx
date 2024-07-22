@@ -5,6 +5,7 @@ import { Toaster } from "~/components/ui/toaster";
 import Navigation from "./_components/navigation";
 import DeleteCode from "./_components/delete-code";
 import useAppStore from "~/store/app.store";
+import { redirect } from "next/navigation";
 
 export default function RootLayout({
   children,
@@ -12,6 +13,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const passcode = useAppStore((state) => state.passcode);
+  if (!passcode.trim()) redirect('/client')
+    
   return (
     passcode.trim().length > 0 &&
     passcode == process.env.NEXT_PUBLIC_PASSCODE && (
