@@ -7,6 +7,8 @@ import type { CommonOutputType, formData } from "~/server/api/client/types";
 import { ToastTypes } from '~/utils/types';
 
 interface State {
+  isMe: boolean,
+  setIsMe: (isMe: State['isMe']) => void
   modal: boolean;
   isLoading: boolean
   isAuth: boolean
@@ -100,7 +102,7 @@ const createStore: StateCreator<State, [], [], State> = (set, get) => ({
     set({ passcodeModal })
   },
   setPasscode: (passcode) => {
-    set({ passcode, isAuth: !!passcode.trim() })
+    set({ passcode, isAuth: true })
   },
   deleteCode: false,
   setDeleteCode: (deleteCode) => {
@@ -113,6 +115,10 @@ const createStore: StateCreator<State, [], [], State> = (set, get) => ({
   isFetching: false,
   setIsFetching: (isFetching) => {
     set({ isFetching })
+  },
+  isMe: false,
+  setIsMe: (isMe) => {
+    set({ isMe, isAuth: true })
   }
 });
 

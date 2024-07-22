@@ -143,7 +143,7 @@ const ClientPage = () => {
             <Link href={item.url} target="_blank">
               <div className="rounded-lg bg-gray-600 p-2 hover:border-2">
                 <div className="flex justify-between">
-                  <Label className="text-5xl sm:text-xl font-bold">{item.title}</Label>
+                  <Label className="text-3xl sm:text-xl font-bold">{item.title}</Label>
                   <ArrowTopRightIcon className="h-10 w-10 sm:h-7 sm:w-7" />
                 </div>
                 <div className="text-xl sm:text-base">{item.description}</div>

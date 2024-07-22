@@ -77,7 +77,6 @@ export default function DataTableCompact<TData, TValue>({
     if (isMobile) {
       Object.keys(hiddenColumns).map((key: string)=>hiddenColumns[key] = !hiddenColumns[key])
       setColumnVisibility({ ...hiddenColumns, id: false, actions: false, mobile: true })
-      // setColumnVisibility({ title: false, id:false ,description: false, type: false, actions: false })
     }
     else setColumnVisibility({ ...hiddenColumns, actions: isAuth })
   }, [hiddenColumns]);

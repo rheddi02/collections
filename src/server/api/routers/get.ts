@@ -111,4 +111,13 @@ export const getRouter = createTRPCRouter({
         },
       });
     }),
+    video: publicProcedure
+    .input(z.number())
+    .query(async ({ ctx, input }) => {
+      return await ctx.db.videos.findUnique({
+        where: {
+          id: input,
+        },
+      });
+    }),
 });

@@ -133,7 +133,10 @@ const Nav = ({
           "bg-gray-300 font-semibold text-gray-800",
           
         )}
-        onClick={() => router.push("/client")}
+        onClick={() => {
+          localStorage.removeItem('passcode')
+          router.push("/client")
+        }}
       >
         Client Page
         <ArrowTopRightIcon />

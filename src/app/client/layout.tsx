@@ -16,7 +16,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
   }
   return (
     <div>
-      <div className="flex w-full justify-between item p-5 shadow-lg">
+      <div className="flex w-full justify-between items-center p-5 shadow-lg">
         <div>
           <Link href={"/"} className="font-bold">Colletions</Link>
         </div>

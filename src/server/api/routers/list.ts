@@ -279,4 +279,27 @@ export const listRouter = createTRPCRouter({
         return { data, total };
       }
     }),
+  video: publicProcedure
+    .input(
+      z.object({
+        page: z.number().optional(),
+        perPage: z.number().default(20),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const total = await ctx.db.videos.count();
+      if (input.page) {
+        const data = await ctx.db.videos.findMany({
+          skip: (input.page - 1) * input.perPage,
+          take: input.perPage,
+          orderBy: {
+            createdAt: 'desc'
+          }
+        });
+        return { data, total };
+      } else {
+        const data =  await ctx.db.videos.findMany()
+        return { data, total };
+      }
+    }),
 });

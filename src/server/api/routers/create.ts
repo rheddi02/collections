@@ -171,4 +171,16 @@ export const createRouter = createTRPCRouter({
         data: {...input}
       });
     }),
+  video: publicProcedure
+    .input(
+      z.object({
+        title: z.string().min(1),
+        url: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db.videos.create({
+        data: {...input}
+      });
+    }),
 });

@@ -19,10 +19,11 @@ const Passcode = () => {
   const router = useRouter()
   const passcodeRef = useRef<HTMLInputElement>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const { setPasscodeModal, passcodeModal, setPasscode } = useAppStore((state) => ({
+  const { setPasscodeModal, passcodeModal, setPasscode, setIsMe } = useAppStore((state) => ({
     setPasscodeModal: state.setPasscodeModal,
     passcodeModal: state.passcodeModal,
     setPasscode: state.setPasscode,
+    setIsMe: state.setIsMe,
   }));
 
   const handlePasscode = () => {
@@ -36,6 +37,13 @@ const Passcode = () => {
       setPasscodeModal(false);
       router.push('/admin/dashboard')
     }
+    if (
+      passcodeRef?.current &&
+      passcodeRef.current.value == process.env.NEXT_PUBLIC_PASSCODE_PRIVATE
+    ) {
+      setIsMe(true)
+      router.push('/me')
+    }
     setIsLoading(false);
   };
 
@@ -44,23 +52,21 @@ const Passcode = () => {
   }
   return (
     <Dialog open={passcodeModal}>
-      <DialogContent className="sm:max-w-[425px]" hideCloseButton={true}>
+      <DialogContent className="w-2/3 sm:max-w-[425px]" hideCloseButton={true}>
         <DialogHeader className="text-left">
-          <DialogTitle>Enter passcode</DialogTitle>
-          <DialogDescription>
-            A passcode is required to use the application
-          </DialogDescription>
+          <DialogTitle>Passcode</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
             <Input
               id="passcode"
-              placeholder="Enter passcode to gain access"
+              type="password"
+              placeholder="Enter passcode to grant access"
               ref={passcodeRef}
             />
           </div>
         </div>
-        <DialogFooter>
+        <DialogFooter className="flex gap-2 sm:gap-1">
           <Button
             disabled={isLoading}
             onClick={handlePasscodeClose}
@@ -75,7 +81,7 @@ const Passcode = () => {
             className="flex items-center gap-2"
           >
             {isLoading && <ReloadIcon className="animate-spin" />}
-            Enter Code
+            Submit
           </Button>
         </DialogFooter>
       </DialogContent>

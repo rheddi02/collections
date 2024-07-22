@@ -169,3 +169,12 @@ model EnergyTips {
 
     @@index([id])
 }
+model Videos {
+    id          Int      @id @default(autoincrement())
+    title       String
+    url         String
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    @@index([id])
+}

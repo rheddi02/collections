@@ -42,3 +42,6 @@ export type equipmentOutput = RouterOutput["create"]['equipmentTip'];
 
 export type healthInput = RouterInput["create"]['healthTip'];
 export type healthOutput = RouterOutput["create"]['healthTip'];
+
+export type videoInput = RouterInput["create"]['video'];
+export type videoOutput = RouterOutput["create"]['video'];
