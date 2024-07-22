@@ -12,7 +12,7 @@ import { api } from "~/trpc/react";
 const ClientPage = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const page = searchParams.get("page");
+  const [page] = useState(searchParams.get("page"));
   const [data, setData] = useState<CommonOutputType[]>([]);
   const setIsFetching = useAppStore((state) => state.setIsFetching);
 
