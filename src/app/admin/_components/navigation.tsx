@@ -1,7 +1,11 @@
 "use client";
-import { ArrowTopRightIcon, ReloadIcon } from "@radix-ui/react-icons";
+import {
+  ArrowTopRightIcon,
+  PinLeftIcon,
+  ReloadIcon,
+} from "@radix-ui/react-icons";
 import { useRouter, useSelectedLayoutSegments } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { Label } from "~/components/ui/label";
 import { cn } from "~/lib/utils";
@@ -13,59 +17,66 @@ import type { NavigationType } from "~/utils/types";
 
 export default function Navigation() {
   const [navList] = useState<NavigationType[]>(NavigationLists);
+  const setIsLoading = useAppStore((state) => state.setIsLoading);
 
   const { page, perPage } = usePaginationStore((state) => ({
     perPage: state.perPage,
     page: state.page,
   }));
-  const { refetch: fetchHome } = api.list.homeTip.useQuery(
-    { page, perPage },
-    { enabled: false },
-  );
-  const { refetch: fetchBeauty } = api.list.beautyTip.useQuery(
-    { page, perPage },
-    { enabled: false },
-  );
-  const { refetch: fetchHealth } = api.list.healthTip.useQuery(
-    { page, perPage },
-    { enabled: false },
-  );
-  const { refetch: fetchEquipment } = api.list.equipmentTip.useQuery(
-    { page, perPage },
-    { enabled: false },
-  );
-  const { refetch: fetchEnergy } = api.list.energyTip.useQuery(
-    { page, perPage },
-    { enabled: false },
-  );
-  const { refetch: fetchLeisure } = api.list.leisureTip.useQuery(
-    { page, perPage },
-    { enabled: false },
-  );
-  const { refetch: fetchRide } = api.list.rideTip.useQuery(
-    { page, perPage },
-    { enabled: false },
-  );
-  const { refetch: fetchMachinery } = api.list.machineryTip.useQuery(
-    { page, perPage },
-    { enabled: false },
-  );
-  const { refetch: fetchPlant } = api.list.plantTip.useQuery(
-    { page, perPage },
-    { enabled: false },
-  );
-  const { refetch: fetchCloth } = api.list.clothTip.useQuery(
-    { page, perPage },
-    { enabled: false },
-  );
-  const { refetch: fetchPet } = api.list.petTip.useQuery(
-    { page, perPage },
-    { enabled: false },
-  );
-  const { refetch: fetchFood } = api.list.foodTip.useQuery(
-    { page, perPage },
-    { enabled: false },
-  );
+  const { refetch: fetchHome, isFetching: fetchingHome } =
+    api.list.homeTip.useQuery({ page, perPage }, { enabled: false });
+  const { refetch: fetchBeauty, isFetching: fetchingBeauty } =
+    api.list.beautyTip.useQuery({ page, perPage }, { enabled: false });
+  const { refetch: fetchHealth, isFetching: fetchingHealth } =
+    api.list.healthTip.useQuery({ page, perPage }, { enabled: false });
+  const { refetch: fetchEquipment, isFetching: fetchingEquipment } =
+    api.list.equipmentTip.useQuery({ page, perPage }, { enabled: false });
+  const { refetch: fetchEnergy, isFetching: fetchingEnergy } =
+    api.list.energyTip.useQuery({ page, perPage }, { enabled: false });
+  const { refetch: fetchLeisure, isFetching: fetchingLeisure } =
+    api.list.leisureTip.useQuery({ page, perPage }, { enabled: false });
+  const { refetch: fetchRide, isFetching: fetchingRide } =
+    api.list.rideTip.useQuery({ page, perPage }, { enabled: false });
+  const { refetch: fetchMachinery, isFetching: fetchingMachinery } =
+    api.list.machineryTip.useQuery({ page, perPage }, { enabled: false });
+  const { refetch: fetchPlant, isFetching: fetchingPlant } =
+    api.list.plantTip.useQuery({ page, perPage }, { enabled: false });
+  const { refetch: fetchCloth, isFetching: fetchingCloth } =
+    api.list.clothTip.useQuery({ page, perPage }, { enabled: false });
+  const { refetch: fetchPet, isFetching: fetchingPet } =
+    api.list.petTip.useQuery({ page, perPage }, { enabled: false });
+  const { refetch: fetchFood, isFetching: fetchingFood } =
+    api.list.foodTip.useQuery({ page, perPage }, { enabled: false });
+
+  useEffect(() => {
+    setIsLoading(
+      fetchingHome ||
+        fetchingBeauty ||
+        fetchingHealth ||
+        fetchingEquipment ||
+        fetchingEnergy ||
+        fetchingLeisure ||
+        fetchingRide ||
+        fetchingMachinery ||
+        fetchingPlant ||
+        fetchingCloth ||
+        fetchingPet ||
+        fetchingFood,
+    );
+  }, [
+    fetchingHome,
+    fetchingBeauty,
+    fetchingHealth,
+    fetchingEquipment,
+    fetchingEnergy,
+    fetchingLeisure,
+    fetchingRide,
+    fetchingMachinery,
+    fetchingPlant,
+    fetchingCloth,
+    fetchingPet,
+    fetchingFood,
+  ]);
 
   const handleReload = async (segment: string | undefined) => {
     if (segment?.includes("home")) await fetchHome();
@@ -120,10 +131,15 @@ const Nav = ({
     if (handleReload) await handleReload(segment);
   };
 
+  const removePasscode = () => {
+    localStorage.removeItem("passcode");
+    router.push("/client");
+  };
+
   return (
     <div
       className={cn(
-        "flex h-screen flex-col gap-2",
+        "relative flex h-screen flex-col gap-2",
         openMenu ? "w-40" : "hidden",
       )}
     >
@@ -131,11 +147,9 @@ const Nav = ({
         className={twMerge(
           "flex items-center justify-between rounded-md p-2 capitalize hover:cursor-pointer hover:bg-gray-400 hover:text-gray-800",
           "bg-gray-300 font-semibold text-gray-800",
-          
         )}
         onClick={() => {
-          localStorage.removeItem('passcode')
-          router.push("/client")
+          router.push("/client");
         }}
       >
         Client Page
@@ -169,6 +183,17 @@ const Nav = ({
           )}
         </React.Fragment>
       ))}
+      <div
+        className={twMerge(
+          "group flex items-center gap-2 rounded-md p-2 capitalize hover:cursor-pointer",
+          "bg-gray-300 font-semibold text-gray-800",
+          "absolute bottom-5 w-full cursor-pointer",
+        )}
+        onClick={removePasscode}
+      >
+        <PinLeftIcon />
+        <Label className="select-none group-hover:font-bold">Logout</Label>
+      </div>
     </div>
   );
 };
