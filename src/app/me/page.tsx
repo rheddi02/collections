@@ -2,7 +2,6 @@
 import { redirect, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import useAppStore from "~/store/app.store";
-import MeDialog from "./_components/dialog";
 import { ArrowLeftIcon, PlusIcon } from "@radix-ui/react-icons";
 import { api } from "~/trpc/react";
 import { ToastTypes } from "~/utils/types";
@@ -10,14 +9,13 @@ import type { Row } from "@tanstack/react-table";
 import type { videoOutput } from "~/server/api/client/types";
 import VideoPlayer from "./_components/video-player";
 import PageTableMe from "../admin/_components/table/page-table-me";
-import CustomDialog from "../admin/_components/dialog";
+import CustomDialog from "../_components/dialog";
+import { Button } from "~/components/ui/button";
 
 const Page = () => {
   const router = useRouter();
   const appStore = useAppStore();
-  const [isLoading, setIsLoading] = useState(false);
   const utils = api.useUtils();
-  const [show, setShow] = useState(false);
   const [videos, setVideos] = useState<videoOutput[]>([])
   const [form, setForm] = useState({
     title: "Create New",
@@ -33,12 +31,26 @@ const Page = () => {
         await utils.list.video.invalidate();
       },
       onSettled: () => {
-        setIsLoading(!isLoading);
-        setShow(false);
+        appStore.setIsLoading(false);
+        appStore.resetForm();
         appStore.setModal(false)
         appStore.setToastType(ToastTypes.ADDED);
       },
     });
+
+
+  const { mutate: updateData, isPending: pendingUpdate } =
+  api.update.video.useMutation({
+    onSuccess: async () => {
+      await utils.list.video.invalidate();
+    },
+    onSettled: () => {
+      appStore.setModal(false);
+      appStore.resetForm();
+      appStore.setToastType(ToastTypes.UPDATED);
+    },
+  });
+
 
   const { mutate: deleteData, isPending: pendingDelete } =
     api.delete.video.useMutation({
@@ -46,9 +58,9 @@ const Page = () => {
         await utils.list.video.invalidate();
       },
       onSettled: () => {
-        setShow(false);
         appStore.setToastType(ToastTypes.DELETED);
         appStore.setDeleteId(0);
+        appStore.setModal(false)
       },
     });
 
@@ -71,12 +83,21 @@ const Page = () => {
     if (!appStore.isMe) redirect("/client");
   }, []);
 
+  useEffect(() => {
+    appStore.setIsLoading(pendingDelete || pendingUpdate || pendingCreate);
+  }, [pendingUpdate, pendingDelete, pendingCreate]);
+
   const handleSave = () => {
     createData({
       ...appStore.formData,
       description: appStore.formData.description || appStore.formData.title,
       type: appStore.formData.type || "general",
     });
+  };
+
+  const handleUpdate = () => {
+    const tmpForm = appStore.formData as videoOutput;
+    updateData(tmpForm);
   };
 
   const handleReturn = () => {
@@ -94,9 +115,17 @@ const Page = () => {
   };
 
   const onEdit = (row: Row<videoOutput>) => {
-    console.log("🚀 ~ onEdit ~ row:", row)
-    
-  }
+    setForm({
+      title: "Edit Data",
+      description: "Edit selected data",
+      label: "update",
+    });
+    appStore.setFormData({
+      ...row.original,
+    });
+    appStore.setModal(true);
+  };
+
   const onDelete = (row: Row<videoOutput>) => {
     appStore.setDeleteId(row.original.id);
     deleteData(row.original.id);
@@ -109,10 +138,9 @@ const Page = () => {
 
   return (
     <>
-      {/* <MeDialog {...{ isLoading, show, setShow, action: handleSave }} /> */}
       <CustomDialog
         {...{ ...form }}
-        action={handleSave}
+        action={form.label == "update" ? handleUpdate : handleSave}
       />
       <div>
         <div className="flex items-center justify-between gap-2 bg-red-700 p-5 text-red-50">
@@ -123,17 +151,32 @@ const Page = () => {
             <ArrowLeftIcon className="size-10 rounded-full bg-red-50 p-2 text-red-700" />
             Me
           </div>
+          {
+            videos.length > 0 &&
           <div
-            className="rounded-full bg-red-50 p-2 text-red-700 hover:cursor-pointer"
-            onClick={handleShowDialog}
+          className="rounded-full bg-red-50 p-2 text-red-700 hover:cursor-pointer"
+          onClick={handleShowDialog}
           >
             <PlusIcon className="size-6" />
           </div>
+          }
         </div>
-        <div className="mt-5">
+        {
+          videos.length > 0 ? <>
+        <div className="mt-10 sm:mt-0 sm:p-5">
           <PageTableMe {...{ data: videos, onDelete, onRowClick, onEdit, loading: false }} />
           {/* <VideoPlayer {...{data: videos,deleteVideo}}/> */}
         </div>
+          </>
+          : <div className="flex items-center justify-center h-[90vh] w-full flex-col gap-5">
+          <Button className="rounded-full size-20" onClick={handleShowDialog}>
+            <PlusIcon className="size-10"/>
+          </Button>
+          <span className="text-gray-500">
+          Nothing to show here, create your first record.
+          </span>
+          </div>
+        }
       </div>
     </>
   );

@@ -219,4 +219,22 @@ export const updateRouter = createTRPCRouter({
         data: { ...input },
       });
     }),
+  video: publicProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        title: z.string().min(1),
+        description: z.string().default(""),
+        url: z.string(),
+        type: z.string(),
+        createdAt: z.date(),
+        updatedAt: z.date(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db.videos.update({
+        where: { id: input.id },
+        data: { ...input },
+      });
+    }),
 });
