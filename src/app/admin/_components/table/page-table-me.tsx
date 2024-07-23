@@ -2,12 +2,11 @@
 import DataTableCompact from "~/app/admin/_components/table/table-compact";
 import type { ColumnDef, Row } from "@tanstack/react-table";
 import {
-  EyeOpenIcon,
+  Pencil1Icon,
   ReloadIcon,
   TrashIcon,
 } from "@radix-ui/react-icons";
 import type { videoOutput } from "~/server/api/client/types";
-import Link from "next/link";
 import useAppStore from "~/store/app.store";
 import { Label } from "~/components/ui/label";
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
@@ -19,11 +18,13 @@ const PageTableMe = ({
   data,
   onDelete,
   loading,
+  onEdit,
   onRowClick
 }: {
   data: videoOutput[]
   onDelete: (row: Row<videoOutput>) => void;
   onRowClick: (row: Row<videoOutput>) => void;
+  onEdit: (row: Row<videoOutput>) => void;
   loading: boolean;
 }) => {
   const [isMobileView, setIsMobileView] = useState(false);
@@ -48,11 +49,11 @@ const PageTableMe = ({
     {
       accessorKey: "actions",
       header: () => {
-        return <div className="font-bold">Action</div>;
+        return <div className="font-bold"></div>;
       },
       cell: ({ row }) => {
         return (
-          <div className="flex items-center justify-center gap-2 p-1">
+          <div className="flex items-center justify-end gap-2 p-1">
             {deleteId.includes(row.getValue("id")) ? (
               <div className="flex items-center gap-1 rounded-full border px-2 py-1">
                 <ReloadIcon className="animate-spin" />
@@ -60,6 +61,13 @@ const PageTableMe = ({
               </div>
             ) : (
               <>
+                <Pencil1Icon
+                  className=" size-5 hover:cursor-pointer hover:text-red-600 flex "
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onEdit(row)
+                  }}
+                />
                 <TrashIcon
                   className=" size-5 hover:cursor-pointer hover:text-red-600 flex "
                   onClick={(e) => {
@@ -85,11 +93,8 @@ const PageTableMe = ({
             onClick={() => onRowClick(row)}
           >
             <Label>{row.getValue("title")}</Label>
-            <div>{row.getValue("description")}</div>
             <div className="flex justify-between">
-             <div>
-              
-             </div>
+            <div></div>
               {deleteId.includes(row.getValue("id")) ? (
                 <div className="flex items-center gap-1">
                   <ReloadIcon className="animate-spin" />
@@ -97,6 +102,16 @@ const PageTableMe = ({
                 </div>
               ) : (
                 <ToggleGroup type="single" size="sm">
+                  <ToggleGroupItem
+                    value="edit"
+                    aria-label="Toggle edit"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEdit(row);
+                    }}
+                  >
+                    <Pencil1Icon className="flex size-5 hover:cursor-pointer hover:text-red-600" />
+                  </ToggleGroupItem>
                   <ToggleGroupItem
                     value="delete"
                     aria-label="Toggle delete"

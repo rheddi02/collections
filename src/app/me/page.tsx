@@ -93,11 +93,18 @@ const Page = () => {
     window.open(row.original.url, "_blank");
   };
 
+  const onEdit = (row: Row<videoOutput>) => {
+    console.log("🚀 ~ onEdit ~ row:", row)
+    
+  }
   const onDelete = (row: Row<videoOutput>) => {
     appStore.setDeleteId(row.original.id);
     deleteData(row.original.id);
   };
 
+  const deleteVideo = (id: number) => {
+    deleteData(id);
+  }
   
 
   return (
@@ -124,8 +131,8 @@ const Page = () => {
           </div>
         </div>
         <div className="mt-5">
-          {/* <PageTableMe {...{ data: videos, onDelete, onRowClick, loading: false }} /> */}
-          <VideoPlayer data={videos} />
+          <PageTableMe {...{ data: videos, onDelete, onRowClick, onEdit, loading: false }} />
+          {/* <VideoPlayer {...{data: videos,deleteVideo}}/> */}
         </div>
       </div>
     </>

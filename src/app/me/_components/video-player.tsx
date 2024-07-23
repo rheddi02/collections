@@ -3,10 +3,9 @@ import ReactPlayer from "react-player";
 import type { videoOutput } from "~/server/api/client/types";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { cn } from "~/lib/utils";
-import { ArrowTopRightIcon, CopyIcon } from "@radix-ui/react-icons";
-import copy from "clipboard-copy";
+import { ArrowTopRightIcon, TrashIcon } from "@radix-ui/react-icons";
 
-const VideoPlayer = ({ data }: { data: videoOutput[] }) => {
+const VideoPlayer = ({ data, deleteVideo }: { data: videoOutput[], deleteVideo: (id:number) => void }) => {
   const [video, setVideo] = useState<videoOutput>();
 
   const setActiveVideo = (video: videoOutput) => {
@@ -14,7 +13,7 @@ const VideoPlayer = ({ data }: { data: videoOutput[] }) => {
   };
 
   const openUrl = (url: string) => {
-    window.open(url,'_blank')
+    window.open(url, "_blank");
   };
 
   return (
@@ -24,7 +23,7 @@ const VideoPlayer = ({ data }: { data: videoOutput[] }) => {
           <ReactPlayer url={video?.url} width="100%" height="100%" />
         </div>
       </div>
-      <div className="flex h-[55vh] w-full flex-col gap-2 overflow-scroll sm:w-[40rem]">
+      <div className="flex h-[55vh] sm:h-[80vh] w-full flex-col gap-2 overflow-scroll sm:w-[40rem]">
         {data.map((item) => (
           <Fragment key={item.id}>
             <Card
@@ -38,14 +37,25 @@ const VideoPlayer = ({ data }: { data: videoOutput[] }) => {
                 <CardHeader className="text-sm sm:text-base">
                   <CardTitle className="flex justify-between capitalize">
                     <div>{item.title}</div>
-                    <div
-                      className="p-3"
-                      onClick={ (e) => {
-                        e.stopPropagation();
-                        openUrl(item.url);
-                      }}
-                    >
-                      <ArrowTopRightIcon />
+                    <div>
+                      <div
+                        className="p-3 hover:border rounded-full hover:text-red-500 hover:border-red-500"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openUrl(item.url);
+                        }}
+                      >
+                        <ArrowTopRightIcon />
+                      </div>
+                      <div
+                        className="p-3 hover:border rounded-full hover:text-red-500 hover:border-red-500"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteVideo(item.id);
+                        }}
+                      >
+                        <TrashIcon />
+                      </div>
                     </div>
                   </CardTitle>
                 </CardHeader>
