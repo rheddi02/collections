@@ -5,6 +5,7 @@ import { Button } from "~/components/ui/button";
 import PageModal from "./_components/page-modal";
 import useAppStore from "~/store/app.store";
 import { useRouter } from "next/navigation";
+import { SocialIcon } from "react-social-icons";
 
 const Layout = ({ children }: { children: ReactNode }) => {
   const appStore = useAppStore()
@@ -26,6 +27,13 @@ const Layout = ({ children }: { children: ReactNode }) => {
         {children}
       </Suspense>
       <PageModal />
+      <div className="flex flex-col items-center justify-center gap-5 p-10 bg-gray-300">
+        <div className="flex gap-3">
+          <SocialIcon url="https://facebook.com/rheddi02" target='_blank'/>
+          <SocialIcon url="https://www.instagram.com/rheddi02/" target='_blank'/>
+          <SocialIcon url="https://x.com/rheddi02" target='_blank'/>
+        </div>
+      </div>
     </div>
   );
 };

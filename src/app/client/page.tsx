@@ -9,16 +9,16 @@ import { NavigationLists } from "~/utils/navigations";
 
 const Page = () => {
   const [lists] = useState(NavigationLists);
-  const router = useRouter()
-  const appStore = useAppStore()
+  const router = useRouter();
+  const appStore = useAppStore();
 
-  useEffect( () => {
-    appStore.setIsFetching(false)
-  },[])
+  useEffect(() => {
+    appStore.setIsFetching(false);
+  }, []);
 
   const handleOpenPage = (title: string) => {
-    router.push(`/client/ui?page=${title}`)
-  }
+    router.push(`/client/ui?page=${title}`);
+  };
   return (
     <div className="sm:p-5">
       <div className="flex flex-wrap text-gray-100">
