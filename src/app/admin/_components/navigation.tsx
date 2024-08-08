@@ -118,8 +118,10 @@ const Nav = ({
   const router = useRouter();
   const segments = useSelectedLayoutSegments();
   const segment = segments.pop();
+  const appStore = useAppStore()
 
   const handleRoute = (route: NavigationType) => {
+    appStore.setData([])
     if (route.subRoute.length) {
       router.push(route.subRoute[0]!.route);
     } else {

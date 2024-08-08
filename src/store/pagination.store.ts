@@ -1,6 +1,7 @@
 import type { StateCreator } from 'zustand';
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
+import { PAGE_LIMIT } from '~/lib/utils';
 
 export interface PaginationState {
   page: number;
@@ -25,7 +26,7 @@ export const createPaginationStore: StateCreator<PaginationState & any, [], [], 
   /**
    * per page limit
    */
-  perPage: 15,
+  perPage: PAGE_LIMIT,
 
   /**
    * set current page

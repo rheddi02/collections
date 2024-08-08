@@ -64,6 +64,10 @@ const ClientPage = () => {
     {},
     { enabled: page == "ride" },
   );
+  const { data: coin } = api.list.coin.useQuery(
+    {},
+    { enabled: page == "coin" },
+  );
 
   useEffect(() => {
     setIsFetching(false);
@@ -113,7 +117,10 @@ const ClientPage = () => {
     setIsFetching(false);
     setData(rideTip?.data ?? []);
   }, [rideTip?.data]);
-
+  useEffect(() => {
+    setIsFetching(false);
+    setData(coin?.data ?? []);
+  }, [coin?.data]);
   useEffect(() => {
     setIsFetching(true);
     setData([]);

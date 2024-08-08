@@ -45,3 +45,9 @@ export type healthOutput = RouterOutput["create"]['healthTip'];
 
 export type videoInput = RouterInput["create"]['video'];
 export type videoOutput = RouterOutput["create"]['video'];
+
+export type coinInput = RouterInput["create"]['coin'];
+export type coinOutput = RouterOutput["create"]['coin'];
+
+export type categoryInput = RouterInput["create"]['category'];
+export type categoryOutput = RouterOutput["create"]['category'];

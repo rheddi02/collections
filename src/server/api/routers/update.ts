@@ -237,4 +237,38 @@ export const updateRouter = createTRPCRouter({
         data: { ...input },
       });
     }),
+  coin: publicProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        title: z.string().min(1),
+        categoryId: z.number(),
+        description: z.string().default(''),
+        year: z.string(),
+        type: z.enum(['NEW', 'OLD','SPECIAL']),
+        url: z.string(),
+        createdAt: z.date(),
+        updatedAt: z.date(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db.coins.update({
+        where: { id: input.id },
+        data: { ...input },
+      });
+    }),
+  category: publicProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        title: z.string().min(1),
+        description: z.string().default(""),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db.categories.update({
+        where: { id: input.id },
+        data: { ...input },
+      });
+    }),
 });

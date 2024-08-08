@@ -17,12 +17,12 @@ export const listRouter = createTRPCRouter({
           skip: (input.page - 1) * input.perPage,
           take: input.perPage,
           orderBy: {
-            createdAt: 'desc'
-          }
+            createdAt: "desc",
+          },
         });
         return { data, total };
       } else {
-        const data =  await ctx.db.beautyTips.findMany()
+        const data = await ctx.db.beautyTips.findMany();
         return { data, total };
       }
     }),
@@ -40,12 +40,12 @@ export const listRouter = createTRPCRouter({
           skip: (input.page - 1) * input.perPage,
           take: input.perPage,
           orderBy: {
-            createdAt: 'desc'
-          }
+            createdAt: "desc",
+          },
         });
         return { data, total };
       } else {
-        const data =  await ctx.db.equipmentTips.findMany()
+        const data = await ctx.db.equipmentTips.findMany();
         return { data, total };
       }
     }),
@@ -63,12 +63,12 @@ export const listRouter = createTRPCRouter({
           skip: (input.page - 1) * input.perPage,
           take: input.perPage,
           orderBy: {
-            createdAt: 'desc'
-          }
+            createdAt: "desc",
+          },
         });
         return { data, total };
       } else {
-        const data =  await ctx.db.foodTips.findMany()
+        const data = await ctx.db.foodTips.findMany();
         return { data, total };
       }
     }),
@@ -86,12 +86,12 @@ export const listRouter = createTRPCRouter({
           skip: (input.page - 1) * input.perPage,
           take: input.perPage,
           orderBy: {
-            createdAt: 'desc'
-          }
+            createdAt: "desc",
+          },
         });
         return { data, total };
       } else {
-        const data =  await ctx.db.healthTips.findMany()
+        const data = await ctx.db.healthTips.findMany();
         return { data, total };
       }
     }),
@@ -109,12 +109,12 @@ export const listRouter = createTRPCRouter({
           skip: (input.page - 1) * input.perPage,
           take: input.perPage,
           orderBy: {
-            createdAt: 'desc'
-          }
+            createdAt: "desc",
+          },
         });
         return { data, total };
       } else {
-        const data =  await ctx.db.homeTips.findMany()
+        const data = await ctx.db.homeTips.findMany();
         return { data, total };
       }
     }),
@@ -132,12 +132,12 @@ export const listRouter = createTRPCRouter({
           skip: (input.page - 1) * input.perPage,
           take: input.perPage,
           orderBy: {
-            createdAt: 'desc'
-          }
+            createdAt: "desc",
+          },
         });
         return { data, total };
       } else {
-        const data =  await ctx.db.petTips.findMany()
+        const data = await ctx.db.petTips.findMany();
         return { data, total };
       }
     }),
@@ -155,12 +155,12 @@ export const listRouter = createTRPCRouter({
           skip: (input.page - 1) * input.perPage,
           take: input.perPage,
           orderBy: {
-            createdAt: 'desc'
-          }
+            createdAt: "desc",
+          },
         });
         return { data, total };
       } else {
-        const data =  await ctx.db.clothTips.findMany()
+        const data = await ctx.db.clothTips.findMany();
         return { data, total };
       }
     }),
@@ -178,12 +178,12 @@ export const listRouter = createTRPCRouter({
           skip: (input.page - 1) * input.perPage,
           take: input.perPage,
           orderBy: {
-            createdAt: 'desc'
-          }
+            createdAt: "desc",
+          },
         });
         return { data, total };
       } else {
-        const data =  await ctx.db.plantTips.findMany()
+        const data = await ctx.db.plantTips.findMany();
         return { data, total };
       }
     }),
@@ -192,21 +192,30 @@ export const listRouter = createTRPCRouter({
       z.object({
         page: z.number().optional(),
         perPage: z.number().default(20),
+        filters: z.object({
+          search: z.string(),
+        }),
       }),
     )
     .query(async ({ ctx, input }) => {
       const total = await ctx.db.machineryTips.count();
+      if (input?.filters?.search.trim()) {
+        const data = await ctx.db.$queryRawUnsafe(
+          `SELECT * FROM "MachineryTips" WHERE "description" LIKE '%${input.filters.search}%'`,
+        );
+        return { data, total: 100 };
+      }
       if (input.page) {
         const data = await ctx.db.machineryTips.findMany({
           skip: (input.page - 1) * input.perPage,
           take: input.perPage,
           orderBy: {
-            createdAt: 'desc'
-          }
+            createdAt: "desc",
+          },
         });
         return { data, total };
       } else {
-        const data =  await ctx.db.machineryTips.findMany()
+        const data = await ctx.db.machineryTips.findMany();
         return { data, total };
       }
     }),
@@ -224,12 +233,12 @@ export const listRouter = createTRPCRouter({
           skip: (input.page - 1) * input.perPage,
           take: input.perPage,
           orderBy: {
-            createdAt: 'desc'
-          }
+            createdAt: "desc",
+          },
         });
         return { data, total };
       } else {
-        const data =  await ctx.db.rideTips.findMany()
+        const data = await ctx.db.rideTips.findMany();
         return { data, total };
       }
     }),
@@ -247,12 +256,12 @@ export const listRouter = createTRPCRouter({
           skip: (input.page - 1) * input.perPage,
           take: input.perPage,
           orderBy: {
-            createdAt: 'desc'
-          }
+            createdAt: "desc",
+          },
         });
         return { data, total };
       } else {
-        const data =  await ctx.db.leisureTips.findMany()
+        const data = await ctx.db.leisureTips.findMany();
         return { data, total };
       }
     }),
@@ -270,12 +279,12 @@ export const listRouter = createTRPCRouter({
           skip: (input.page - 1) * input.perPage,
           take: input.perPage,
           orderBy: {
-            createdAt: 'desc'
-          }
+            createdAt: "desc",
+          },
         });
         return { data, total };
       } else {
-        const data =  await ctx.db.energyTips.findMany()
+        const data = await ctx.db.energyTips.findMany();
         return { data, total };
       }
     }),
@@ -293,12 +302,58 @@ export const listRouter = createTRPCRouter({
           skip: (input.page - 1) * input.perPage,
           take: input.perPage,
           orderBy: {
-            createdAt: 'desc'
-          }
+            createdAt: "desc",
+          },
         });
         return { data, total };
       } else {
-        const data =  await ctx.db.videos.findMany()
+        const data = await ctx.db.videos.findMany();
+        return { data, total };
+      }
+    }),
+  coin: publicProcedure
+    .input(
+      z.object({
+        page: z.number().optional(),
+        perPage: z.number().default(20),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const total = await ctx.db.coins.count();
+      if (input.page) {
+        const data = await ctx.db.coins.findMany({
+          skip: (input.page - 1) * input.perPage,
+          take: input.perPage,
+          orderBy: {
+            createdAt: "desc",
+          },
+        });
+        return { data, total };
+      } else {
+        const data = await ctx.db.coins.findMany();
+        return { data, total };
+      }
+    }),
+  category: publicProcedure
+    .input(
+      z.object({
+        page: z.number().optional(),
+        perPage: z.number().default(20),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const total = await ctx.db.categories.count();
+      if (input.page) {
+        const data = await ctx.db.categories.findMany({
+          skip: (input.page - 1) * input.perPage,
+          take: input.perPage,
+          orderBy: {
+            title: "asc",
+          },
+        });
+        return { data, total };
+      } else {
+        const data = await ctx.db.categories.findMany();
         return { data, total };
       }
     }),

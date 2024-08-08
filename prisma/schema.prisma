@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 // datasource db {
@@ -10,8 +10,8 @@ generator client {
 //     url      = env("DATABASE_URL")
 // }
 datasource db {
-  provider = "postgresql"
-  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
@@ -38,145 +38,187 @@ datasource db {
 //     @@index([id])
 // }
 model BeautyTips {
-    id          Int      @id @default(autoincrement())
-    title       String
-    description String
-    type        String
-    url         String
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  type        String
+  url         String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-    @@index([id])
+  @@index([id])
 }
+
 model EquipmentTips {
-    id          Int      @id @default(autoincrement())
-    title       String
-    description String
-    type        String
-    url         String
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  type        String
+  url         String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-    @@index([id])
+  @@index([id])
 }
+
 model HealthTips {
-    id          Int      @id @default(autoincrement())
-    title       String
-    description String
-    type        String
-    url         String
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  type        String
+  url         String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-    @@index([id])
+  @@index([id])
 }
+
 model HomeTips {
-    id          Int      @id @default(autoincrement())
-    title       String
-    description String
-    type        String
-    url         String
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  type        String
+  url         String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-    @@index([id])
+  @@index([id])
 }
+
 model FoodTips {
-    id          Int      @id @default(autoincrement())
-    title       String
-    description String
-    type        String
-    url         String
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  type        String
+  url         String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-    @@index([id])
+  @@index([id])
 }
+
 model PetTips {
-    id          Int      @id @default(autoincrement())
-    title       String
-    description String
-    type        String
-    url         String
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  type        String
+  url         String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-    @@index([id])
+  @@index([id])
 }
+
 model ClothTips {
-    id          Int      @id @default(autoincrement())
-    title       String
-    description String
-    type        String
-    url         String
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  type        String
+  url         String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-    @@index([id])
+  @@index([id])
 }
+
 model PlantTips {
-    id          Int      @id @default(autoincrement())
-    title       String
-    description String
-    type        String
-    url         String
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  type        String
+  url         String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-    @@index([id])
+  @@index([id])
 }
+
 model MachineryTips {
-    id          Int      @id @default(autoincrement())
-    title       String
-    description String
-    type        String
-    url         String
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  type        String
+  url         String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-    @@index([id])
+  @@index([id])
 }
+
 model RideTips {
-    id          Int      @id @default(autoincrement())
-    title       String
-    description String
-    type        String
-    url         String
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  type        String
+  url         String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-    @@index([id])
+  @@index([id])
 }
+
 model LeisureTips {
-    id          Int      @id @default(autoincrement())
-    title       String
-    description String
-    type        String
-    url         String
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  type        String
+  url         String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-    @@index([id])
+  @@index([id])
 }
+
 model EnergyTips {
-    id          Int      @id @default(autoincrement())
-    title       String
-    description String
-    type        String
-    url         String
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  type        String
+  url         String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-    @@index([id])
+  @@index([id])
 }
-model Videos {
-    id          Int      @id @default(autoincrement())
-    title       String
-    description String
-    type        String
-    url         String
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
 
-    @@index([id])
+model Videos {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  type        String
+  url         String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([id])
+}
+
+model Coins {
+  id          Int        @id @default(autoincrement())
+  title       String
+  categoryId  Int
+  description String
+  year        String
+  type        Type
+  url         String     @unique()
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  categories  Categories @relation(fields: [categoryId], references: [id])
+
+  @@index([id])
+}
+
+enum Type {
+  NEW
+  OLD
+  SPECIAL
+}
+
+model Categories {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String
+  Coins       Coins[]
+
+  @@index([id])
 }

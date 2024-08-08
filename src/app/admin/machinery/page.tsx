@@ -4,7 +4,6 @@ import useAppStore from "~/store/app.store";
 import type { Row } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 import CustomDialog from "~/app/_components/dialog";
-;
 import type { CommonOutputType } from "~/server/api/client/types";
 import { Button } from "~/components/ui/button";
 import { HamburgerMenuIcon, PlusIcon, ReloadIcon } from "@radix-ui/react-icons";
@@ -12,6 +11,8 @@ import { api } from "~/trpc/react";
 import { usePathname } from "next/navigation";
 import { ToastTypes } from "~/utils/types";
 import PageTable from "~/app/admin/_components/table/page-table";
+import { Input } from "~/components/ui/input";
+import Actions from "~/app/_components/actions";
 
 const Page = () => {
   const path = usePathname();
@@ -34,7 +35,8 @@ const Page = () => {
     setOpenMenu,
     setToastType,
     setDeleteId,
-setDeleteCode
+    setDeleteCode,
+    filters
   } = useAppStore();
 
   const {
@@ -49,7 +51,8 @@ setDeleteCode
     data: data,
     isFetched,
     isFetching,
-  } = api.list.machineryTip.useQuery({ page, perPage });
+    refetch
+  } = api.list.machineryTip.useQuery({ page, perPage, filters });
 
   const { mutate: createData, isPending: pendingCreate } =
     api.create.machineryTip.useMutation({
@@ -84,9 +87,19 @@ setDeleteCode
         setModal(false);
         setToastType(ToastTypes.DELETED);
         setDeleteId(0);
-setDeleteCode(false)
+        setDeleteCode(false);
       },
     });
+
+  useEffect( () => {
+    const unsubMonth = useAppStore.subscribe(
+      (state) => state.filters,
+      () => {
+        refetch()
+      },
+      { fireImmediately: true }
+    );
+  },[])
 
   useEffect(() => {
     if (!isFetched) return;
@@ -150,6 +163,10 @@ setDeleteCode(false)
     deleteData(deleteRow);
   };
 
+  const onRowClick = (row: Row<CommonOutputType>) => {
+    window.open(row.original.url, "_blank");
+  };
+
   return (
     <>
       <CustomDialog
@@ -167,13 +184,18 @@ setDeleteCode(false)
               {isFetching && <ReloadIcon className="animate-spin" />}
             </div>
           </div>
-          <Button onClick={() => setModal(true)} className="flex gap-2">
-            <PlusIcon className="h-4 w-4" />
-            Add New
-          </Button>
+          <Actions />
         </div>
         <hr />
-        <PageTable {...{ onEdit, onDelete: onDeleteCheck, loading: false }} />
+        <PageTable
+          {...{
+            onEdit,
+            onDelete: onDeleteCheck,
+            loading: false,
+            onRowClick,
+            isCompact: true,
+          }}
+        />
       </div>
     </>
   );

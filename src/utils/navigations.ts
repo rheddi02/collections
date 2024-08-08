@@ -105,4 +105,20 @@ export const NavigationLists: NavigationType[] = [
     subRoute: [],
     image: 'https://picsum.photos/id/146/500/700'
   },
+  {
+    title: "coin",
+    get route() {
+      return "/admin/" + this.title.replaceAll(" ", "-");
+    },
+    subRoute: [],
+    image: 'https://picsum.photos/id/149/500/700'
+  },
+  {
+    title: "category",
+    get route() {
+      return "/admin/" + this.title.replaceAll(" ", "-");
+    },
+    subRoute: [],
+    image: 'https://picsum.photos/id/147/500/700'
+  },
 ];

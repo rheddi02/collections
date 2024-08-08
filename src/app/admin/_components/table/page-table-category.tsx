@@ -2,42 +2,38 @@
 import DataTableCompact from "~/app/admin/_components/table/table-compact";
 import type { ColumnDef, Row } from "@tanstack/react-table";
 import {
-  EyeOpenIcon,
   Pencil1Icon,
   ReloadIcon,
   TrashIcon,
 } from "@radix-ui/react-icons";
-import type { CommonOutputType } from "~/server/api/client/types";
-import Link from "next/link";
+import type { categoryOutput } from "~/server/api/client/types";
 import useAppStore from "~/store/app.store";
-import { Badge } from "~/components/ui/badge";
 import { Label } from "~/components/ui/label";
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 import DataTable from "./table";
 import { isMobile } from "react-device-detect";
 import { useEffect, useState } from "react";
 
-const PageTable = ({
-  onEdit,
+const PageTableCategory = ({
+  data,
   onDelete,
   loading,
-  onRowClick,
-  isCompact
+  onEdit,
+  onRowClick
 }: {
-  onEdit: (row: Row<CommonOutputType>) => void;
-  onDelete: (row: Row<CommonOutputType>) => void;
-  onRowClick?: (row: Row<CommonOutputType>) => void;
+  data: categoryOutput[]
+  onDelete: (row: Row<categoryOutput>) => void;
+  onRowClick: (row: Row<categoryOutput>) => void;
+  onEdit: (row: Row<categoryOutput>) => void;
   loading: boolean;
-  isCompact?: boolean;
 }) => {
   const [isMobileView, setIsMobileView] = useState(false);
-  const { data, pageCount, setPage, deleteId } = useAppStore((state) => ({
-    data: state.data,
+  const { pageCount, setPage, deleteId } = useAppStore((state) => ({
     pageCount: state.pageCount,
     setPage: state.setPage,
     deleteId: state.deleteId,
   }));
-  const columns: ColumnDef<CommonOutputType>[] = [
+  const columns: ColumnDef<categoryOutput>[] = [
     {
       accessorKey: "id",
     },
@@ -51,31 +47,13 @@ const PageTable = ({
       },
     },
     {
-      accessorKey: "description",
-      header: () => {
-        return <div className="font-bold">Description</div>;
-      },
-      cell: ({ row }) => {
-        return <div className="">{row.getValue("description")}</div>;
-      },
-    },
-    {
-      accessorKey: "type",
-      header: () => {
-        return <div className="font-bold">Type</div>;
-      },
-      cell: ({ row }) => {
-        return <div className="">{row.getValue("type")}</div>;
-      },
-    },
-    {
       accessorKey: "actions",
       header: () => {
         return <div className="font-bold"></div>;
       },
       cell: ({ row }) => {
         return (
-          <div className="flex items-center justify-center gap-2 p-1">
+          <div className="flex items-center justify-end gap-2 p-1">
             {deleteId.includes(row.getValue("id")) ? (
               <div className="flex items-center gap-1 rounded-full border px-2 py-1">
                 <ReloadIcon className="animate-spin" />
@@ -84,24 +62,19 @@ const PageTable = ({
             ) : (
               <>
                 <Pencil1Icon
-                  className=" size-5 hover:cursor-pointer hover:text-red-600 group-hover:flex "
+                  className=" size-5 hover:cursor-pointer hover:text-red-600 flex "
                   onClick={(e) => {
-                    e.preventDefault()
                     e.stopPropagation()
                     onEdit(row)
                   }}
                 />
                 <TrashIcon
-                  className=" size-5 hover:cursor-pointer hover:text-red-600 group-hover:flex "
+                  className=" size-5 hover:cursor-pointer hover:text-red-600 flex "
                   onClick={(e) => {
-                    e.preventDefault()
                     e.stopPropagation()
                     onDelete(row)
                   }}
                 />
-                <Link href={row.original.url} target="_blank">
-                  <EyeOpenIcon className=" size-5 hover:cursor-pointer hover:text-red-600 group-hover:flex " />
-                </Link>
               </>
             )}
           </div>
@@ -115,13 +88,13 @@ const PageTable = ({
       },
       cell: ({ row }) => {
         return (
-          <div className="flex flex-col justify-center gap-2 p-1" onClick={() => onRowDivClick(row)}>
+          <div
+            className="flex flex-col justify-center gap-2 p-1"
+            onClick={() => onRowClick(row)}
+          >
             <Label>{row.getValue("title")}</Label>
-            <div>{row.getValue("description")}</div>
             <div className="flex justify-between">
-              <Badge variant="default" className="uppercase text-[10px]">
-                {row.getValue("type")}
-              </Badge>
+            <div></div>
               {deleteId.includes(row.getValue("id")) ? (
                 <div className="flex items-center gap-1">
                   <ReloadIcon className="animate-spin" />
@@ -133,8 +106,8 @@ const PageTable = ({
                     value="edit"
                     aria-label="Toggle edit"
                     onClick={(e) => {
-                      e.stopPropagation()
-                      onEdit(row)
+                      e.stopPropagation();
+                      onEdit(row);
                     }}
                   >
                     <Pencil1Icon className="flex size-5 hover:cursor-pointer hover:text-red-600" />
@@ -143,8 +116,8 @@ const PageTable = ({
                     value="delete"
                     aria-label="Toggle delete"
                     onClick={(e) => {
-                      e.stopPropagation()
-                      onDelete(row)
+                      e.stopPropagation();
+                      onDelete(row);
                     }}
                   >
                     <TrashIcon className="flex size-5 hover:cursor-pointer hover:text-red-600" />
@@ -168,9 +141,13 @@ const PageTable = ({
   const onRowChange = () => {
     null;
   };
-  const onRowDivClick = (row: Row<CommonOutputType>) => {
-    if (isMobileView) window.open(row.original.url, '_blank')
-  }
+  // const onRowDivClick = (row: Row<categoryOutput>) => {
+  //   if (isMobileView) window.open(row.original.url, "_blank");
+  // };
+  // const onRowClick = (row: Row<categoryOutput>) => {
+  //   console.log("🚀 ~ onRowClick ~ row:", row)
+  //   null;
+  // };
 
   if (isMobileView)
     return (
@@ -184,8 +161,6 @@ const PageTable = ({
           hiddenColumns: {
             id: false,
             title: true,
-            description: true,
-            type: true,
             actions: true,
             mobile: false,
           },
@@ -206,8 +181,6 @@ const PageTable = ({
         hiddenColumns: {
           id: false,
           title: true,
-          description: true,
-          type: true,
           actions: true,
           mobile: false,
         },
@@ -219,4 +192,4 @@ const PageTable = ({
   );
 };
 
-export default PageTable;
+export default PageTableCategory;

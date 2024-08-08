@@ -111,7 +111,7 @@ const CustomDialog = ({ title, description, label, action }: Props) => {
           <Button
             disabled={isLoading || !actionable}
             onClick={action}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 capitalize"
           >
             {isLoading && <ReloadIcon className="animate-spin" />}
             {label}

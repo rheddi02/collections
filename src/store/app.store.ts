@@ -6,7 +6,11 @@ import { subscribeWithSelector } from "zustand/middleware";
 import type { CommonOutputType, formData } from "~/server/api/client/types";
 import { ToastTypes } from '~/utils/types';
 
-interface State {
+export interface State {
+  filters: {
+    search: string
+  }
+  setFilters: (filters: State['filters']) => void
   isMe: boolean,
   setIsMe: (isMe: State['isMe']) => void
   modal: boolean;
@@ -42,6 +46,12 @@ interface State {
 }
 
 const createStore: StateCreator<State, [], [], State> = (set, get) => ({
+  filters: {
+    search: '',
+  },
+  setFilters: (filters) => {
+    set({ filters })
+  },
   data: [],
   modal: false,
   isAuth: false,

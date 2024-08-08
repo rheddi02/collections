@@ -1,3 +1,4 @@
+import { Type } from "@prisma/client";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
@@ -182,6 +183,34 @@ export const createRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.videos.create({
+        data: {...input}
+      });
+    }),
+  coin: publicProcedure
+    .input(
+      z.object({
+        title: z.string().min(1),
+        categoryId: z.number(),
+        description: z.string().default(''),
+        year: z.string(),
+        type: z.enum(['NEW', 'OLD','SPECIAL']),
+        url: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db.coins.create({
+        data: {...input}
+      });
+    }),
+  category: publicProcedure
+    .input(
+      z.object({
+        title: z.string().min(1),
+        description: z.string().default(''),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db.categories.create({
         data: {...input}
       });
     }),
