@@ -194,7 +194,7 @@ export const listRouter = createTRPCRouter({
         perPage: z.number().default(20),
         filters: z.object({
           search: z.string(),
-        }),
+        }).optional(),
       }),
     )
     .query(async ({ ctx, input }) => {

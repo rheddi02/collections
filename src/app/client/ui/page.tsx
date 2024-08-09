@@ -145,10 +145,10 @@ const ClientPage = () => {
         {data.map((item) => (
           <div
             key={item.id}
-            className="overflow-hidden rounded-lg p-1 w-full md:w-1/2 lg:w-1/3 xl:w-1/4 2xl:w-1/5 3xl:w-1/6"
+            className="overflow-hidden rounded-lg p-1 w-full md:w-1/2 lg:w-1/3 xl:w-1/4 2xl:w-1/5 3xl:w-1/6 items-stretch"
           >
             <Link href={item.url} target="_blank">
-              <div className="rounded-lg bg-gray-600 p-2 hover:border-2">
+              <div className="rounded-lg bg-gray-600 p-2 hover:border-2 h-full">
                 <div className="flex justify-between">
                   <Label className="text-3xl sm:text-xl font-bold">{item.title}</Label>
                   <ArrowTopRightIcon className="h-10 w-10 sm:h-7 sm:w-7" />
