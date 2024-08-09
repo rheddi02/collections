@@ -99,6 +99,7 @@ const Page = () => {
       },
       { fireImmediately: true }
     );
+    return unsubMonth
   },[])
 
   useEffect(() => {
@@ -191,9 +192,17 @@ const Page = () => {
           {...{
             onEdit,
             onDelete: onDeleteCheck,
-            loading: false,
+            loading: isFetching,
             onRowClick,
-            isCompact: true,
+            hiddenColumns: {
+              id: false,
+              title: true,
+              description: true,
+              type: false,
+              actions: true,
+              mobile: false,
+            },
+            formatDescription: true
           }}
         />
       </div>

@@ -173,7 +173,15 @@ setDeleteCode(false)
           </Button>
         </div>
         <hr />
-        <PageTable {...{ onEdit, onDelete: onDeleteCheck, loading: false }} />
+        <PageTable {...{ onEdit, onDelete: onDeleteCheck, loading: isFetching, 
+            hiddenColumns: {
+              id: false,
+              title: true,
+              description: true,
+              type: false,
+              actions: true,
+              mobile: false,
+            }, }} />
       </div>
     </>
   );

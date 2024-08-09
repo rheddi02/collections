@@ -22,13 +22,15 @@ const PageTable = ({
   onDelete,
   loading,
   onRowClick,
-  isCompact
+  hiddenColumns,
+  formatDescription
 }: {
   onEdit: (row: Row<CommonOutputType>) => void;
   onDelete: (row: Row<CommonOutputType>) => void;
   onRowClick?: (row: Row<CommonOutputType>) => void;
   loading: boolean;
-  isCompact?: boolean;
+  hiddenColumns?: Record<string, boolean>;
+  formatDescription?: boolean
 }) => {
   const [isMobileView, setIsMobileView] = useState(false);
   const { data, pageCount, setPage, deleteId } = useAppStore((state) => ({
@@ -56,7 +58,17 @@ const PageTable = ({
         return <div className="font-bold">Description</div>;
       },
       cell: ({ row }) => {
-        return <div className="">{row.getValue("description")}</div>;
+        const descriptions: string = row.getValue("description")
+        return <>
+          {
+            formatDescription ?
+            descriptions.split(',').map(description => (
+              <div className="">{description}</div>
+            ))
+            :
+            <div className="">{descriptions}</div>
+          }
+        </>;
       },
     },
     {
@@ -159,7 +171,7 @@ const PageTable = ({
   ];
 
   useEffect(() => {
-    setIsMobileView(true);
+    setIsMobileView(isMobile);
   }, [isMobile]);
 
   const onPaginationChange = (page: number) => {
@@ -181,7 +193,7 @@ const PageTable = ({
           onPaginationChange,
           onRowChange,
           onRowClick,
-          hiddenColumns: {
+          hiddenColumns: hiddenColumns ?? {
             id: false,
             title: true,
             description: true,
@@ -203,7 +215,7 @@ const PageTable = ({
         onPaginationChange,
         onRowChange,
         onRowClick,
-        hiddenColumns: {
+        hiddenColumns: hiddenColumns ?? {
           id: false,
           title: true,
           description: true,

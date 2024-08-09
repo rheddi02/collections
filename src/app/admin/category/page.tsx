@@ -25,7 +25,7 @@ const Page = () => {
     label: "Create",
   });
   const { setPageCount, page, perPage } = useAppStore();
-  const { data: data } = api.list.category.useQuery({ page, perPage });
+  const { data: data, isFetching } = api.list.category.useQuery({ page, perPage });
   const [formData, setFormData] = useState<categoryInput>({
     title: '',
     description:'',
@@ -166,7 +166,7 @@ const Page = () => {
         {
           categories.length > 0 ? <>
         <div className="mt-10 sm:mt-0 sm:p-5">
-          <PageTableCategory {...{ data: categories , onRowClick, onEdit, onDelete, loading: false }} />
+          <PageTableCategory {...{ data: categories , onRowClick, onEdit, onDelete, loading: isFetching }} />
         </div>
           </>
           : <div className="flex items-center justify-center h-[90vh] w-full flex-col gap-5">

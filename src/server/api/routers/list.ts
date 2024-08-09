@@ -199,11 +199,35 @@ export const listRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       const total = await ctx.db.machineryTips.count();
-      if (input?.filters?.search.trim()) {
-        const data = await ctx.db.$queryRawUnsafe(
-          `SELECT * FROM "MachineryTips" WHERE "description" LIKE '%${input.filters.search}%'`,
-        );
-        return { data, total: 100 };
+      if (input?.filters?.search.trim() && input.page) {
+        const total = await ctx.db.machineryTips.count({
+          where: {
+            OR: [
+              {
+                description: {
+                  contains: input.filters.search,
+                },
+              },
+            ],
+          },
+        });
+        const data = await ctx.db.machineryTips.findMany({
+          where: {
+            OR: [
+              {
+                description: {
+                  contains: input.filters.search,
+                },
+              },
+            ],
+          },
+          skip: (input.page - 1) * input.perPage,
+          take: input.perPage,
+          orderBy: {
+            createdAt: "desc",
+          },
+        });
+        return { data, total };
       }
       if (input.page) {
         const data = await ctx.db.machineryTips.findMany({

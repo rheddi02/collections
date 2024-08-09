@@ -30,7 +30,7 @@ import { useEffect, useState } from "react";
 import { DataTablePaginationPage } from "./pagination";
 import { cn } from "~/lib/utils";
 import useAppStore from "~/store/app.store";
-import { isMobile } from 'react-device-detect';
+import { isMobile } from "react-device-detect";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -55,7 +55,7 @@ export default function DataTableCompact<TData, TValue>({
   onRowChange,
   hiddenColumns = {},
 }: DataTableProps<TData, TValue>) {
-  const isAuth = useAppStore(state=>state.isAuth)
+  const isAuth = useAppStore((state) => state.isAuth);
   const [rowSelection, setRowSelection] = useState({});
   const [page, setPage] = useState<PaginationState>({
     pageIndex: 0,
@@ -75,10 +75,16 @@ export default function DataTableCompact<TData, TValue>({
 
   useEffect(() => {
     if (isMobile) {
-      Object.keys(hiddenColumns).map((key: string)=>hiddenColumns[key] = !hiddenColumns[key])
-      setColumnVisibility({ ...hiddenColumns, id: false, actions: false, mobile: true })
-    }
-    else setColumnVisibility({ ...hiddenColumns, actions: isAuth })
+      Object.keys(hiddenColumns).map(
+        (key: string) => (hiddenColumns[key] = false),
+      );
+      setColumnVisibility({
+        ...hiddenColumns,
+        id: false,
+        actions: false,
+        mobile: true,
+      });
+    } else setColumnVisibility({ ...hiddenColumns, actions: isAuth });
   }, [hiddenColumns]);
 
   const table = useReactTable({
@@ -170,30 +176,33 @@ export default function DataTableCompact<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {loading && <TableRowActions type={"loading"} />}
-            {table.getRowModel().rows?.length
-              ? table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    onClick={() => {
-                      if (onRowClick) {
-                        onRowClick(row);
-                      }
-                    }}
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                    className="group"
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              : !loading && <TableRowActions type={"empty"} />}
+            {loading ? (
+              <TableRowActions type={"loading"} />
+            ) : table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  onClick={() => {
+                    if (onRowClick) {
+                      onRowClick(row);
+                    }
+                  }}
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                  className="group"
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              !loading && <TableRowActions type={"empty"} />
+            )}
           </TableBody>
         </Table>
       </div>

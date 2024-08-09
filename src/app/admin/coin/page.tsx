@@ -23,7 +23,7 @@ const Page = () => {
     label: "Create",
   });
   const { setPageCount, page, perPage } = useAppStore();
-  const { data: data } = api.list.coin.useQuery({ page, perPage });
+  const { data: data, isFetching } = api.list.coin.useQuery({ page, perPage });
   const { data: categories } = api.list.category.useQuery({});
   const [formData, setFormData] = useState<coinInput>({
     title: "",
@@ -182,7 +182,7 @@ const Page = () => {
                   onDelete,
                   onRowClick,
                   onEdit,
-                  loading: false,
+                  loading: isFetching,
                 }}
               />
             </div>
