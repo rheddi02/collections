@@ -5,6 +5,7 @@ import { deleteRouter } from "./routers/delete";
 import { listRouter } from "./routers/list";
 import { getRouter } from "./routers/get";
 import { countRouter } from "./routers/count";
+import { authRouter } from "./routers/auth";
 
 /**
  * This is the primary router for your server.
@@ -17,7 +18,8 @@ export const appRouter = createTRPCRouter({
   update: updateRouter,
   delete: deleteRouter,
   list: listRouter,
-  get: getRouter
+  get: getRouter,
+  auth: authRouter,
 });
 
 // export type definition of API

@@ -3,17 +3,25 @@ import React, { useEffect, type ReactNode } from "react";
 import { useToast } from "~/components/ui/use-toast";
 import useAppStore from "~/store/app.store";
 import { ToastTypes } from "~/utils/types";
+import { api } from "~/trpc/react";
 
 const Template = ({ children }: { children: ReactNode }) => {
   const { toast } = useToast();
-  const { toastType, passcode, setPasscode, setPasscodeModal, setData } = useAppStore(
+  const { toastType, setData, setIsAuth } = useAppStore(
     (state) => ({
       toastType: state.toastType,
-      passcode: state.passcode,
-      setPasscode: state.setPasscode,
-      setPasscodeModal: state.setPasscodeModal,
-      setData: state.setData
+      setData: state.setData,
+      setIsAuth: state.setIsAuth,
     }),
+  );
+
+  // Verify token on app load
+  const tokenVerifyQuery = api.auth.verifyToken.useQuery(
+    { token: typeof window !== "undefined" ? localStorage.getItem("authToken") ?? "" : "" },
+    { 
+      enabled: typeof window !== "undefined" && !!localStorage.getItem("authToken"),
+      retry: false,
+    }
   );
 
   useEffect(() => {
@@ -23,20 +31,24 @@ const Template = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     setData([])
-    const tmpPasscode = localStorage.getItem("passcode");
-    if (!tmpPasscode) return setPasscode('')
-    if (tmpPasscode == process.env.NEXT_PUBLIC_PASSCODE) {
-      setPasscode(tmpPasscode)
-      // localStorage.setItem('passcode', tmpPasscode)
-    } else {
-      setPasscode('')
+    
+    // Check for existing auth token first
+    const authToken = localStorage.getItem("authToken");
+    if (authToken && tokenVerifyQuery.data?.valid) {
+      setIsAuth(true);
+      return;
     }
-  }, []);
+  }, [tokenVerifyQuery.data]);
 
-  // useEffect( () => {
-  //   if (passcode) setPasscodeModal(false)
-  //   else setPasscodeModal(true)
-  // },[passcode])
+  // Handle token verification errors
+  useEffect(() => {
+    if (tokenVerifyQuery.error) {
+      // Token is invalid, clear it
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("user");
+      setIsAuth(false);
+    }
+  }, [tokenVerifyQuery.error]);
 
   const showToast = (type: ToastTypes) => {
     const toastData = {

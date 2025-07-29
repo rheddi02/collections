@@ -3,21 +3,35 @@ import "~/styles/globals.css";
 
 import { Toaster } from "~/components/ui/toaster";
 import Navigation from "./_components/navigation";
-import DeleteCode from "./_components/delete-code";
 import useAppStore from "~/store/app.store";
 import { redirect } from "next/navigation";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const passcode = useAppStore((state) => state.passcode);
-  if (!passcode.trim()) redirect('/client')
+  const router = useRouter();
+  const { isAuth } = useAppStore((state) => ({
+    isAuth: state.isAuth,
+  }));
+  
+  // Use useEffect to handle redirect on auth state changes
+  useEffect(() => {
+    if (!isAuth) {
+      router.push('/client');
+    }
+  }, [isAuth, router]);
+  
+  // Don't render anything if not authenticated
+  if (!isAuth) {
+    return null;
+  }
     
   return (
-    passcode.trim().length > 0 &&
-    passcode == process.env.NEXT_PUBLIC_PASSCODE && (
+    isAuth ? (
       <>
         <div className="flex gap-2 bg-gray-800 p-2 text-gray-300">
           <Navigation />
@@ -25,9 +39,8 @@ export default function RootLayout({
             {children}
           </div>
           <Toaster />
-          <DeleteCode />
         </div>
       </>
-    )
+    ) : null
   );
 }

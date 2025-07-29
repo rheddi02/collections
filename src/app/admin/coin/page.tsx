@@ -100,10 +100,6 @@ const Page = () => {
   }, [appStore.modal]);
 
   useEffect(() => {
-    appStore.setPasscodeModal(false);
-  }, []);
-
-  useEffect(() => {
     appStore.setIsLoading(pendingDelete || pendingUpdate || pendingCreate);
   }, [pendingUpdate, pendingDelete, pendingCreate]);
 

@@ -2,119 +2,48 @@ import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
+// Generic get function for tips
+const createTipGetProcedure = (tableName: string) =>
+  publicProcedure
+    .input(z.number())
+    .query(async ({ ctx, input }) => {
+      return await (ctx.db as any)[tableName].findUnique({
+        where: {
+          id: input,
+        },
+      });
+    });
+
 export const getRouter = createTRPCRouter({
-  beautyTip: publicProcedure
+  beautyTip: createTipGetProcedure("beautyTips"),
+  equipmentTip: createTipGetProcedure("equipmentTips"),
+  foodTip: createTipGetProcedure("foodTips"),
+  healthTip: createTipGetProcedure("healthTips"),
+  homeTip: createTipGetProcedure("homeTips"),
+  petTip: createTipGetProcedure("petTips"),
+  clothTip: createTipGetProcedure("clothTips"),
+  plantTip: createTipGetProcedure("plantTips"),
+  machineryTip: createTipGetProcedure("machineryTips"),
+  rideTip: createTipGetProcedure("rideTips"),
+  leisureTip: createTipGetProcedure("leisureTips"),
+  energyTip: createTipGetProcedure("energyTips"),
+  video: createTipGetProcedure("videos"),
+  coin: publicProcedure
     .input(z.number())
     .query(async ({ ctx, input }) => {
-      return await ctx.db.beautyTips.findUnique({
+      return await ctx.db.coins.findUnique({
         where: {
           id: input,
         },
-      });
-    }),
-  equipmentTip: publicProcedure
-    .input(z.number())
-    .query(async ({ ctx, input }) => {
-      return await ctx.db.equipmentTips.findUnique({
-        where: {
-          id: input,
+        include: {
+          categories: true,
         },
       });
     }),
-  foodTip: publicProcedure
+  category: publicProcedure
     .input(z.number())
     .query(async ({ ctx, input }) => {
-      return await ctx.db.foodTips.findUnique({
-        where: {
-          id: input,
-        },
-      });
-    }),
-  healthTip: publicProcedure
-    .input(z.number())
-    .query(async ({ ctx, input }) => {
-      return await ctx.db.healthTips.findUnique({
-        where: {
-          id: input,
-        },
-      });
-    }),
-  homeTip: publicProcedure
-    .input(z.number())
-    .query(async ({ ctx, input }) => {
-      return await ctx.db.homeTips.findUnique({
-        where: {
-          id: input,
-        },
-      });
-    }),
-  petTip: publicProcedure
-    .input(z.number())
-    .query(async ({ ctx, input }) => {
-      return await ctx.db.petTips.findUnique({
-        where: {
-          id: input,
-        },
-      });
-    }),
-  clothTip: publicProcedure
-    .input(z.number())
-    .query(async ({ ctx, input }) => {
-      return await ctx.db.clothTips.findUnique({
-        where: {
-          id: input,
-        },
-      });
-    }),
-  plantTip: publicProcedure
-    .input(z.number())
-    .query(async ({ ctx, input }) => {
-      return await ctx.db.plantTips.findUnique({
-        where: {
-          id: input,
-        },
-      });
-    }),
-  machineryTip: publicProcedure
-    .input(z.number())
-    .query(async ({ ctx, input }) => {
-      return await ctx.db.machineryTips.findUnique({
-        where: {
-          id: input,
-        },
-      });
-    }),
-  rideTip: publicProcedure
-    .input(z.number())
-    .query(async ({ ctx, input }) => {
-      return await ctx.db.rideTips.findUnique({
-        where: {
-          id: input,
-        },
-      });
-    }),
-  leisureTip: publicProcedure
-    .input(z.number())
-    .query(async ({ ctx, input }) => {
-      return await ctx.db.leisureTips.findUnique({
-        where: {
-          id: input,
-        },
-      });
-    }),
-  energyTip: publicProcedure
-    .input(z.number())
-    .query(async ({ ctx, input }) => {
-      return await ctx.db.energyTips.findUnique({
-        where: {
-          id: input,
-        },
-      });
-    }),
-    video: publicProcedure
-    .input(z.number())
-    .query(async ({ ctx, input }) => {
-      return await ctx.db.videos.findUnique({
+      return await ctx.db.categories.findUnique({
         where: {
           id: input,
         },

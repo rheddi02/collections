@@ -1,260 +1,86 @@
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "~/server/api/trpc";
+
+// Generic update function for tips with ownership validation
+const createTipUpdateProcedure = (tableName: string, entityName: string) =>
+  protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        title: z.string().min(1),
+        description: z.string().default(""),
+        url: z.string(),
+        type: z.string(),
+        isPublic: z.boolean().default(true),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { id, ...updateData } = input;
+      
+      // First check if the record exists and belongs to the user
+      const existingRecord = await (ctx.db as any)[tableName].findFirst({
+        where: {
+          id,
+          userId: ctx.user.id,
+        },
+      });
+
+      if (!existingRecord) {
+        throw new Error(`${entityName} not found or you don't have permission to update it`);
+      }
+
+      return await (ctx.db as any)[tableName].update({
+        where: { id },
+        data: updateData,
+      });
+    });
 
 export const updateRouter = createTRPCRouter({
-  beautyTip: publicProcedure
-    .input(
-      z.object({
-        id: z.number(),
-        title: z.string().min(1),
-        description: z.string().default(""),
-        url: z.string(),
-        type: z.string(),
-        createdAt: z.date(),
-        updatedAt: z.date(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.db.beautyTips.update({
-        where: { id: input.id },
-        data: { ...input },
-      });
-    }),
-  equipmentTip: publicProcedure
-    .input(
-      z.object({
-        id: z.number(),
-        title: z.string().min(1),
-        description: z.string().default(""),
-        url: z.string(),
-        type: z.string(),
-        createdAt: z.date(),
-        updatedAt: z.date(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.db.equipmentTips.update({
-        where: { id: input.id },
-        data: { ...input },
-      });
-    }),
-  foodTip: publicProcedure
-    .input(
-      z.object({
-        id: z.number(),
-        title: z.string().min(1),
-        description: z.string().default(""),
-        url: z.string(),
-        type: z.string(),
-        createdAt: z.date(),
-        updatedAt: z.date(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.db.foodTips.update({
-        where: { id: input.id },
-        data: { ...input },
-      });
-    }),
-  healthTip: publicProcedure
-    .input(
-      z.object({
-        id: z.number(),
-        title: z.string().min(1),
-        description: z.string().default(""),
-        url: z.string(),
-        type: z.string(),
-        createdAt: z.date(),
-        updatedAt: z.date(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.db.healthTips.update({
-        where: { id: input.id },
-        data: { ...input },
-      });
-    }),
-  homeTip: publicProcedure
-    .input(
-      z.object({
-        id: z.number(),
-        title: z.string().min(1),
-        description: z.string().default(""),
-        url: z.string(),
-        type: z.string(),
-        createdAt: z.date(),
-        updatedAt: z.date(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.db.homeTips.update({
-        where: { id: input.id },
-        data: { ...input },
-      });
-    }),
-  petTip: publicProcedure
-    .input(
-      z.object({
-        id: z.number(),
-        title: z.string().min(1),
-        description: z.string().default(""),
-        url: z.string(),
-        type: z.string(),
-        createdAt: z.date(),
-        updatedAt: z.date(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.db.petTips.update({
-        where: { id: input.id },
-        data: { ...input },
-      });
-    }),
-  clothTip: publicProcedure
-    .input(
-      z.object({
-        id: z.number(),
-        title: z.string().min(1),
-        description: z.string().default(""),
-        url: z.string(),
-        type: z.string(),
-        createdAt: z.date(),
-        updatedAt: z.date(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.db.clothTips.update({
-        where: { id: input.id },
-        data: { ...input },
-      });
-    }),
-  plantTip: publicProcedure
-    .input(
-      z.object({
-        id: z.number(),
-        title: z.string().min(1),
-        description: z.string().default(""),
-        url: z.string(),
-        type: z.string(),
-        createdAt: z.date(),
-        updatedAt: z.date(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.db.plantTips.update({
-        where: { id: input.id },
-        data: { ...input },
-      });
-    }),
-  machineryTip: publicProcedure
-    .input(
-      z.object({
-        id: z.number(),
-        title: z.string().min(1),
-        description: z.string().default(""),
-        url: z.string(),
-        type: z.string(),
-        createdAt: z.date(),
-        updatedAt: z.date(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.db.machineryTips.update({
-        where: { id: input.id },
-        data: { ...input },
-      });
-    }),
-  rideTip: publicProcedure
-    .input(
-      z.object({
-        id: z.number(),
-        title: z.string().min(1),
-        description: z.string().default(""),
-        url: z.string(),
-        type: z.string(),
-        createdAt: z.date(),
-        updatedAt: z.date(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.db.rideTips.update({
-        where: { id: input.id },
-        data: { ...input },
-      });
-    }),
-  leisureTip: publicProcedure
-    .input(
-      z.object({
-        id: z.number(),
-        title: z.string().min(1),
-        description: z.string().default(""),
-        url: z.string(),
-        type: z.string(),
-        createdAt: z.date(),
-        updatedAt: z.date(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.db.leisureTips.update({
-        where: { id: input.id },
-        data: { ...input },
-      });
-    }),
-  energyTip: publicProcedure
-    .input(
-      z.object({
-        id: z.number(),
-        title: z.string().min(1),
-        description: z.string().default(""),
-        url: z.string(),
-        type: z.string(),
-        createdAt: z.date(),
-        updatedAt: z.date(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.db.energyTips.update({
-        where: { id: input.id },
-        data: { ...input },
-      });
-    }),
-  video: publicProcedure
-    .input(
-      z.object({
-        id: z.number(),
-        title: z.string().min(1),
-        description: z.string().default(""),
-        url: z.string(),
-        type: z.string(),
-        createdAt: z.date(),
-        updatedAt: z.date(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.db.videos.update({
-        where: { id: input.id },
-        data: { ...input },
-      });
-    }),
-  coin: publicProcedure
+  beautyTip: createTipUpdateProcedure("beautyTips", "Beauty tip"),
+  equipmentTip: createTipUpdateProcedure("equipmentTips", "Equipment tip"),
+  foodTip: createTipUpdateProcedure("foodTips", "Food tip"),
+  healthTip: createTipUpdateProcedure("healthTips", "Health tip"),
+  homeTip: createTipUpdateProcedure("homeTips", "Home tip"),
+  petTip: createTipUpdateProcedure("petTips", "Pet tip"),
+  clothTip: createTipUpdateProcedure("clothTips", "Cloth tip"),
+  plantTip: createTipUpdateProcedure("plantTips", "Plant tip"),
+  machineryTip: createTipUpdateProcedure("machineryTips", "Machinery tip"),
+  rideTip: createTipUpdateProcedure("rideTips", "Ride tip"),
+  leisureTip: createTipUpdateProcedure("leisureTips", "Leisure tip"),
+  energyTip: createTipUpdateProcedure("energyTips", "Energy tip"),
+  video: createTipUpdateProcedure("videos", "Video"),
+  coin: protectedProcedure
     .input(
       z.object({
         id: z.number(),
         title: z.string().min(1),
         categoryId: z.number(),
-        description: z.string().default(''),
+        description: z.string().default(""),
         year: z.string(),
-        type: z.enum(['NEW', 'OLD','SPECIAL']),
+        type: z.enum(["NEW", "OLD", "SPECIAL"]),
         url: z.string(),
-        createdAt: z.date(),
-        updatedAt: z.date(),
+        isPublic: z.boolean().default(true),
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const { id, ...updateData } = input;
+      
+      // Check ownership
+      const existingCoin = await ctx.db.coins.findFirst({
+        where: {
+          id,
+          userId: ctx.user.id,
+        },
+      });
+
+      if (!existingCoin) {
+        throw new Error("Coin not found or you don't have permission to update it");
+      }
+
       return await ctx.db.coins.update({
-        where: { id: input.id },
-        data: { ...input },
+        where: { id },
+        data: updateData,
       });
     }),
   category: publicProcedure
@@ -266,9 +92,20 @@ export const updateRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const { id, ...updateData } = input;
+      
+      // Check if category exists
+      const existingCategory = await ctx.db.categories.findUnique({
+        where: { id },
+      });
+
+      if (!existingCategory) {
+        throw new Error("Category not found");
+      }
+
       return await ctx.db.categories.update({
-        where: { id: input.id },
-        data: { ...input },
+        where: { id },
+        data: updateData,
       });
     }),
 });

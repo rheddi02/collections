@@ -33,16 +33,10 @@ export interface State {
   setData: (data: State['data']) => void
   deleteId: number[]
   setDeleteId: (deleteId:number) => void
-  passcode: string
-  setPasscode: (passcode: State['passcode']) => void
-  passcodeModal: boolean
-  deleteCodeModal: boolean
-  deleteCode: boolean
-  setDeleteCode: (deleteCode: State['deleteCode']) => void
-  setPasscodeModal: (passcodeModal: State['passcodeModal']) => void
-  setDeleteCodeModal: (deleteCodeModal: State['deleteCodeModal']) => void
   isFetching: boolean
   setIsFetching: (isFetching: State['isFetching']) => void
+  credentialsModal: boolean
+  setCredentialsModal: (credentialsModal: State['credentialsModal']) => void
 }
 
 const createStore: StateCreator<State, [], [], State> = (set, get) => ({
@@ -72,8 +66,6 @@ const createStore: StateCreator<State, [], [], State> = (set, get) => ({
   },
   toastType: ToastTypes.DEFAULT,
   deleteId: [],
-  passcodeModal: false,
-  passcode: '',
   setIsAuth: (isAuth) => {
     set({ isAuth })
   },
@@ -108,20 +100,6 @@ const createStore: StateCreator<State, [], [], State> = (set, get) => ({
     if (get().isAuth) set({ modal });
     else set({ modal: false })
   },
-  setPasscodeModal: (passcodeModal) => {
-    set({ passcodeModal })
-  },
-  setPasscode: (passcode) => {
-    set({ passcode, isAuth: true })
-  },
-  deleteCode: false,
-  setDeleteCode: (deleteCode) => {
-    set({ deleteCode })
-  },
-  deleteCodeModal: false,
-  setDeleteCodeModal: (deleteCodeModal) => {
-    set({ deleteCodeModal })
-  },
   isFetching: false,
   setIsFetching: (isFetching) => {
     set({ isFetching })
@@ -129,6 +107,10 @@ const createStore: StateCreator<State, [], [], State> = (set, get) => ({
   isMe: false,
   setIsMe: (isMe) => {
     set({ isMe, isAuth: true })
+  },
+  credentialsModal: false,
+  setCredentialsModal: (credentialsModal) => {
+    set({ credentialsModal })
   }
 });
 

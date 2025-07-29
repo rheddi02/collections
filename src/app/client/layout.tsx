@@ -11,13 +11,13 @@ const Layout = ({ children }: { children: ReactNode }) => {
   const appStore = useAppStore()
   const router = useRouter()
   const handleChangeRole = () => {
-    if (appStore.passcode)
+    if (appStore.isAuth)
       router.push('/admin/dashboard')
-    else appStore.setPasscodeModal(true)
+    else appStore.setCredentialsModal(true)
   }
   return (
     <div>
-      <div className="flex w-full justify-between items-center p-5 shadow-lg">
+      <div className="flex w-full justify-between items-center p-5 shadow-lg sticky z-50 top-0 bg-white">
         <div>
           <Link href={"/"} className="font-bold">Colletions</Link>
         </div>
@@ -27,7 +27,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
         {children}
       </Suspense>
       <PageModal />
-      <div className="flex flex-col items-center justify-center gap-5 p-10 bg-gray-300">
+      <div className="flex flex-col items-center justify-center gap-5 p-10 bg-gray-300 mt-20">
         <div className="flex gap-3">
           <SocialIcon url="https://facebook.com/rheddi02" target='_blank'/>
           <SocialIcon url="https://www.instagram.com/rheddi02/" target='_blank'/>

@@ -9,6 +9,7 @@
 import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
+import jwt from "jsonwebtoken";
 
 import { db } from "~/server/db";
 
@@ -25,8 +26,45 @@ import { db } from "~/server/db";
  * @see https://trpc.io/docs/server/context
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
+  // Extract the authorization token from headers
+  const authorization = opts.headers.get("authorization");
+  const token = authorization?.replace("Bearer ", "");
+  
+  console.log("🔍 tRPC Context - Authorization header:", authorization ? "Present" : "Missing");
+  console.log("🔍 tRPC Context - Token:", token ? token.substring(0, 20) + "..." : "None");
+  
+  let user = null;
+  
+  if (token) {
+    try {
+      const jwtSecret = process.env.JWT_SECRET;
+      if (jwtSecret) {
+        const decoded = jwt.verify(token, jwtSecret) as {
+          userId: number;
+          username: string;
+          email: string;
+        };
+        
+        // Fetch user from database to ensure it still exists
+        user = await db.users.findUnique({
+          where: { id: decoded.userId },
+          select: {
+            id: true,
+            username: true,
+            email: true,
+            isVerified: true,
+          }
+        });
+      }
+    } catch (error) {
+      // Token is invalid, user remains null
+      console.log("Invalid token:", error);
+    }
+  }
+
   return {
     db,
+    user,
     ...opts,
   };
 };
@@ -81,3 +119,21 @@ export const createTRPCRouter = t.router;
  * are logged in.
  */
 export const publicProcedure = t.procedure;
+
+/**
+ * Protected (authenticated) procedure
+ *
+ * This procedure requires the user to be authenticated with a valid JWT token.
+ * It will throw an error if no user is found in the context.
+ */
+export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
+  if (!ctx.user) {
+    throw new Error("UNAUTHORIZED");
+  }
+  return next({
+    ctx: {
+      ...ctx,
+      user: ctx.user, // user is now guaranteed to be non-null
+    },
+  });
+});

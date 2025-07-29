@@ -1,28 +1,51 @@
 "use client";
-import Table from "./_components/table";
 import useAppStore from "~/store/app.store";
 import type { Row } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 import CustomDialog from "~/app/_components/dialog";
-;
 import type { CommonOutputType } from "~/server/api/client/types";
 import { Button } from "~/components/ui/button";
 import { HamburgerMenuIcon, PlusIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { api } from "~/trpc/react";
-import { usePathname } from "next/navigation";
 import { ToastTypes } from "~/utils/types";
 import PageTable from "~/app/admin/_components/table/page-table";
 
-const Page = () => {
-  const path = usePathname();
-  const [pageTitle] = useState(path.split("/")[2]);
-  const [deleteRow, setDeleteRow] = useState(0);
+// Map tip types to their API endpoints
+const TIP_TYPE_MAP = {
+  beauty: 'beautyTip',
+  equipment: 'equipmentTip',
+  food: 'foodTip',
+  health: 'healthTip',
+  home: 'homeTip',
+  pet: 'petTip',
+  cloth: 'clothTip',
+  plant: 'plantTip',
+  machinery: 'machineryTip',
+  ride: 'rideTip',
+  leisure: 'leisureTip',
+  energy: 'energyTip',
+} as const;
+
+type TipType = keyof typeof TIP_TYPE_MAP;
+
+interface PageProps {
+  params: {
+    type: TipType;
+  };
+}
+
+const TipsPage = ({ params }: PageProps) => {
+  const { type } = params;
+  const pageTitle = type;
+  const apiEndpoint = TIP_TYPE_MAP[type];
+  
   const utils = api.useUtils();
   const [form, setForm] = useState({
     title: "Create New",
     description: "Add new data",
     label: "Create",
   });
+
   const {
     modal,
     setModal,
@@ -34,7 +57,6 @@ const Page = () => {
     setOpenMenu,
     setToastType,
     setDeleteId,
-setDeleteCode
   } = useAppStore();
 
   const {
@@ -42,17 +64,17 @@ setDeleteCode
     page,
     perPage,
     setPageCount,
-    deleteCode,
-    setDeleteCodeModal,
   } = useAppStore();
+
+  // Dynamic API calls based on tip type
   const {
     data: data,
     isFetched,
     isFetching,
-  } = api.list.healthTip.useQuery({ page, perPage });
+  } = (api.list as any)[apiEndpoint].useQuery({ page, perPage });
 
   const { mutate: createData, isPending: pendingCreate } =
-    api.create.healthTip.useMutation({
+    (api.create as any)[apiEndpoint].useMutation({
       onSuccess: async () => {
         await invalidateList();
       },
@@ -64,7 +86,7 @@ setDeleteCode
     });
 
   const { mutate: updateData, isPending: pendingUpdate } =
-    api.update.healthTip.useMutation({
+    (api.update as any)[apiEndpoint].useMutation({
       onSuccess: async () => {
         await invalidateList();
       },
@@ -76,7 +98,7 @@ setDeleteCode
     });
 
   const { mutate: deleteData, isPending: pendingDelete } =
-    api.delete.healthTip.useMutation({
+    (api.delete as any)[apiEndpoint].useMutation({
       onSuccess: async () => {
         await invalidateList();
       },
@@ -84,7 +106,6 @@ setDeleteCode
         setModal(false);
         setToastType(ToastTypes.DELETED);
         setDeleteId(0);
-setDeleteCode(false)
       },
     });
 
@@ -99,10 +120,6 @@ setDeleteCode(false)
   }, [pendingUpdate, pendingDelete, pendingCreate]);
 
   useEffect(() => {
-    if (deleteCode) onDelete();
-  }, [deleteCode]);
-
-  useEffect(() => {
     if (!modal)
       setForm({
         title: "Create New",
@@ -112,8 +129,9 @@ setDeleteCode(false)
   }, [modal]);
 
   const invalidateList = async () => {
-    await utils.list.healthTip.invalidate();
+    await (utils.list as any)[apiEndpoint].invalidate();
   };
+
   const handleSave = () => {
     createData({
       ...formData,
@@ -121,6 +139,7 @@ setDeleteCode(false)
       type: formData.type || "general",
     });
   };
+
   const handleUpdate = () => {
     const tmpForm = formData as CommonOutputType;
     updateData(tmpForm);
@@ -138,16 +157,9 @@ setDeleteCode(false)
     setModal(true);
   };
 
-  const onDeleteCheck = (row: Row<CommonOutputType>) => {
-    setDeleteRow(row.original.id);
-    if ((process.env.NEXT_PUBLIC_DELETE as unknown as string) == "true")
-      setDeleteCodeModal(true);
-    else onDelete();
-  };
-  // const onDelete = (row: Row<CommonOutputType>) => {
-  const onDelete = () => {
-    setDeleteId(deleteRow);
-    deleteData(deleteRow);
+  const onDelete = (row: Row<CommonOutputType>) => {
+    setDeleteId(row.original.id);
+    deleteData(row.original.id);
   };
 
   return (
@@ -173,10 +185,10 @@ setDeleteCode(false)
           </Button>
         </div>
         <hr />
-        <PageTable {...{ onEdit, onDelete: onDeleteCheck, loading: isFetching }} />
+        <PageTable {...{ onEdit, onDelete, loading: isFetching }} />
       </div>
     </>
   );
 };
 
-export default Page;
+export default TipsPage;

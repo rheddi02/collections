@@ -9,6 +9,7 @@ export type CommonInputType = {
   description: string;
   type: string;
   url: string;
+  isPublic?: boolean;
 }
 
 export type CommonOutputType = {
@@ -19,6 +20,8 @@ export type CommonOutputType = {
   url: string;
   createdAt: Date;
   updatedAt: Date;
+  isPublic: boolean;
+  userId: number;
 }
 
 export type formData =

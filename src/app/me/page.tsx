@@ -79,7 +79,6 @@ const Page = () => {
   }, [appStore.modal]);
 
   useEffect(() => {
-    appStore.setPasscodeModal(false);
     if (!appStore.isMe) redirect("/client");
   }, []);
 

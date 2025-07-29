@@ -111,17 +111,18 @@ const Nav = ({
   isChild?: boolean;
   handleReload?: (segment: string | undefined) => Promise<void>;
 }) => {
-  const { openMenu, isLoading } = useAppStore((state) => ({
+  const { openMenu, isLoading, setIsAuth, setData } = useAppStore((state) => ({
     openMenu: state.openMenu,
     isLoading: state.isLoading,
+    setIsAuth: state.setIsAuth,
+    setData: state.setData,
   }));
   const router = useRouter();
   const segments = useSelectedLayoutSegments();
   const segment = segments.pop();
-  const appStore = useAppStore()
 
   const handleRoute = (route: NavigationType) => {
-    appStore.setData([])
+    setData([])
     if (route.subRoute.length) {
       router.push(route.subRoute[0]!.route);
     } else {
@@ -133,9 +134,14 @@ const Nav = ({
     if (handleReload) await handleReload(segment);
   };
 
-  const removePasscode = () => {
-    localStorage.removeItem("passcode");
-    router.push("/client");
+  const logout = () => {
+    // Clear credentials authentication
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
+    setIsAuth(false);
+    
+    // Force a hard redirect to ensure clean state
+    window.location.href = "/client";
   };
 
   return (
@@ -191,7 +197,7 @@ const Nav = ({
           "bg-gray-300 font-semibold text-gray-800",
           "absolute bottom-5 w-full cursor-pointer",
         )}
-        onClick={removePasscode}
+        onClick={logout}
       >
         <PinLeftIcon />
         <Label className="select-none group-hover:font-bold">Logout</Label>

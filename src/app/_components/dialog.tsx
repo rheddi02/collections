@@ -31,24 +31,33 @@ type Props = {
 };
 const CustomDialog = ({ title, description, label, action }: Props) => {
   const [lists] = useState(typeLists);
-  const { resetForm, modal, setModal, isLoading, actionable, formData, setFormData } =
-    useAppStore((state) => ({
-      resetForm: state.resetForm,
-      modal: state.modal,
-      setModal: state.setModal,
-      isLoading: state.isLoading,
-      actionable: state.actionable,
-      formData: state.formData,
-      setFormData: state.setFormData,
-    }));
+  const {
+    resetForm,
+    modal,
+    setModal,
+    isLoading,
+    actionable,
+    formData,
+    setFormData,
+  } = useAppStore((state) => ({
+    resetForm: state.resetForm,
+    modal: state.modal,
+    setModal: state.setModal,
+    isLoading: state.isLoading,
+    actionable: state.actionable,
+    formData: state.formData,
+    setFormData: state.setFormData,
+  }));
 
-    useEffect( () => {
-      if (!modal) resetForm()
-    },[modal])
+  useEffect(() => {
+    if (!modal) resetForm();
+  }, [modal]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const key = e.target.id
-    const value = e.target.value
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const key = e.target.id;
+    const value = e.target.value;
 
     setFormData({
       ...formData,
@@ -65,58 +74,87 @@ const CustomDialog = ({ title, description, label, action }: Props) => {
 
   return (
     <Dialog onOpenChange={setModal} open={modal}>
-      <DialogContent className="sm:max-w-[425px]" >
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader className="text-left">
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid gap-2">
-            <Input
-              id="title"
-              placeholder="Title"
-              value={formData.title}
-              onChange={handleInputChange}
-            />
-            <Input
-              id="url"
-              placeholder="Url"
-              value={formData.url}
-              onChange={handleInputChange}
-            />
-            <Textarea
-              id="description"
-              placeholder="Description"
-              value={formData.description}
-              onChange={handleInputChange}
-            />
-            <Select
-              onValueChange={handleOptionChange}
-              defaultValue={formData.type}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select type" />
-              </SelectTrigger>
-              <SelectContent id="type" className="capitalize">
-                {lists.sort( (a,b) => a.label.localeCompare(b.label)).map((list) => (
-                  <SelectItem key={list.value} value={list.value}>
-                    {list.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            action();
+          }}
+        >
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Input
+                id="title"
+                placeholder="Title"
+                value={formData.title}
+                onChange={handleInputChange}
+              />
+              <Input
+                id="url"
+                placeholder="Url"
+                value={formData.url}
+                onChange={handleInputChange}
+              />
+              <Textarea
+                id="description"
+                placeholder="Description"
+                value={formData.description}
+                onChange={handleInputChange}
+              />
+              <Select
+                onValueChange={handleOptionChange}
+                defaultValue={formData.type}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent id="type" className="capitalize">
+                  {lists
+                    .sort((a, b) => a.label.localeCompare(b.label))
+                    .map((list) => (
+                      <SelectItem key={list.value} value={list.value}>
+                        {list.label}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+              <Select
+                onValueChange={(value) =>
+                  setFormData({
+                    ...formData,
+                    isPublic: value === "public",
+                  })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Publish" />
+                </SelectTrigger>
+                <SelectContent id="isPublic" className="capitalize">
+                  {['public', 'private'].map((value) => (
+                      <SelectItem key={value} value={value}>
+                        {value}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-        </div>
-        <DialogFooter>
-          <Button
-            disabled={isLoading || !actionable}
-            onClick={action}
-            className="flex items-center gap-2 capitalize"
-          >
-            {isLoading && <ReloadIcon className="animate-spin" />}
-            {label}
-          </Button>
-        </DialogFooter>
+          <DialogFooter>
+            <Button
+              disabled={isLoading || !actionable}
+              // onClick={action}
+              type="submit"
+              className="flex items-center gap-2 capitalize"
+            >
+              {isLoading && <ReloadIcon className="animate-spin" />}
+              {label}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

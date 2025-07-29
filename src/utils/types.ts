@@ -3,6 +3,7 @@ export type NavigationType = {
   route: string
   image?: string
   subRoute: NavigationType[]
+  description?: string
 }
 export type TypeListType = {
   label: string

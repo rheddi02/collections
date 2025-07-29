@@ -1,137 +1,60 @@
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+
+// Generic delete function for tips with userId ownership
+const createTipDeleteProcedure = (tableName: string, entityName: string) =>
+  protectedProcedure
+    .input(z.number())
+    .mutation(async ({ ctx, input }) => {
+      const existingRecord = await (ctx.db as any)[tableName].findFirst({
+        where: {
+          id: input,
+          userId: ctx.user.id,
+        },
+      });
+
+      if (!existingRecord) {
+        throw new Error(`${entityName} not found or you don't have permission to delete it`);
+      }
+
+      return await (ctx.db as any)[tableName].delete({
+        where: {
+          id: input,
+        },
+      });
+    });
 
 export const deleteRouter = createTRPCRouter({
-  beautyTip: publicProcedure
+  beautyTip: createTipDeleteProcedure("beautyTips", "Beauty tip"),
+  equipmentTip: createTipDeleteProcedure("equipmentTips", "Equipment tip"),
+  foodTip: createTipDeleteProcedure("foodTips", "Food tip"),
+  healthTip: createTipDeleteProcedure("healthTips", "Health tip"),
+  homeTip: createTipDeleteProcedure("homeTips", "Home tip"),
+  petTip: createTipDeleteProcedure("petTips", "Pet tip"),
+  clothTip: createTipDeleteProcedure("clothTips", "Cloth tip"),
+  plantTip: createTipDeleteProcedure("plantTips", "Plant tip"),
+  machineryTip: createTipDeleteProcedure("machineryTips", "Machinery tip"),
+  rideTip: createTipDeleteProcedure("rideTips", "Ride tip"),
+  leisureTip: createTipDeleteProcedure("leisureTips", "Leisure tip"),
+  energyTip: createTipDeleteProcedure("energyTips", "Energy tip"),
+  video: createTipDeleteProcedure("videos", "Video"),
+  coin: createTipDeleteProcedure("coins", "Coin"),
+  category: protectedProcedure
     .input(z.number())
     .mutation(async ({ ctx, input }) => {
-      return await ctx.db.beautyTips.delete({
+      // Categories don't have userId, so we might want to restrict this to admin users only
+      // For now, let's just check if the category exists and allow any authenticated user to delete
+      const existingCategory = await ctx.db.categories.findUnique({
         where: {
           id: input,
         },
       });
-    }),
-  equipmentTip: publicProcedure
-    .input(z.number())
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.db.equipmentTips.delete({
-        where: {
-          id: input,
-        },
-      });
-    }),
-  foodTip: publicProcedure
-    .input(z.number())
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.db.foodTips.delete({
-        where: {
-          id: input,
-        },
-      });
-    }),
-  healthTip: publicProcedure
-    .input(z.number())
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.db.healthTips.delete({
-        where: {
-          id: input,
-        },
-      });
-    }),
-  homeTip: publicProcedure
-    .input(z.number())
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.db.homeTips.delete({
-        where: {
-          id: input,
-        },
-      });
-    }),
-  petTip: publicProcedure
-    .input(z.number())
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.db.petTips.delete({
-        where: {
-          id: input,
-        },
-      });
-    }),
-  clothTip: publicProcedure
-    .input(z.number())
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.db.clothTips.delete({
-        where: {
-          id: input,
-        },
-      });
-    }),
-  plantTip: publicProcedure
-    .input(z.number())
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.db.plantTips.delete({
-        where: {
-          id: input,
-        },
-      });
-    }),
-  machineryTip: publicProcedure
-    .input(z.number())
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.db.machineryTips.delete({
-        where: {
-          id: input,
-        },
-      });
-    }),
-  rideTip: publicProcedure
-    .input(z.number())
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.db.rideTips.delete({
-        where: {
-          id: input,
-        },
-      });
-    }),
-  leisureTip: publicProcedure
-    .input(z.number())
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.db.leisureTips.delete({
-        where: {
-          id: input,
-        },
-      });
-    }),
-  energyTip: publicProcedure
-    .input(z.number())
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.db.energyTips.delete({
-        where: {
-          id: input,
-        },
-      });
-    }),
-  video: publicProcedure
-    .input(z.number())
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.db.videos.delete({
-        where: {
-          id: input,
-        },
-      });
-    }),
-  coin: publicProcedure
-    .input(z.number())
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.db.coins.delete({
-        where: {
-          id: input,
-        },
-      });
-    }),
-  category: publicProcedure
-    .input(z.number())
-    .mutation(async ({ ctx, input }) => {
+
+      if (!existingCategory) {
+        throw new Error("Category not found");
+      }
+
       return await ctx.db.categories.delete({
         where: {
           id: input,

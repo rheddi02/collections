@@ -51,9 +51,19 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
         unstable_httpBatchStreamLink({
           transformer: SuperJSON,
           url: getBaseUrl() + "/api/trpc",
-          headers: () => {
-            const headers = new Headers();
-            headers.set("x-trpc-source", "nextjs-react");
+          headers() {
+            const headers: Record<string, string> = {
+              "x-trpc-source": "nextjs-react",
+            };
+            
+            // Add JWT token if available (this gets called on every request)
+            if (typeof window !== "undefined") {
+              const token = localStorage.getItem("authToken");
+              if (token) {
+                headers["authorization"] = `Bearer ${token}`;
+              }
+            }
+            
             return headers;
           },
         }),
