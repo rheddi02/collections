@@ -6,6 +6,7 @@ import { TRPCReactProvider } from "~/trpc/react";
 import CredentialsLogin from "./_components/credentials-login";
 import { Toaster } from "~/components/ui/toaster";
 import useAppStore from "~/store/app.store";
+import { AuthProvider } from "~/contexts/AuthContext";
 
 export default function RootLayout({
   children,
@@ -24,14 +25,16 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
       <body>
-        <TRPCReactProvider>
-          {children}
-          <CredentialsLogin 
-            isOpen={credentialsModal} 
-            onClose={handleClose} 
-          />
-          <Toaster />
-        </TRPCReactProvider>
+        <AuthProvider>
+          <TRPCReactProvider>
+            {children}
+            <CredentialsLogin 
+              isOpen={credentialsModal} 
+              onClose={handleClose} 
+            />
+            <Toaster />
+          </TRPCReactProvider>
+        </AuthProvider>
       </body>
     </html>
   );

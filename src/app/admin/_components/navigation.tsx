@@ -14,6 +14,7 @@ import usePaginationStore from "~/store/pagination.store";
 import { api } from "~/trpc/react";
 import { NavigationLists } from "~/utils/navigations";
 import type { NavigationType } from "~/utils/types";
+import { useAuth } from "~/contexts/AuthContext";
 
 export default function Navigation() {
   const [navList] = useState<NavigationType[]>(NavigationLists);
@@ -120,6 +121,7 @@ const Nav = ({
   const router = useRouter();
   const segments = useSelectedLayoutSegments();
   const segment = segments.pop();
+  const { logout: authLogout } = useAuth();
 
   const handleRoute = (route: NavigationType) => {
     setData([])
@@ -135,13 +137,7 @@ const Nav = ({
   };
 
   const logout = () => {
-    // Clear credentials authentication
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("user");
-    setIsAuth(false);
-    
-    // Force a hard redirect to ensure clean state
-    window.location.href = "/client";
+    authLogout();
   };
 
   return (

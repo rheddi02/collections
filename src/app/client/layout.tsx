@@ -6,12 +6,15 @@ import PageModal from "./_components/page-modal";
 import useAppStore from "~/store/app.store";
 import { useRouter } from "next/navigation";
 import { SocialIcon } from "react-social-icons";
+import { useAuth } from "~/contexts/AuthContext";
 
 const Layout = ({ children }: { children: ReactNode }) => {
   const appStore = useAppStore()
   const router = useRouter()
+  const { isAuthenticated } = useAuth();
+  
   const handleChangeRole = () => {
-    if (appStore.isAuth)
+    if (isAuthenticated)
       router.push('/admin/dashboard')
     else appStore.setCredentialsModal(true)
   }
