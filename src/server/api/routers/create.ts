@@ -1,11 +1,11 @@
 import { Type } from "@prisma/client";
 import { z } from "zod";
 
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, authenticatedProcedure, publicProcedure } from "~/server/api/trpc";
 
-// Generic create function for tips with standard fields
+// Generic create function for tips - NOW WITH PROPER AUTH SECURITY
 const createTipCreateProcedure = (tableName: string) =>
-  protectedProcedure
+  authenticatedProcedure
     .input(
       z.object({
         title: z.string().min(1),
@@ -16,10 +16,11 @@ const createTipCreateProcedure = (tableName: string) =>
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      // SECURITY: Only authenticated users can create, data is linked to their user ID
       return await (ctx.db as any)[tableName].create({
         data: {
           ...input,
-          userId: ctx.user.id,
+          userId: parseInt(ctx.user.id), // Use authenticated user's ID
         },
       });
     });
@@ -38,7 +39,7 @@ export const createRouter = createTRPCRouter({
   leisureTip: createTipCreateProcedure("leisureTips"),
   energyTip: createTipCreateProcedure("energyTips"),
   video: createTipCreateProcedure("videos"),
-  coin: protectedProcedure
+  coin: authenticatedProcedure
     .input(
       z.object({
         title: z.string().min(1),
@@ -51,8 +52,9 @@ export const createRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      // SECURITY: Only authenticated users can create coins
       return await ctx.db.coins.create({
-        data: { ...input, userId: ctx.user.id },
+        data: { ...input, userId: parseInt(ctx.user.id) },
       });
     }),
   category: publicProcedure

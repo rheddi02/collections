@@ -2,43 +2,38 @@ import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
+// Schema for pagination
+const paginationInput = z.object({
+  page: z.number().min(1).default(1),
+  perPage: z.number().min(1).max(100).default(10),
+});
+
 // Generic list function for tips
 const createTipListProcedure = (tableName: string) =>
   publicProcedure
-    .input(
-      z.object({
-        page: z.number().optional(),
-        perPage: z.number().default(20),
-      }),
-    )
+    .input(paginationInput)
     .query(async ({ ctx, input }) => {
-      const whereClause = {
-        OR: [
-          { userId: ctx.user?.id }, // All data from logged-in user
-          { isPublic: true }, // All public data from any user
-        ],
-      };
+      const { page, perPage } = input;
+      const skip = (page - 1) * perPage;
 
-      const total = await (ctx.db as any)[tableName].count({
-        where: whereClause,
-      });
-
-      if (input.page) {
-        const data = await (ctx.db as any)[tableName].findMany({
-          where: whereClause,
-          skip: (input.page - 1) * input.perPage,
-          take: input.perPage,
+      const [data, total] = await Promise.all([
+        (ctx.db as any)[tableName].findMany({
+          skip,
+          take: perPage,
           orderBy: {
-            createdAt: "desc",
+            id: 'desc',
           },
-        });
-        return { data, total };
-      } else {
-        const data = await (ctx.db as any)[tableName].findMany({
-          where: whereClause,
-        });
-        return { data, total };
-      }
+        }),
+        (ctx.db as any)[tableName].count(),
+      ]);
+
+      return {
+        data,
+        total,
+        page,
+        perPage,
+        totalPages: Math.ceil(total / perPage),
+      };
     });
 
 export const listRouter = createTRPCRouter({
@@ -50,112 +45,62 @@ export const listRouter = createTRPCRouter({
   petTip: createTipListProcedure("petTips"),
   clothTip: createTipListProcedure("clothTips"),
   plantTip: createTipListProcedure("plantTips"),
+  machineryTip: createTipListProcedure("machineryTips"),
   rideTip: createTipListProcedure("rideTips"),
   leisureTip: createTipListProcedure("leisureTips"),
   energyTip: createTipListProcedure("energyTips"),
   video: createTipListProcedure("videos"),
-  machineryTip: publicProcedure
-    .input(
-      z.object({
-        page: z.number().optional(),
-        perPage: z.number().default(20),
-        filters: z.object({
-          search: z.string(),
-        }).optional(),
-      }),
-    )
-    .query(async ({ ctx, input }) => {
-      let whereClause: any = {
-        OR: [
-          { userId: ctx.user?.id }, // All data from logged-in user
-          { isPublic: true }, // All public data from any user
-        ],
-      };
-
-      // Add search filter if provided
-      if (input?.filters?.search?.trim()) {
-        whereClause = {
-          AND: [
-            {
-              OR: [
-                { userId: ctx.user?.id },
-                { isPublic: true },
-              ],
-            },
-            {
-              description: {
-                contains: input.filters.search,
-              },
-            },
-          ],
-        };
-      }
-
-      const total = await ctx.db.machineryTips.count({
-        where: whereClause,
-      });
-
-      if (input.page) {
-        const data = await ctx.db.machineryTips.findMany({
-          where: whereClause,
-          skip: (input.page - 1) * input.perPage,
-          take: input.perPage,
-          orderBy: {
-            createdAt: "desc",
-          },
-        });
-        return { data, total };
-      } else {
-        const data = await ctx.db.machineryTips.findMany({
-          where: whereClause,
-        });
-        return { data, total };
-      }
-    }),
   coin: publicProcedure
-    .input(
-      z.object({
-        page: z.number().optional(),
-        perPage: z.number().default(20),
-      }),
-    )
+    .input(paginationInput)
     .query(async ({ ctx, input }) => {
-      const total = await ctx.db.coins.count();
-      if (input.page) {
-        const data = await ctx.db.coins.findMany({
-          skip: (input.page - 1) * input.perPage,
-          take: input.perPage,
+      const { page, perPage } = input;
+      const skip = (page - 1) * perPage;
+
+      const [data, total] = await Promise.all([
+        ctx.db.coins.findMany({
+          skip,
+          take: perPage,
           orderBy: {
-            createdAt: "desc",
+            id: 'desc',
           },
-        });
-        return { data, total };
-      } else {
-        const data = await ctx.db.coins.findMany();
-        return { data, total };
-      }
+          include: {
+            categories: true,
+          },
+        }),
+        ctx.db.coins.count(),
+      ]);
+
+      return {
+        data,
+        total,
+        page,
+        perPage,
+        totalPages: Math.ceil(total / perPage),
+      };
     }),
   category: publicProcedure
-    .input(
-      z.object({
-        page: z.number().optional(),
-        perPage: z.number().default(20),
-      }),
-    )
+    .input(paginationInput)
     .query(async ({ ctx, input }) => {
-      const total = await ctx.db.categories.count();
-      if (input.page) {
-        const data = await ctx.db.categories.findMany({
-          skip: (input.page - 1) * input.perPage,
-          take: input.perPage,
+      const { page, perPage } = input;
+      const skip = (page - 1) * perPage;
+
+      const [data, total] = await Promise.all([
+        ctx.db.categories.findMany({
+          skip,
+          take: perPage,
           orderBy: {
-            title: "asc",
+            id: 'desc',
           },
-        });
-        return { data, total };
-      } else {
-        const data = await ctx.db.categories.findMany();
-        return { data, total };
-      }
+        }),
+        ctx.db.categories.count(),
+      ]);
+
+      return {
+        data,
+        total,
+        page,
+        perPage,
+        totalPages: Math.ceil(total / perPage),
+      };
     }),
 });

@@ -56,6 +56,9 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
               "x-trpc-source": "nextjs-react",
             };
             
+            // NextAuth handles authentication automatically via cookies/sessions
+            // No need for manual header management!
+            
             return headers;
           },
         }),

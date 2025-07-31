@@ -1,35 +1,59 @@
 'use client'
+import { useMemo } from 'react'
 import CardTemplate from '~/app/admin/_components/card'
 import { api } from '~/trpc/react'
 
 const Dashboard = () => {
-  const { data: beautyTip, isFetching: beautyTipFetching } = api.count.beautyTip.useQuery()
-  const { data: healthTip, isFetching: healthTipFetching } = api.count.healthTip.useQuery()
-  const { data: equipmentTip, isFetching: equipmentTipFetching } = api.count.equipmentTip.useQuery()
-  const { data: homeTip, isFetching: homeTipFetching } = api.count.homeTip.useQuery()
-  const { data: foodTip, isFetching: foodTipFetching } = api.count.foodTip.useQuery()
-  const { data: petTip, isFetching: petTipFetching } = api.count.petTip.useQuery()
-  const { data: clothTip, isFetching: clothTipFetching } = api.count.clothTip.useQuery()
-  const { data: plantTip, isFetching: plantTipFetching } = api.count.plantTip.useQuery()
-  const { data: machineryTip, isFetching: machineryTipFetching } = api.count.machineryTip.useQuery()
-  const { data: rideTip, isFetching: rideTipFetching } = api.count.rideTip.useQuery()
-  const { data: leisureTip, isFetching: leisureTipFetching } = api.count.leisureTip.useQuery()
-  const { data: energyTip, isFetching: energyTipFetching } = api.count.energyTip.useQuery()
+  // NextAuth handles authentication automatically via server-side sessions
+  const { data: counts, isFetching, error } = api.count.all.useQuery(
+    undefined, // No input needed - user context comes from NextAuth session
+    {
+      staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+      refetchOnWindowFocus: false, // Don't refetch on window focus
+    }
+  )
+
+  // Debug: Test NextAuth server-side authentication
+  const { data: authCheck } = api.debug.checkAuth.useQuery()
+
+  console.log('🔍 NextAuth server-side auth check:', authCheck)
+
+  // Memoized card configuration to avoid recreating on every render
+  const cardConfigs = useMemo(() => [
+    { key: 'healthTip', label: 'health', url: 'tips/health' },
+    { key: 'beautyTip', label: 'beauty', url: 'tips/beauty' },
+    { key: 'equipmentTip', label: 'equipment', url: 'tips/equipment' },
+    { key: 'homeTip', label: 'home', url: 'tips/home' },
+    { key: 'foodTip', label: 'food', url: 'tips/food' },
+    { key: 'petTip', label: 'pet', url: 'tips/pet' },
+    { key: 'clothTip', label: 'cloth', url: 'tips/cloth' },
+    { key: 'plantTip', label: 'plant', url: 'tips/plant' },
+    { key: 'machineryTip', label: 'machinery', url: 'tips/machinery' },
+    { key: 'rideTip', label: 'ride', url: 'tips/ride' },
+    { key: 'leisureTip', label: 'leisure', url: 'tips/leisure' },
+    { key: 'energyTip', label: 'energy', url: 'tips/energy' },
+  ] as const, [])
+
+  if (error) {
+    return (
+      <div className="p-4 text-center text-red-600">
+        <p>Failed to load dashboard data</p>
+        <p className="text-sm text-gray-500">{error.message}</p>
+      </div>
+    )
+  }
 
   return (
-    <div className='grid sm:grid-cols-3 gap-2'>
-      <CardTemplate {...{fetching: healthTipFetching, count: healthTip ?? 0, label:'health'}} url='health'/>
-      <CardTemplate {...{fetching: beautyTipFetching, count: beautyTip ?? 0, label:'beauty'}} url='beauty'/>
-      <CardTemplate {...{fetching: equipmentTipFetching, count: equipmentTip ?? 0, label:'equipment'}} url='equipment'/>
-      <CardTemplate {...{fetching: homeTipFetching, count: homeTip ?? 0, label:'home'}} url='home'/>
-      <CardTemplate {...{fetching: foodTipFetching, count: foodTip ?? 0, label:'food'}} url='food'/>
-      <CardTemplate {...{fetching: petTipFetching, count: petTip ?? 0, label:'pet'}} url='pet'/>
-      <CardTemplate {...{fetching: clothTipFetching, count: clothTip ?? 0, label:'cloth'}} url='cloth'/>
-      <CardTemplate {...{fetching: plantTipFetching, count: plantTip ?? 0, label:'plant'}} url='plant'/>
-      <CardTemplate {...{fetching: machineryTipFetching, count: machineryTip ?? 0, label:'machinery'}} url='machinery'/>
-      <CardTemplate {...{fetching: rideTipFetching, count: rideTip ?? 0, label:'ride'}} url='ride'/>
-      <CardTemplate {...{fetching: leisureTipFetching, count: leisureTip ?? 0, label:'leisure'}} url='leisure'/>
-      <CardTemplate {...{fetching: energyTipFetching, count: energyTip ?? 0, label:'energy'}} url='energy'/>
+    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
+      {cardConfigs.map(({ key, label, url }) => (
+        <CardTemplate
+          key={key}
+          fetching={isFetching}
+          count={counts?.[key] ?? 0}
+          label={label}
+          url={url}
+        />
+      ))}
     </div>
   )
 }

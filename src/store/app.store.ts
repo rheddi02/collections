@@ -15,12 +15,10 @@ export interface State {
   setIsMe: (isMe: State['isMe']) => void
   modal: boolean;
   isLoading: boolean
-  isAuth: boolean
   actionable: boolean
   formData: formData
   formDataDefault: State['formData']
   toastType: ToastTypes
-  setIsAuth: (isAuth: State['isAuth']) => void
   setToastType: (toastType: State['toastType']) => void
   setFormData: (formData: State['formData']) => void
   resetForm: () => void
@@ -48,7 +46,6 @@ const createStore: StateCreator<State, [], [], State> = (set, get) => ({
   },
   data: [],
   modal: false,
-  isAuth: false,
   openMenu: true,
   isLoading: false,
   actionable: false,
@@ -66,9 +63,6 @@ const createStore: StateCreator<State, [], [], State> = (set, get) => ({
   },
   toastType: ToastTypes.DEFAULT,
   deleteId: [],
-  setIsAuth: (isAuth) => {
-    set({ isAuth })
-  },
   setDeleteId: (deleteId) => {
     set({ deleteId: [...get().deleteId, deleteId] })
   },
@@ -97,8 +91,7 @@ const createStore: StateCreator<State, [], [], State> = (set, get) => ({
     set({ isLoading })
   },
   setModal: (modal) => {
-    if (get().isAuth) set({ modal });
-    else set({ modal: false })
+    set({ modal });
   },
   isFetching: false,
   setIsFetching: (isFetching) => {
@@ -106,7 +99,7 @@ const createStore: StateCreator<State, [], [], State> = (set, get) => ({
   },
   isMe: false,
   setIsMe: (isMe) => {
-    set({ isMe, isAuth: true })
+    set({ isMe })
   },
   credentialsModal: false,
   setCredentialsModal: (credentialsModal) => {

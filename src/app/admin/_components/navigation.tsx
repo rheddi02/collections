@@ -14,7 +14,7 @@ import usePaginationStore from "~/store/pagination.store";
 import { api } from "~/trpc/react";
 import { NavigationLists } from "~/utils/navigations";
 import type { NavigationType } from "~/utils/types";
-import { useAuth } from "~/contexts/AuthContext";
+import { signOut } from "next-auth/react";
 
 export default function Navigation() {
   const [navList] = useState<NavigationType[]>(NavigationLists);
@@ -112,16 +112,14 @@ const Nav = ({
   isChild?: boolean;
   handleReload?: (segment: string | undefined) => Promise<void>;
 }) => {
-  const { openMenu, isLoading, setIsAuth, setData } = useAppStore((state) => ({
+  const { openMenu, isLoading, setData } = useAppStore((state) => ({
     openMenu: state.openMenu,
     isLoading: state.isLoading,
-    setIsAuth: state.setIsAuth,
     setData: state.setData,
   }));
   const router = useRouter();
   const segments = useSelectedLayoutSegments();
   const segment = segments.pop();
-  const { logout: authLogout } = useAuth();
 
   const handleRoute = (route: NavigationType) => {
     setData([])
@@ -137,7 +135,7 @@ const Nav = ({
   };
 
   const logout = () => {
-    authLogout();
+    signOut({ callbackUrl: '/client' });
   };
 
   return (

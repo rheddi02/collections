@@ -1,21 +1,21 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useAuth } from "~/contexts/AuthContext";
+import { useSession } from "next-auth/react";
 
 export default function Home() {
   const router = useRouter();
-  const { isAuthenticated, isLoading } = useAuth();
+  const { data: session, status } = useSession();
 
   useEffect(() => {
-    if (!isLoading) {
-      if (isAuthenticated) {
+    if (status !== "loading") {
+      if (session) {
         router.push("/admin/dashboard");
       } else {
         router.push("/client");
       }
     }
-  }, [isAuthenticated, isLoading, router]);
+  }, [session, status, router]);
 
   // Show loading state while checking auth
   return (

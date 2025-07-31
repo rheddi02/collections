@@ -1,27 +1,28 @@
 import { z } from "zod";
 
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, authenticatedProcedure, publicProcedure } from "~/server/api/trpc";
 
-// Generic delete function for tips with userId ownership
+// Generic delete function for tips - NOW WITH OWNERSHIP SECURITY
 const createTipDeleteProcedure = (tableName: string, entityName: string) =>
-  protectedProcedure
+  authenticatedProcedure
     .input(z.number())
     .mutation(async ({ ctx, input }) => {
-      const existingRecord = await (ctx.db as any)[tableName].findFirst({
-        where: {
-          id: input,
-          userId: ctx.user.id,
-        },
+      // SECURITY: Check if record exists AND belongs to authenticated user
+      const existingRecord = await (ctx.db as any)[tableName].findUnique({
+        where: { id: input },
       });
 
       if (!existingRecord) {
-        throw new Error(`${entityName} not found or you don't have permission to delete it`);
+        throw new Error(`${entityName} not found`);
+      }
+
+      // CRITICAL SECURITY CHECK: Only allow users to delete their own data
+      if (existingRecord.userId !== parseInt(ctx.user.id)) {
+        throw new Error(`Unauthorized: You can only delete your own ${entityName.toLowerCase()}`);
       }
 
       return await (ctx.db as any)[tableName].delete({
-        where: {
-          id: input,
-        },
+        where: { id: input },
       });
     });
 
@@ -40,7 +41,7 @@ export const deleteRouter = createTRPCRouter({
   energyTip: createTipDeleteProcedure("energyTips", "Energy tip"),
   video: createTipDeleteProcedure("videos", "Video"),
   coin: createTipDeleteProcedure("coins", "Coin"),
-  category: protectedProcedure
+  category: publicProcedure
     .input(z.number())
     .mutation(async ({ ctx, input }) => {
       // Categories don't have userId, so we might want to restrict this to admin users only

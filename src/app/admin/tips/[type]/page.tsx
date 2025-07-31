@@ -57,16 +57,13 @@ const TipsPage = ({ params }: PageProps) => {
     setOpenMenu,
     setToastType,
     setDeleteId,
-  } = useAppStore();
-
-  const {
     setData,
     page,
     perPage,
     setPageCount,
   } = useAppStore();
 
-  // Dynamic API calls based on tip type
+  // Dynamic API calls based on tip type with server-side auth
   const {
     data: data,
     isFetched,

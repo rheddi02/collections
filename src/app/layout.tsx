@@ -6,7 +6,8 @@ import { TRPCReactProvider } from "~/trpc/react";
 import CredentialsLogin from "./_components/credentials-login";
 import { Toaster } from "~/components/ui/toaster";
 import useAppStore from "~/store/app.store";
-import { AuthProvider } from "~/contexts/AuthContext";
+import AuthProvider from "~/components/AuthProvider";
+import { SessionDebug } from "~/components/SessionDebug";
 
 export default function RootLayout({
   children,
@@ -33,6 +34,7 @@ export default function RootLayout({
               onClose={handleClose} 
             />
             <Toaster />
+            <SessionDebug />
           </TRPCReactProvider>
         </AuthProvider>
       </body>

@@ -12,7 +12,7 @@ import {
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { useToast } from "~/components/ui/use-toast";
-import { useAuth } from "~/contexts/AuthContext";
+import { signIn } from "next-auth/react";
 
 interface CredentialsLoginProps {
   isOpen: boolean;
@@ -22,7 +22,6 @@ interface CredentialsLoginProps {
 const CredentialsLogin = ({ isOpen, onClose }: CredentialsLoginProps) => {
   const router = useRouter();
   const { toast } = useToast();
-  const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isRegister, setIsRegister] = useState(false);
   const [formData, setFormData] = useState({
@@ -50,31 +49,77 @@ const CredentialsLogin = ({ isOpen, onClose }: CredentialsLoginProps) => {
           return;
         }
 
-        // Simple register logic - in a real app, you'd call your API
-        const success = await login(formData.email, formData.password);
-        if (success) {
+        if (formData.username.length < 3) {
           toast({
-            title: "Success",
-            description: "Account created successfully",
+            variant: "destructive",
+            title: "Error",
+            description: "Username must be at least 3 characters long",
           });
-          onClose();
-          router.push("/admin/dashboard");
-        } else {
-          throw new Error("Registration failed");
+          setIsLoading(false);
+          return;
         }
-      } else {
-        // Login logic
-        const success = await login(formData.usernameOrEmail, formData.password);
-        if (success) {
+
+        if (formData.password.length < 6) {
           toast({
-            title: "Success",
-            description: "Logged in successfully",
+            variant: "destructive",
+            title: "Error",
+            description: "Password must be at least 6 characters long",
           });
-          onClose();
-          router.push("/admin/dashboard");
-        } else {
+          setIsLoading(false);
+          return;
+        }
+
+        // Register new user
+        const response = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username: formData.username,
+            email: formData.email,
+            password: formData.password,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Registration failed');
+        }
+
+        toast({
+          title: "Success",
+          description: "Account created successfully! You can now log in.",
+        });
+
+        // Switch to login mode
+        setIsRegister(false);
+        setFormData({
+          usernameOrEmail: formData.email,
+          username: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+        });
+      } else {
+        // Login logic using NextAuth
+        const result = await signIn('credentials', {
+          usernameOrEmail: formData.usernameOrEmail,
+          password: formData.password,
+          redirect: false,
+        });
+
+        if (result?.error) {
           throw new Error("Invalid credentials");
         }
+
+        toast({
+          title: "Success",
+          description: "Logged in successfully",
+        });
+        onClose();
+        router.push("/admin/dashboard");
       }
     } catch (error) {
       toast({

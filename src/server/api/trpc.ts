@@ -9,7 +9,8 @@
 import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import jwt from "jsonwebtoken";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "~/lib/auth-config";
 
 import { db } from "~/server/db";
 
@@ -25,46 +26,21 @@ import { db } from "~/server/db";
  *
  * @see https://trpc.io/docs/server/context
  */
-export const createTRPCContext = async (opts: { headers: Headers }) => {
-  // Extract the authorization token from headers
-  const authorization = opts.headers.get("authorization");
-  const token = authorization?.replace("Bearer ", "");
-  
-  console.log("🔍 tRPC Context - Authorization header:", authorization ? "Present" : "Missing");
-  console.log("🔍 tRPC Context - Token:", token ? token.substring(0, 20) + "..." : "None");
-  
-  let user = null;
-  
-  if (token) {
-    try {
-      const jwtSecret = process.env.JWT_SECRET;
-      if (jwtSecret) {
-        const decoded = jwt.verify(token, jwtSecret) as {
-          userId: number;
-          username: string;
-          email: string;
-        };
-        
-        // Fetch user from database to ensure it still exists
-        user = await db.users.findUnique({
-          where: { id: decoded.userId },
-          select: {
-            id: true,
-            username: true,
-            email: true,
-            isVerified: true,
-          }
-        });
-      }
-    } catch (error) {
-      // Token is invalid, user remains null
-      console.log("Invalid token:", error);
-    }
-  }
 
+interface User {
+  id: string;
+  email: string;
+  name?: string;
+}
+
+export const createTRPCContext = async (opts: { headers: Headers }) => {
+  // Get session from NextAuth
+  const session = await getServerSession(authOptions);
+  
   return {
     db,
-    user,
+    session,
+    user: session?.user || null,
     ...opts,
   };
 };
@@ -121,19 +97,37 @@ export const createTRPCRouter = t.router;
 export const publicProcedure = t.procedure;
 
 /**
- * Protected (authenticated) procedure
+ * Authenticated procedure - NextAuth Session-based
  *
- * This procedure requires the user to be authenticated with a valid JWT token.
- * It will throw an error if no user is found in the context.
+ * This procedure ensures that a user is authenticated via NextAuth before executing.
+ * You can access the user via ctx.user
  */
-export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
-  if (!ctx.user) {
-    throw new Error("UNAUTHORIZED");
+export const authenticatedProcedure = t.procedure.use(async ({ ctx, next }) => {
+  if (!ctx.session || !ctx.user) {
+    throw new Error("UNAUTHORIZED: Please sign in to access this resource");
   }
+  
   return next({
     ctx: {
       ...ctx,
-      user: ctx.user, // user is now guaranteed to be non-null
+      session: ctx.session,
+      user: ctx.user, // Type-safe user access
+    },
+  });
+});
+
+/**
+ * Optional authenticated procedure - works with or without auth
+ *
+ * This procedure works for both authenticated and unauthenticated users.
+ * Check ctx.user to see if user is authenticated.
+ */
+export const optionalAuthProcedure = t.procedure.use(async ({ ctx, next }) => {
+  return next({
+    ctx: {
+      ...ctx,
+      session: ctx.session,
+      user: ctx.user, // May be null
     },
   });
 });

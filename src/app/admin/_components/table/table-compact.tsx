@@ -1,5 +1,6 @@
 "use client";
 
+import { useSession } from "next-auth/react";
 import {
   Table,
   TableBody,
@@ -55,7 +56,7 @@ export default function DataTableCompact<TData, TValue>({
   onRowChange,
   hiddenColumns = {},
 }: DataTableProps<TData, TValue>) {
-  const isAuth = useAppStore((state) => state.isAuth);
+  const { data: session } = useSession();
   const [rowSelection, setRowSelection] = useState({});
   const [page, setPage] = useState<PaginationState>({
     pageIndex: 0,
@@ -84,7 +85,7 @@ export default function DataTableCompact<TData, TValue>({
         actions: false,
         mobile: true,
       });
-    } else setColumnVisibility({ ...hiddenColumns, actions: isAuth });
+    } else setColumnVisibility({ ...hiddenColumns, actions: !!session });
   }, [hiddenColumns]);
 
   const table = useReactTable({
