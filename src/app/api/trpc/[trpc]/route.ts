@@ -1,5 +1,7 @@
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import { type NextRequest } from "next/server";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "~/lib/auth-config";
 
 import { env } from "~/env";
 import { appRouter } from "~/server/api/root";
@@ -10,7 +12,16 @@ import { createTRPCContext } from "~/server/api/trpc";
  * handling a HTTP request (e.g. when you make requests from Client Components).
  */
 const createContext = async (req: NextRequest) => {
+  // Get session directly in the API route handler
+  const session = await getServerSession(authOptions);
+  
+  console.log("API Route - Session:", session ? "✅ Found" : "❌ Not found");
+  console.log("API Route - User:", session?.user?.email || "No user");
+  
+  // Use the createTRPCContext function with session data
   return createTRPCContext({
+    session,
+    user: session?.user || null,
     headers: req.headers,
   });
 };

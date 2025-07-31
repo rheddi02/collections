@@ -4,7 +4,6 @@ import CardTemplate from '~/app/admin/_components/card'
 import { api } from '~/trpc/react'
 
 const Dashboard = () => {
-  // NextAuth handles authentication automatically via server-side sessions
   const { data: counts, isFetching, error } = api.count.all.useQuery(
     undefined, // No input needed - user context comes from NextAuth session
     {
@@ -12,11 +11,6 @@ const Dashboard = () => {
       refetchOnWindowFocus: false, // Don't refetch on window focus
     }
   )
-
-  // Debug: Test NextAuth server-side authentication
-  const { data: authCheck } = api.debug.checkAuth.useQuery()
-
-  console.log('🔍 NextAuth server-side auth check:', authCheck)
 
   // Memoized card configuration to avoid recreating on every render
   const cardConfigs = useMemo(() => [

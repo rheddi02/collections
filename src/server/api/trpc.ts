@@ -9,8 +9,6 @@
 import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "~/lib/auth-config";
 
 import { db } from "~/server/db";
 
@@ -33,15 +31,21 @@ interface User {
   name?: string;
 }
 
-export const createTRPCContext = async (opts: { headers: Headers }) => {
-  // Get session from NextAuth
-  const session = await getServerSession(authOptions);
+// Simple context that receives session from the API route
+interface CreateContextOptions {
+  session?: any;
+  user?: User | null;
+  headers?: Headers;
+  db?: typeof db;
+}
+
+export const createTRPCContext = (opts: CreateContextOptions) => {
   
   return {
-    db,
-    session,
-    user: session?.user || null,
-    ...opts,
+    db: opts.db ?? db,
+    session: opts.session || null,
+    user: opts.user || null,
+    headers: opts.headers,
   };
 };
 
@@ -104,6 +108,7 @@ export const publicProcedure = t.procedure;
  */
 export const authenticatedProcedure = t.procedure.use(async ({ ctx, next }) => {
   if (!ctx.session || !ctx.user) {
+    console.error("UNAUTHORIZED: No session or user found");
     throw new Error("UNAUTHORIZED: Please sign in to access this resource");
   }
   
