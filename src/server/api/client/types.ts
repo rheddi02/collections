@@ -32,7 +32,12 @@ export type formData =
   | equipmentInput
   | equipmentOutput
   | healthInput
-  | healthOutput;
+  | healthOutput
+  | linkInput
+  | linkOutput
+
+export type linkInput = RouterInput["create"]["link"];
+export type linkOutput = RouterOutput["create"]['link'];
 
 export type homeInput = RouterInput["create"]["homeTip"];
 export type homeOutput = RouterOutput["create"]['homeTip'];

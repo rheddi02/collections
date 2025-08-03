@@ -14,6 +14,7 @@ export const healthTips = createTRPCRouter({
 export const dashboardRouter = createTRPCRouter({
   get: publicProcedure.query(async ({ ctx }) => {
     const counts = await ctx.db.$transaction( async (db) => {
+      const totalLinks = await db.links.count();
       const totalHomeTips = await db.homeTips.count();
       const totalHealthTips = await db.healthTips.count();
       const totalEquipmentTips = await db.equipmentTips.count();
@@ -27,6 +28,7 @@ export const dashboardRouter = createTRPCRouter({
       const totalLeisureTips = await db.leisureTips.count();
       const totalEnergyTips = await db.energyTips.count();
       return {
+        totalLinks,
         totalHomeTips,
         totalHealthTips,
         totalEquipmentTips,

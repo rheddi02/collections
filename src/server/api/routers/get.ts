@@ -15,6 +15,7 @@ const createTipGetProcedure = (tableName: string) =>
     });
 
 export const getRouter = createTRPCRouter({
+  link: createTipGetProcedure("links"),
   beautyTip: createTipGetProcedure("beautyTips"),
   equipmentTip: createTipGetProcedure("equipmentTips"),
   foodTip: createTipGetProcedure("foodTips"),

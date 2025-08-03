@@ -27,6 +27,7 @@ const createTipDeleteProcedure = (tableName: string, entityName: string) =>
     });
 
 export const deleteRouter = createTRPCRouter({
+  link: createTipDeleteProcedure("links", "Link"),
   beautyTip: createTipDeleteProcedure("beautyTips", "Beauty tip"),
   equipmentTip: createTipDeleteProcedure("equipmentTips", "Equipment tip"),
   foodTip: createTipDeleteProcedure("foodTips", "Food tip"),

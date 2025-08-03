@@ -240,6 +240,23 @@ model Categories {
   title       String
   description String
   Coins       Coins[]
+  Links       Links[]
+
+  @@index([id])
+}
+
+model Links {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  url         String   @unique()
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isPublic    Boolean  @default(true) @map("is_public")
+  userId      Int
+  user        Users    @relation(fields: [userId], references: [id])
+  categoryId  Int
+  category    Categories @relation(fields: [categoryId], references: [id])
 
   @@index([id])
 }
@@ -267,6 +284,7 @@ model Users {
   energyTips  EnergyTips[]
   videos      Videos[]
   coins       Coins[]
+  links       Links[]
 
   @@index([id])
   @@index([username])

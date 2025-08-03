@@ -3,13 +3,15 @@ import _ from "lodash";
 import type { StateCreator } from "zustand";
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
-import type { CommonOutputType, formData } from "~/server/api/client/types";
+import type { CommonOutputType, formData, linkOutput } from "~/server/api/client/types";
 import { ToastTypes } from '~/utils/types';
 
 export interface State {
   filters: {
     search: string
   }
+  categories: linkOutput[]
+  setCategories: (categories: State['categories']) => void
   setFilters: (filters: State['filters']) => void
   isMe: boolean,
   setIsMe: (isMe: State['isMe']) => void
@@ -38,6 +40,10 @@ export interface State {
 }
 
 const createStore: StateCreator<State, [], [], State> = (set, get) => ({
+  categories: [],
+  setCategories: (categories) => {
+    set({ categories })
+  },
   filters: {
     search: '',
   },

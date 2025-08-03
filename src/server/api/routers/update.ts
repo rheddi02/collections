@@ -39,6 +39,7 @@ const createTipUpdateProcedure = (tableName: string, entityName: string) =>
     });
 
 export const updateRouter = createTRPCRouter({
+  link: createTipUpdateProcedure("links", "Link"),
   beautyTip: createTipUpdateProcedure("beautyTips", "Beauty tip"),
   equipmentTip: createTipUpdateProcedure("equipmentTips", "Equipment tip"),
   foodTip: createTipUpdateProcedure("foodTips", "Food tip"),

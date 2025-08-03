@@ -39,6 +39,7 @@ const getAllCounts = optionalAuthProcedure
 
     // Execute all count queries in parallel
     const [
+      link,
       beautyTip,
       equipmentTip,
       foodTip,
@@ -52,6 +53,7 @@ const getAllCounts = optionalAuthProcedure
       leisureTip,
       energyTip,
     ] = await Promise.all([
+      ctx.db.links.count({ where: whereClause }),
       ctx.db.beautyTips.count({ where: whereClause }),
       ctx.db.equipmentTips.count({ where: whereClause }),
       ctx.db.foodTips.count({ where: whereClause }),
@@ -67,6 +69,7 @@ const getAllCounts = optionalAuthProcedure
     ]);
 
     return {
+      link,
       beautyTip,
       equipmentTip,
       foodTip,
@@ -84,6 +87,7 @@ const getAllCounts = optionalAuthProcedure
 
 export const countRouter = createTRPCRouter({
   // Individual endpoints (keep for backward compatibility)
+  link: createTipCountProcedure("links"),
   beautyTip: createTipCountProcedure("beautyTips"),
   equipmentTip: createTipCountProcedure("equipmentTips"),
   foodTip: createTipCountProcedure("foodTips"),

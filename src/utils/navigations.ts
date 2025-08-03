@@ -10,6 +10,15 @@ export const NavigationLists: NavigationType[] = [
     image: ''
   },
   {
+    title: "Link",
+    get route() {
+      return "/admin/link";
+    },
+    subRoute: [],
+    image: 'https://picsum.photos/id/64/500/700',
+    description: "URL Links.",
+  },
+  {
     title: "beauty",
     get route() {
       return "/admin/tips/beauty";
