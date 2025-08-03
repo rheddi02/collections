@@ -3,7 +3,6 @@ import "~/styles/globals.css";
 
 import { GeistSans } from "geist/font/sans";
 import { TRPCReactProvider } from "~/trpc/react";
-import CredentialsLogin from "./_components/credentials-login";
 import { Toaster } from "~/components/ui/toaster";
 import useAppStore from "~/store/app.store";
 import AuthProvider from "~/components/AuthProvider";
@@ -29,10 +28,6 @@ export default function RootLayout({
         <AuthProvider>
           <TRPCReactProvider>
             {children}
-            <CredentialsLogin 
-              isOpen={credentialsModal} 
-              onClose={handleClose} 
-            />
             <Toaster />
             <SessionDebug />
           </TRPCReactProvider>

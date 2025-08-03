@@ -1,8 +1,5 @@
 "use client";
 import {
-  ArrowTopRightIcon,
-  PersonIcon,
-  PinLeftIcon,
   ReloadIcon,
 } from "@radix-ui/react-icons";
 import { useRouter, useSelectedLayoutSegments } from "next/navigation";
@@ -10,31 +7,30 @@ import { twMerge } from "tailwind-merge";
 import { Label } from "~/components/ui/label";
 import { cn } from "~/lib/utils";
 import useAppStore from "~/store/app.store";
-import usePaginationStore from "~/store/pagination.store";
 import type { NavigationType } from "~/utils/types";
-import { signOut, useSession } from "next-auth/react";
 import { useNavigationLists } from "~/utils/navigations";
 import { Fragment } from "react";
-import CategoryForm from "./category/page";
+import CategoryForm from "./category-form";
 import LogoutBtn from "./logout-btn";
+import UserProfile from "./user-profile";
 
 export default function Navigation() {
-  const navList = useNavigationLists(); // Now reactive to category changes
+  const navLists = useNavigationLists(); // Now reactive to category changes
   const handleReload = async (segment: string | undefined) => {};
 
   return (
     <div className="flex h-screen flex-col gap-2">
-      <Nav {...{ navList, handleReload }} />
+      <Nav {...{ navLists, handleReload }} />
     </div>
   );
 }
 
 const Nav = ({
-  navList,
+  navLists,
   isChild = false,
   handleReload,
 }: {
-  navList: NavigationType[];
+  navLists: NavigationType[];
   isChild?: boolean;
   handleReload?: (segment: string | undefined) => Promise<void>;
 }) => {
@@ -42,7 +38,6 @@ const Nav = ({
     openMenu: state.openMenu,
     isLoading: state.isLoading,
   }));
-  const { data: session } = useSession();
   const router = useRouter();
   const segments = useSelectedLayoutSegments();
   const segment = segments.pop();
@@ -66,14 +61,8 @@ const Nav = ({
         openMenu ? "w-40" : "hidden",
       )}
     >
-      <div className="flex items-center mr-2 gap-2 mb-2 p-2">
-        <PersonIcon className="h-10 w-10 text-gray-500 border rounded-full p-2" />
-        <div className="flex flex-col">
-          <Label className="select-none text-lg">{session?.user?.name}</Label>
-          <Label className="select-none text-xs">{session?.user?.email}</Label>
-        </div>
-      </div>
-      {navList.map((navigation) => (
+      <UserProfile />
+      {navLists.map((navigation) => (
         <Fragment key={navigation.route}>
           <div
             className={twMerge(
@@ -97,7 +86,7 @@ const Nav = ({
             )}
           </div>
           {!!navigation.subRoute.length && (
-            <Nav navList={navigation.subRoute} isChild={true} />
+            <Nav navLists={navigation.subRoute} isChild={true} />
           )}
         </Fragment>
       ))}

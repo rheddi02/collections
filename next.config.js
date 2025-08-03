@@ -14,6 +14,18 @@ const config = {
             port: '',
             pathname: '/**'
         },
+        {
+            protocol: 'https',
+            hostname: 'fastly.picsum.photos',
+            port: '',
+            pathname: '/**'
+        },
+        {
+            protocol: 'https',
+            hostname: 'images.unsplash.com',
+            port: '',
+            pathname: '/**'
+        },
     ],
 },
 };

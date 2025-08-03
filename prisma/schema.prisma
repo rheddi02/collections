@@ -274,6 +274,8 @@ model Users {
   isVerified  Boolean  @default(false) @map("is_verified")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
+  profile     String?  @map("profile") // Optional profile field for user profile information
+  cover       String?  @map("cover") // Optional cover field for user profile information
   beautyTips  BeautyTips[]
   equipmentTips EquipmentTips[]
   healthTips  HealthTips[]

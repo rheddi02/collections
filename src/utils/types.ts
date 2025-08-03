@@ -5,10 +5,6 @@ export type NavigationType = {
   subRoute: NavigationType[]
   description?: string
 }
-export type TypeListType = {
-  label: string
-  value: string
-}
 export type PageType = {
   page: number
   perPage: number

@@ -20,7 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import { typeLists } from "~/utils/type-list";
 import React, { useEffect, useState, useReducer } from "react";
 
 // Form state type
@@ -44,6 +43,7 @@ const initialFormState: FormState = {
   title: "",
   url: "",
   description: "",
+
 };
 
 // Form reducer
@@ -82,7 +82,6 @@ type Props = {
   defaultType?: string;
 };
 const CustomDialog = ({ title, description, label, action, initialData, defaultType }: Props) => {
-  const [lists] = useState(typeLists);
   const [formData, dispatch] = useReducer(formReducer, initialFormState);
   const [errors, setErrors] = useState<{
     title?: string;

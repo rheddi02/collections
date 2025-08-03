@@ -65,7 +65,6 @@ const CategoryForm = () => {
   const { mutate: createData, isPending: pendingCreate } =
     api.create.category.useMutation({
       onSuccess: async () => {
-        await utils.list.category.invalidate();
         await utils.list.categories.invalidate(); // Also invalidate categories for navigation update
       },
       onSettled: () => {
@@ -78,7 +77,6 @@ const CategoryForm = () => {
   const { mutate: updateData, isPending: pendingUpdate } =
     api.update.category.useMutation({
       onSuccess: async () => {
-        await utils.list.category.invalidate();
         await utils.list.categories.invalidate(); // Also invalidate categories for navigation update
       },
       onSettled: () => {

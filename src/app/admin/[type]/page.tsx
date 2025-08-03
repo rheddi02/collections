@@ -160,8 +160,14 @@ const DynamicPage = ({ params }: PageProps) => {
 
   const handleUpdate = (formData: FormState) => {
     setIsLoading(true);
-    
-    updateData(formData);
+    if (!category || typeof formData.id !== "number") return;
+    updateData({
+      id: formData.id,
+      title: formData.title,
+      url: formData.url,
+      categoryId: category.id || 1,
+      description: formData.description,
+    });
   };
 
   return (
