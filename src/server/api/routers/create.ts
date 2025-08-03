@@ -67,13 +67,19 @@ export const createRouter = createTRPCRouter({
         title: z.string().min(1),
         description: z.string().default(""),
         url: z.string(),
-        isPublic: z.boolean().default(false),
         categoryId: z.number(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      return await ctx.db.links.create({
+      try {
+        await ctx.db.links.create({
         data: { ...input, userId: parseInt(ctx.user.id) },
       });
+    } catch (error) {
+        if (error instanceof Error && error.message.toLowerCase().includes("unique constraint failed")) {
+          throw new Error("Link with this URL already exists");
+        }
+        else throw new Error(error instanceof Error ? error.message : "Failed to create link");
+      }
     }),
 });

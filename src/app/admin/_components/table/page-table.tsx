@@ -18,157 +18,29 @@ import { isMobile } from "react-device-detect";
 import { useEffect, useState } from "react";
 
 const PageTable = ({
+  data,
   onEdit,
   onDelete,
   loading,
   onRowClick,
   hiddenColumns,
+  columns,
   formatDescription
 }: {
+  data: CommonOutputType[];
   onEdit: (row: Row<CommonOutputType>) => void;
   onDelete: (row: Row<CommonOutputType>) => void;
   onRowClick?: (row: Row<CommonOutputType>) => void;
   loading: boolean;
   hiddenColumns?: Record<string, boolean>;
-  formatDescription?: boolean
+  formatDescription?: boolean;
+  columns: ColumnDef<CommonOutputType>[];
 }) => {
   const [isMobileView, setIsMobileView] = useState(false);
-  const { data, pageCount, setPage, deleteId } = useAppStore((state) => ({
-    data: state.data,
+  const { pageCount, setPage } = useAppStore((state) => ({
     pageCount: state.pageCount,
     setPage: state.setPage,
-    deleteId: state.deleteId,
   }));
-  const columns: ColumnDef<CommonOutputType>[] = [
-    {
-      accessorKey: "id",
-    },
-    {
-      accessorKey: "title",
-      header: () => {
-        return <div className="font-bold">Title</div>;
-      },
-      cell: ({ row }) => {
-        return <div className="">{row.getValue("title")}</div>;
-      },
-    },
-    {
-      accessorKey: "description",
-      header: () => {
-        return <div className="font-bold">Description</div>;
-      },
-      cell: ({ row }) => {
-        const descriptions: string = row.getValue("description")
-        return <>
-          {
-            formatDescription ?
-            descriptions.split(',').map(description => (
-              <div className="">{description}</div>
-            ))
-            :
-            <div className="">{descriptions}</div>
-          }
-        </>;
-      },
-    },
-    {
-      accessorKey: "type",
-      header: () => {
-        return <div className="font-bold">Type</div>;
-      },
-      cell: ({ row }) => {
-        return <div className="">{row.getValue("type")}</div>;
-      },
-    },
-    {
-      accessorKey: "actions",
-      header: () => {
-        return <div className="font-bold"></div>;
-      },
-      cell: ({ row }) => {
-        return (
-          <div className="flex items-center justify-center gap-2 p-1">
-            {deleteId.includes(row.getValue("id")) ? (
-              <div className="flex items-center gap-1 rounded-full border px-2 py-1">
-                <ReloadIcon className="animate-spin" />
-                Deleting ...
-              </div>
-            ) : (
-              <>
-                <Pencil1Icon
-                  className=" size-5 hover:cursor-pointer hover:text-red-600 group-hover:flex "
-                  onClick={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    onEdit(row)
-                  }}
-                />
-                <TrashIcon
-                  className=" size-5 hover:cursor-pointer hover:text-red-600 group-hover:flex "
-                  onClick={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    onDelete(row)
-                  }}
-                />
-                <Link href={row.original.url} target="_blank">
-                  <EyeOpenIcon className=" size-5 hover:cursor-pointer hover:text-red-600 group-hover:flex " />
-                </Link>
-              </>
-            )}
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "mobile",
-      header: () => {
-        return <div className="font-bold"></div>;
-      },
-      cell: ({ row }) => {
-        return (
-          <div className="flex flex-col justify-center gap-2 p-1" onClick={() => onRowDivClick(row)}>
-            <Label>{row.getValue("title")}</Label>
-            <div>{row.getValue("description")}</div>
-            <div className="flex justify-between">
-              <Badge variant="default" className="uppercase text-[10px]">
-                {row.getValue("type")}
-              </Badge>
-              {deleteId.includes(row.getValue("id")) ? (
-                <div className="flex items-center gap-1">
-                  <ReloadIcon className="animate-spin" />
-                  Deleting...
-                </div>
-              ) : (
-                <ToggleGroup type="single" size="sm">
-                  <ToggleGroupItem
-                    value="edit"
-                    aria-label="Toggle edit"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      onEdit(row)
-                    }}
-                  >
-                    <Pencil1Icon className="flex size-5 hover:cursor-pointer hover:text-red-600" />
-                  </ToggleGroupItem>
-                  <ToggleGroupItem
-                    value="delete"
-                    aria-label="Toggle delete"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      onDelete(row)
-                    }}
-                  >
-                    <TrashIcon className="flex size-5 hover:cursor-pointer hover:text-red-600" />
-                  </ToggleGroupItem>
-                </ToggleGroup>
-              )}
-            </div>
-          </div>
-        );
-      },
-    },
-  ];
 
   useEffect(() => {
     setIsMobileView(isMobile);
@@ -177,12 +49,6 @@ const PageTable = ({
   const onPaginationChange = (page: number) => {
     setPage(page);
   };
-  const onRowChange = () => {
-    null;
-  };
-  const onRowDivClick = (row: Row<CommonOutputType>) => {
-    if (isMobileView) window.open(row.original.url, '_blank')
-  }
 
   if (isMobileView)
     return (
@@ -191,7 +57,6 @@ const PageTable = ({
           data: data,
           columns: columns,
           onPaginationChange,
-          onRowChange,
           onRowClick,
           hiddenColumns: hiddenColumns ?? {
             id: false,
@@ -213,7 +78,6 @@ const PageTable = ({
         data: data,
         columns: columns,
         onPaginationChange,
-        onRowChange,
         onRowClick,
         hiddenColumns: hiddenColumns ?? {
           id: false,

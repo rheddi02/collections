@@ -1,18 +1,21 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { signIn, useSession } from "next-auth/react"
+import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
 
-export default function SignIn() {
-  const [usernameOrEmail, setUsernameOrEmail] = useState("")
+export default function Register() {
+  const [username, setUsername] = useState("")
+  const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const [success, setSuccess] = useState("")
   const router = useRouter()
   const { data: session, status } = useSession()
 
@@ -27,22 +30,52 @@ export default function SignIn() {
     e.preventDefault()
     setIsLoading(true)
     setError("")
+    setSuccess("")
+
+    // Basic validation
+    if (password !== confirmPassword) {
+      setError("Passwords do not match")
+      setIsLoading(false)
+      return
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long")
+      setIsLoading(false)
+      return
+    }
 
     try {
-      const result = await signIn("credentials", {
-        usernameOrEmail,
-        password,
-        redirect: false,
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username,
+          email,
+          password,
+        }),
       })
 
-      if (result?.error) {
-        setError("Invalid credentials")
-      } else if (result?.ok) {
-        // Successful login - redirect to admin dashboard
-        router.push("/admin/dashboard")
+      const data = await response.json()
+
+      if (response.ok) {
+        setSuccess("Account created successfully! You can now sign in.")
+        // Reset form
+        setUsername("")
+        setEmail("")
+        setPassword("")
+        setConfirmPassword("")
+        // Redirect to sign in after 2 seconds
+        setTimeout(() => {
+          router.push("/auth/signin")
+        }, 2000)
+      } else {
+        setError(data.error || "An error occurred during registration")
       }
     } catch (error) {
-      setError("An error occurred during sign in")
+      setError("An error occurred during registration")
     } finally {
       setIsLoading(false)
     }
@@ -76,9 +109,9 @@ export default function SignIn() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>Sign In</CardTitle>
+          <CardTitle>Create Account</CardTitle>
           <CardDescription>
-            Enter your username/email and password to access your account
+            Enter your details to create a new account
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -86,9 +119,18 @@ export default function SignIn() {
             <div>
               <Input
                 type="text"
-                placeholder="Username or Email"
-                value={usernameOrEmail}
-                onChange={(e) => setUsernameOrEmail(e.target.value)}
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <Input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
@@ -101,22 +143,34 @@ export default function SignIn() {
                 required
               />
             </div>
+            <div>
+              <Input
+                type="password"
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+            </div>
             {error && (
               <p className="text-red-600 text-sm">{error}</p>
+            )}
+            {success && (
+              <p className="text-green-600 text-sm">{success}</p>
             )}
             <Button
               type="submit"
               className="w-full"
               disabled={isLoading}
             >
-              {isLoading ? "Signing in..." : "Sign In"}
+              {isLoading ? "Creating Account..." : "Create Account"}
             </Button>
           </form>
           <div className="mt-4 text-center">
             <p className="text-sm text-gray-600">
-              Don't have an account?{" "}
-              <Link href="/auth/register" className="text-blue-600 hover:underline">
-                Create one
+              Already have an account?{" "}
+              <Link href="/auth/signin" className="text-blue-600 hover:underline">
+                Sign in
               </Link>
             </p>
           </div>

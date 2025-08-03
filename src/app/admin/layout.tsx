@@ -7,6 +7,7 @@ import { ProtectedRoute } from "~/components/ProtectedRoute";
 import { useEffect } from "react";
 import useAppStore from "~/store/app.store";
 import { api } from "~/trpc/react";
+import { categoryOutput } from "~/server/api/client/types";
 
 export default function RootLayout({
   children,
@@ -18,13 +19,11 @@ export default function RootLayout({
   }));
 
   const { data: categories, isFetched: isFetchedCategories } =
-    api.list.categories.useQuery({
-      page: 1,
-    });
+    api.list.categories.useQuery();
 
   useEffect(() => {
-    if (!isFetchedCategories) return;
-    setCategories(categories);
+    if (!isFetchedCategories || !categories) return;
+    setCategories(categories as categoryOutput[]);
   }, [categories, isFetchedCategories]);
 
   return (

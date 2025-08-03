@@ -1,6 +1,7 @@
 "use client";
 import {
   ArrowTopRightIcon,
+  PersonIcon,
   PinLeftIcon,
   ReloadIcon,
 } from "@radix-ui/react-icons";
@@ -11,10 +12,11 @@ import { cn } from "~/lib/utils";
 import useAppStore from "~/store/app.store";
 import usePaginationStore from "~/store/pagination.store";
 import type { NavigationType } from "~/utils/types";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useNavigationLists } from "~/utils/navigations";
 import { Fragment } from "react";
 import CategoryForm from "./category/page";
+import LogoutBtn from "./logout-btn";
 
 export default function Navigation() {
   const navList = useNavigationLists(); // Now reactive to category changes
@@ -36,17 +38,16 @@ const Nav = ({
   isChild?: boolean;
   handleReload?: (segment: string | undefined) => Promise<void>;
 }) => {
-  const { openMenu, isLoading, setData } = useAppStore((state) => ({
+  const { openMenu, isLoading } = useAppStore((state) => ({
     openMenu: state.openMenu,
     isLoading: state.isLoading,
-    setData: state.setData,
   }));
+  const { data: session } = useSession();
   const router = useRouter();
   const segments = useSelectedLayoutSegments();
   const segment = segments.pop();
 
   const handleRoute = (route: NavigationType) => {
-    setData([]);
     if (route.subRoute.length) {
       router.push(route.subRoute[0]!.route);
     } else {
@@ -58,10 +59,6 @@ const Nav = ({
     if (handleReload) await handleReload(segment);
   };
 
-  const logout = () => {
-    signOut({ callbackUrl: "/client" });
-  };
-
   return (
     <div
       className={cn(
@@ -69,17 +66,12 @@ const Nav = ({
         openMenu ? "w-40" : "hidden",
       )}
     >
-      <div
-        className={twMerge(
-          "flex items-center justify-between rounded-md p-2 capitalize hover:cursor-pointer hover:bg-gray-400 hover:text-gray-800",
-          "bg-gray-300 font-semibold text-gray-800",
-        )}
-        onClick={() => {
-          router.push("/client");
-        }}
-      >
-        Client Page
-        <ArrowTopRightIcon />
+      <div className="flex items-center mr-2 gap-2 mb-2 p-2">
+        <PersonIcon className="h-10 w-10 text-gray-500 border rounded-full p-2" />
+        <div className="flex flex-col">
+          <Label className="select-none text-lg">{session?.user?.name}</Label>
+          <Label className="select-none text-xs">{session?.user?.email}</Label>
+        </div>
       </div>
       {navList.map((navigation) => (
         <Fragment key={navigation.route}>
@@ -109,17 +101,9 @@ const Nav = ({
           )}
         </Fragment>
       ))}
+      <div className="mt-auto pb-5 flex flex-col gap-2">
       <CategoryForm />
-      <div
-        className={twMerge(
-          "group flex items-center gap-2 rounded-md p-2 capitalize hover:cursor-pointer",
-          "bg-gray-300 font-semibold text-gray-800",
-          "absolute bottom-5 w-full cursor-pointer",
-        )}
-        onClick={logout}
-      >
-        <PinLeftIcon />
-        <Label className="select-none group-hover:font-bold">Logout</Label>
+      <LogoutBtn />
       </div>
     </div>
   );

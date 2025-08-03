@@ -2,44 +2,27 @@
 import useAppStore from "~/store/app.store";
 import type { Row } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
-import CustomDialog from "~/app/_components/dialog";
-import type { CommonOutputType } from "~/server/api/client/types";
-import { Button } from "~/components/ui/button";
-import { HamburgerMenuIcon, PlusIcon, ReloadIcon } from "@radix-ui/react-icons";
+import CustomDialog, { FormState } from "~/app/admin/[type]/_components/dialog";
 import { api } from "~/trpc/react";
 import { ToastTypes } from "~/utils/types";
-import PageTable from "~/app/admin/_components/table/page-table";
-
-// Map tip types to their API endpoints
-const TIP_TYPE_MAP = {
-  beauty: 'beautyTip',
-  equipment: 'equipmentTip',
-  food: 'foodTip',
-  health: 'healthTip',
-  home: 'homeTip',
-  pet: 'petTip',
-  cloth: 'clothTip',
-  plant: 'plantTip',
-  machinery: 'machineryTip',
-  ride: 'rideTip',
-  leisure: 'leisureTip',
-  energy: 'energyTip',
-} as const;
-
-type TipType = keyof typeof TIP_TYPE_MAP;
+import PageTable from "../_components/table/page-table";
+import { createColumns } from "~/app/admin/[type]/_components/columns";
+import PageHeader from "../_components/page-header";
 
 interface PageProps {
   params: {
-    type: TipType;
+    type: string;
   };
 }
 
-const CategoryPage = ({ params }: PageProps) => {
-  const { type } = params;
-  const pageTitle = type;
-  const apiEndpoint = TIP_TYPE_MAP[type];
-  
+const DynamicPage = ({ params }: PageProps) => {
+  const { type: pageTitle } = params;
+
   const utils = api.useUtils();
+  const [category, setCategory] = useState<
+    { id: number; title: string } | undefined
+  >();
+  const [initialData, setInitialData] = useState<Partial<FormState> | undefined>();
   const [form, setForm] = useState({
     title: "Create New",
     description: "Add new data",
@@ -50,145 +33,168 @@ const CategoryPage = ({ params }: PageProps) => {
     modal,
     setModal,
     setIsLoading,
-    formData,
-    setFormData,
-    resetForm,
     openMenu,
     setOpenMenu,
     setToastType,
     setDeleteId,
-    setData,
+    deleteId,
     page,
     perPage,
     setPageCount,
-  } = useAppStore();
+  } = useAppStore((state) => ({
+    modal: state.modal,
+    setModal: state.setModal,
+    deleteId: state.deleteId,
+    setIsLoading: state.setIsLoading,
+    openMenu: state.openMenu,
+    setOpenMenu: state.setOpenMenu,
+    setToastType: state.setToastType,
+    setDeleteId: state.setDeleteId,
+    page: state.page,
+    perPage: state.perPage,
+    setPageCount: state.setPageCount,
+  }));
 
   // Dynamic API calls based on tip type with server-side auth
-  const {
-    data: data,
-    isFetched,
-    isFetching,
-  } = (api.list as any)[apiEndpoint].useQuery({ page, perPage });
+  const { data, isFetched, isFetching } = api.list.link.useQuery({
+    categoryTitle: pageTitle,
+    page,
+    perPage,
+  });
+
+  const onEdit = (row: Row<any>) => {
+    setForm({
+      title: "Edit Data",
+      description: "Edit selected data",
+      label: "update",
+    });
+    
+    setInitialData({
+      id: row.original.id,
+      title: row.original.title,
+      description: row.original.description,
+      url: row.original.url,
+    });
+    setModal(true);
+  };
+
+  const onDelete = (row: Row<any>) => {
+    const rowData = row.original;
+    setDeleteId(rowData.id);
+    deleteData(rowData.id);
+  };
+
+  // Create columns with handlers
+  const columns = createColumns({
+    onEdit,
+    onDelete,
+    deleteId,
+    pageTitle,
+  });
+
 
   const { mutate: createData, isPending: pendingCreate } =
-    (api.create as any)[apiEndpoint].useMutation({
+    api.create.link.useMutation({
       onSuccess: async () => {
-        await invalidateList();
-      },
-      onSettled: () => {
+        await utils.list.link.invalidate();
+        setToastType({ type: ToastTypes.ADDED });
         setModal(false);
-        resetForm();
-        setToastType(ToastTypes.ADDED);
+      },
+      onError: (err) => {
+        setToastType({ type: ToastTypes.ERROR, data: err.message });
       },
     });
 
   const { mutate: updateData, isPending: pendingUpdate } =
-    (api.update as any)[apiEndpoint].useMutation({
+    api.update.link.useMutation({
       onSuccess: async () => {
-        await invalidateList();
-      },
-      onSettled: () => {
+        await utils.list.link.invalidate();
+        setToastType({ type: ToastTypes.UPDATED });
         setModal(false);
-        resetForm();
-        setToastType(ToastTypes.UPDATED);
       },
     });
 
   const { mutate: deleteData, isPending: pendingDelete } =
-    (api.delete as any)[apiEndpoint].useMutation({
+    api.delete.link.useMutation({
       onSuccess: async () => {
-        await invalidateList();
-      },
-      onSettled: () => {
+        await utils.list.link.invalidate();
+        setToastType({ type: ToastTypes.DELETED });
         setModal(false);
-        setToastType(ToastTypes.DELETED);
         setDeleteId(0);
       },
     });
 
   useEffect(() => {
-    if (!isFetched) return;
-    setData(data?.data ?? []);
-    setPageCount(Math.ceil((data?.total || 0) / perPage));
-  }, [data, isFetched]);
+    if (!isFetched || !data) return;
+    setPageCount(data.totalPages);
+    setCategory(data.category)
+  }, [data, isFetched, perPage, setPageCount]);
 
   useEffect(() => {
     setIsLoading(pendingDelete || pendingUpdate || pendingCreate);
   }, [pendingUpdate, pendingDelete, pendingCreate]);
 
   useEffect(() => {
-    if (!modal)
+    if (!modal) {
       setForm({
-        title: "Create New",
+        title:"Create New",
         description: "Add new data",
         label: "Create",
       });
+      // Reset initial data when modal closes
+      setInitialData(undefined);
+    }
   }, [modal]);
 
-  const invalidateList = async () => {
-    await (utils.list as any)[apiEndpoint].invalidate();
-  };
+  const handleSave = (formData: FormState) => {
+    setIsLoading(true);
 
-  const handleSave = () => {
+    // Type guard and data preparation
     createData({
-      ...formData,
+      title: formData.title,
+      url: formData.url,
+      categoryId: category?.id || 1, // Use category id or default to 1
       description: formData.description || formData.title,
     });
   };
 
-  const handleUpdate = () => {
-    const tmpForm = formData as unknown as CommonOutputType;
-    updateData(tmpForm);
-  };
-
-  const onEdit = (row: Row<CommonOutputType>) => {
-    setForm({
-      title: "Edit Data",
-      description: "Edit selected data",
-      label: "update",
-    });
-    setFormData({
-      title: row.original.title,
-      description: row.original.description,
-      url: row.original.url,
-      isPublic: row.original.isPublic,
-      categoryId: 1, // Default categoryId since CommonOutputType doesn't have it
-    });
-    setModal(true);
-  };
-
-  const onDelete = (row: Row<CommonOutputType>) => {
-    setDeleteId(row.original.id);
-    deleteData(row.original.id);
+  const handleUpdate = (formData: FormState) => {
+    setIsLoading(true);
+    
+    updateData(formData);
   };
 
   return (
     <>
       <CustomDialog
-        {...{ ...form }}
-        action={form.label == "update" ? handleUpdate : handleSave}
+        {...{
+          initialData: initialData,
+          defaultType: pageTitle,
+          action: form.label == "update" ? handleUpdate : handleSave,
+          title: form.title,
+          description: form.description,
+          label: form.label,
+        }}
       />
       <div className="flex flex-col gap-2 p-5">
-        <div className="flex flex-col gap-2 font-bold sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-2">
-            <span onClick={() => setOpenMenu(!openMenu)}>
-              <HamburgerMenuIcon className="block h-5 w-5 sm:hidden" />
-            </span>
-            <div className="flex items-center gap-2">
-              <span className="text-2xl capitalize">{pageTitle}</span>
-              {isFetching && <ReloadIcon className="animate-spin" />}
-            </div>
-          </div>
-          <Button onClick={() => setModal(true)} className="flex gap-2">
-            <PlusIcon className="h-4 w-4" />
-            Add New
-          </Button>
-        </div>
+        <PageHeader
+          title={pageTitle} 
+          label='Add New'
+          action={() => setModal(true)}
+          setOpenMenu={() => setOpenMenu(!openMenu)}
+          isFetching={isFetching}
+        />
         <hr />
-        <PageTable {...{ onEdit, onDelete, loading: isFetching }} />
+        <PageTable 
+          data={data?.data || []} 
+          columns={columns as any}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          loading={isFetching}
+        />
       </div>
     </>
   );
 };
 
-export default CategoryPage;
+export default DynamicPage;

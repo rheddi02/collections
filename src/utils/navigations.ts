@@ -18,9 +18,6 @@ export const useNavigationLists = (): NavigationType[] => {
       title: category.title,
       route: "/admin/" + category.title.toLowerCase().replaceAll(" ", "-"),
       subRoute: [],
-      description:
-        category.description ||
-        "Category management for organizing your content.",
     })),
   ], [categories]);
 };
