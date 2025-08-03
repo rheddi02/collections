@@ -4,7 +4,7 @@ import CardTemplate from "~/app/admin/_components/card";
 import { Button } from "~/components/ui/button";
 import { api } from "~/trpc/react";
 import { useNavigationLists } from "~/utils/navigations";
-import OtpCode, { InputOTPForm } from "../_components/otp-code";
+import { InputOTPForm } from "../_components/otp-code";
 import { useState } from "react";
 
 const Dashboard = () => {
