@@ -3,9 +3,10 @@ import React, { useEffect, useReducer, useState } from "react";
 import useAppStore from "~/store/app.store";
 import { api } from "~/trpc/react";
 import type { Row } from "@tanstack/react-table";
-import { categoryInput, categoryOutput } from "~/server/api/client/types";
+import { categoryOutput } from "~/server/api/client/types";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
+import { useSession } from "next-auth/react";
 
 // Form state type
 interface FormState {
@@ -54,6 +55,7 @@ function formReducer(state: FormState, action: FormAction): FormState {
 }
 
 const CategoryForm = () => {
+  const { data: session } = useSession();
   const { setCategories } = useAppStore((state) => ({
     setCategories: state.setCategories,
   }));
@@ -130,6 +132,15 @@ const CategoryForm = () => {
     dispatch({ type: "SET_TITLE", payload: value });
   };
 
+  const handleAddCategory = () => {
+    if (!session?.user.isVerified) {
+      alert("Please verify your email to add categories.");
+      return;
+    }
+    setIsAdd(true);
+    dispatch({ type: "RESET_FORM" });
+  };
+
   return (
     <div className="flex flex-col gap-4">
       {!isAdd ? (
@@ -137,7 +148,7 @@ const CategoryForm = () => {
           variant={"ghost"}
           size={"sm"}
           className="text-xs"
-          onClick={() => setIsAdd(!isAdd)}
+          onClick={handleAddCategory}
         >
           Add Category
         </Button>
