@@ -272,6 +272,8 @@ model Users {
   password    String
   role        Role     @default(USER)
   isVerified  Boolean  @default(false) @map("is_verified")
+  verificationCode String? @map("verification_code")
+  verificationCodeExpires DateTime? @map("verification_code_expires")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
   profile     String?  @map("profile") // Optional profile field for user profile information

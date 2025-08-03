@@ -3,6 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
+import { api } from "~/trpc/react"
+import { useSession } from "next-auth/react"
 
 import { Button } from "~/components/ui/button"
 import {
@@ -26,7 +28,8 @@ const FormSchema = z.object({
   }),
 })
 
-export function InputOTPForm() {
+export function InputOTPForm({ onBack }: { onBack?: () => void }) {
+  const { update } = useSession();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -34,9 +37,24 @@ export function InputOTPForm() {
     },
   })
 
+  const verifyOTPMutation = api.auth.verifyOTP.useMutation({
+    onSuccess: async () => {
+      // Update the session to reflect the verified status
+      await update();
+      // The component will automatically re-render and show the dashboard
+      // because the session.user.isVerified will now be true
+    },
+    onError: (error) => {
+      form.setError("pin", {
+        type: "manual",
+        message: error.message,
+      });
+    },
+  });
+
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log("🚀 ~ onSubmit ~ data:", data)
-}
+    verifyOTPMutation.mutate({ otp: data.pin });
+  }
 
   return (
     <Form {...form}>
@@ -67,9 +85,23 @@ export function InputOTPForm() {
           )}
         />
 
-        <Button type="submit" disabled={form.watch("pin").length < 6}>
-          Submit
+        <Button 
+          type="submit" 
+          disabled={form.watch("pin").length < 6 || verifyOTPMutation.isPending}
+        >
+          {verifyOTPMutation.isPending ? "Verifying..." : "Submit"}
         </Button>
+        
+        {onBack && (
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={onBack}
+            disabled={verifyOTPMutation.isPending}
+          >
+            Request New Code
+          </Button>
+        )}
       </form>
     </Form>
   )

@@ -8,9 +8,12 @@ import { InputOTPForm } from "../_components/otp-code";
 import { useState } from "react";
 
 const Dashboard = () => {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
+  console.log("🚀 ~ Dashboard ~ session:", session)
+  console.log("🚀 ~ Dashboard ~ isVerified:", session?.user?.isVerified)
   const [isSent, setIsSent] = useState(false);
   const navList = useNavigationLists(); // Now reactive to category changes
+  
   const {
     data: counts,
     isFetching,
@@ -22,23 +25,61 @@ const Dashboard = () => {
       refetchOnWindowFocus: false, // Don't refetch on window focus
     },
   );
+
+  const sendOTPMutation = api.auth.sendOTP.useMutation({
+    onSuccess: () => {
+      setIsSent(true);
+    },
+    onError: (error) => {
+      console.error("Failed to send OTP:", error);
+      alert("Failed to send OTP. Please try again.");
+    },
+  });
+
+  const forceVerifyMutation = api.auth.forceVerify.useMutation({
+    onSuccess: async () => {
+      await update();
+      alert("User verified successfully!");
+    },
+    onError: (error) => {
+      console.error("Failed to force verify:", error);
+      alert("Failed to force verify. Please try again.");
+    },
+  });
+
   const handleVerify = () => {
-    setIsSent(true);
-    // send otp 6 digit code to user's email
-    // This function can be implemented to trigger the OTP verification process
-    alert("OTP sent to your email. Please check your inbox.");
+    sendOTPMutation.mutate();
   };
 
   if (!session?.user.isVerified) {
     return (
       <div className="flex h-screen flex-col items-center justify-center ">
         {isSent ? (
-          <InputOTPForm />
+          <InputOTPForm onBack={() => setIsSent(false)} />
         ) : (
           <>
             <p className="my-5">Please verify your email to access features.</p>
-            <Button variant={"default"} onClick={handleVerify}>
-              Verify Now
+            <Button 
+              variant={"default"} 
+              onClick={handleVerify}
+              disabled={sendOTPMutation.isPending}
+            >
+              {sendOTPMutation.isPending ? "Sending..." : "Verify Now"}
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => update()}
+              className="mt-2"
+            >
+              Refresh Status
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={() => forceVerifyMutation.mutate()}
+              className="mt-2"
+              disabled={forceVerifyMutation.isPending}
+            >
+              {forceVerifyMutation.isPending ? "Verifying..." : "Force Verify (Dev)"}
             </Button>
           </>
         )}

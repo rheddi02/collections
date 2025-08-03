@@ -5,6 +5,7 @@ import { deleteRouter } from "./routers/delete";
 import { getRouter } from "./routers/get";
 import { countRouter } from "./routers/count";
 import { listRouter } from "./routers/list";
+import { authRouter } from "./routers/auth";
 
 /**
  * This is the primary router for your server.
@@ -12,6 +13,7 @@ import { listRouter } from "./routers/list";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
+  auth: authRouter,
   count: countRouter,
   create: createRouter,
   update: updateRouter,
