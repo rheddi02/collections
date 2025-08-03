@@ -5,94 +5,20 @@ import {
   ReloadIcon,
 } from "@radix-ui/react-icons";
 import { useRouter, useSelectedLayoutSegments } from "next/navigation";
-import React, { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { Label } from "~/components/ui/label";
 import { cn } from "~/lib/utils";
 import useAppStore from "~/store/app.store";
 import usePaginationStore from "~/store/pagination.store";
-import { api } from "~/trpc/react";
-import { NavigationLists } from "~/utils/navigations";
 import type { NavigationType } from "~/utils/types";
 import { signOut } from "next-auth/react";
+import { useNavigationLists } from "~/utils/navigations";
+import { Fragment } from "react";
+import CategoryForm from "./category/page";
 
 export default function Navigation() {
-  const [navList] = useState<NavigationType[]>(NavigationLists);
-  const setIsLoading = useAppStore((state) => state.setIsLoading);
-
-  const { page, perPage } = usePaginationStore((state) => ({
-    perPage: state.perPage,
-    page: state.page,
-  }));
-  const { refetch: fetchHome, isFetching: fetchingHome } =
-    api.list.homeTip.useQuery({ page, perPage }, { enabled: false });
-  const { refetch: fetchBeauty, isFetching: fetchingBeauty } =
-    api.list.beautyTip.useQuery({ page, perPage }, { enabled: false });
-  const { refetch: fetchHealth, isFetching: fetchingHealth } =
-    api.list.healthTip.useQuery({ page, perPage }, { enabled: false });
-  const { refetch: fetchEquipment, isFetching: fetchingEquipment } =
-    api.list.equipmentTip.useQuery({ page, perPage }, { enabled: false });
-  const { refetch: fetchEnergy, isFetching: fetchingEnergy } =
-    api.list.energyTip.useQuery({ page, perPage }, { enabled: false });
-  const { refetch: fetchLeisure, isFetching: fetchingLeisure } =
-    api.list.leisureTip.useQuery({ page, perPage }, { enabled: false });
-  const { refetch: fetchRide, isFetching: fetchingRide } =
-    api.list.rideTip.useQuery({ page, perPage }, { enabled: false });
-  const { refetch: fetchMachinery, isFetching: fetchingMachinery } =
-    api.list.machineryTip.useQuery({ page, perPage }, { enabled: false });
-  const { refetch: fetchPlant, isFetching: fetchingPlant } =
-    api.list.plantTip.useQuery({ page, perPage }, { enabled: false });
-  const { refetch: fetchCloth, isFetching: fetchingCloth } =
-    api.list.clothTip.useQuery({ page, perPage }, { enabled: false });
-  const { refetch: fetchPet, isFetching: fetchingPet } =
-    api.list.petTip.useQuery({ page, perPage }, { enabled: false });
-  const { refetch: fetchFood, isFetching: fetchingFood } =
-    api.list.foodTip.useQuery({ page, perPage }, { enabled: false });
-
-  useEffect(() => {
-    setIsLoading(
-      fetchingHome ||
-        fetchingBeauty ||
-        fetchingHealth ||
-        fetchingEquipment ||
-        fetchingEnergy ||
-        fetchingLeisure ||
-        fetchingRide ||
-        fetchingMachinery ||
-        fetchingPlant ||
-        fetchingCloth ||
-        fetchingPet ||
-        fetchingFood,
-    );
-  }, [
-    fetchingHome,
-    fetchingBeauty,
-    fetchingHealth,
-    fetchingEquipment,
-    fetchingEnergy,
-    fetchingLeisure,
-    fetchingRide,
-    fetchingMachinery,
-    fetchingPlant,
-    fetchingCloth,
-    fetchingPet,
-    fetchingFood,
-  ]);
-
-  const handleReload = async (segment: string | undefined) => {
-    if (segment?.includes("home")) await fetchHome();
-    if (segment?.includes("beauty")) await fetchBeauty();
-    if (segment?.includes("health")) await fetchHealth();
-    if (segment?.includes("food")) await fetchFood();
-    if (segment?.includes("pet")) await fetchPet();
-    if (segment?.includes("cloth")) await fetchCloth();
-    if (segment?.includes("plant")) await fetchPlant();
-    if (segment?.includes("machinery")) await fetchMachinery();
-    if (segment?.includes("ride")) await fetchRide();
-    if (segment?.includes("leisure")) await fetchLeisure();
-    if (segment?.includes("energy")) await fetchEnergy();
-    if (segment?.includes("equipment")) await fetchEquipment();
-  };
+  const navList = useNavigationLists(); // Now reactive to category changes
+  const handleReload = async (segment: string | undefined) => {};
 
   return (
     <div className="flex h-screen flex-col gap-2">
@@ -100,8 +26,6 @@ export default function Navigation() {
     </div>
   );
 }
-
-// export default Navigation;
 
 const Nav = ({
   navList,
@@ -122,7 +46,7 @@ const Nav = ({
   const segment = segments.pop();
 
   const handleRoute = (route: NavigationType) => {
-    setData([])
+    setData([]);
     if (route.subRoute.length) {
       router.push(route.subRoute[0]!.route);
     } else {
@@ -135,7 +59,7 @@ const Nav = ({
   };
 
   const logout = () => {
-    signOut({ callbackUrl: '/client' });
+    signOut({ callbackUrl: "/client" });
   };
 
   return (
@@ -158,7 +82,7 @@ const Nav = ({
         <ArrowTopRightIcon />
       </div>
       {navList.map((navigation) => (
-        <React.Fragment key={navigation.route}>
+        <Fragment key={navigation.route}>
           <div
             className={twMerge(
               "group flex items-center justify-between rounded-md p-2 capitalize hover:cursor-pointer hover:bg-gray-400 hover:text-gray-800",
@@ -183,8 +107,9 @@ const Nav = ({
           {!!navigation.subRoute.length && (
             <Nav navList={navigation.subRoute} isChild={true} />
           )}
-        </React.Fragment>
+        </Fragment>
       ))}
+      <CategoryForm />
       <div
         className={twMerge(
           "group flex items-center gap-2 rounded-md p-2 capitalize hover:cursor-pointer",

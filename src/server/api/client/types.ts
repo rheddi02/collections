@@ -25,34 +25,11 @@ export type CommonOutputType = {
 }
 
 export type formData =
-  | homeInput
-  | homeOutput
-  | beautyInput
-  | beautyOutput
-  | equipmentInput
-  | equipmentOutput
-  | healthInput
-  | healthOutput
   | linkInput
   | linkOutput
 
 export type linkInput = RouterInput["create"]["link"];
 export type linkOutput = RouterOutput["create"]['link'];
-
-export type homeInput = RouterInput["create"]["homeTip"];
-export type homeOutput = RouterOutput["create"]['homeTip'];
-
-export type beautyInput = RouterInput["create"]['beautyTip'];
-export type beautyOutput = RouterOutput["create"]['beautyTip'];
-
-export type equipmentInput = RouterInput["create"]['equipmentTip'];
-export type equipmentOutput = RouterOutput["create"]['equipmentTip'];
-
-export type healthInput = RouterInput["create"]['healthTip'];
-export type healthOutput = RouterOutput["create"]['healthTip'];
-
-export type videoInput = RouterInput["create"]['video'];
-export type videoOutput = RouterOutput["create"]['video'];
 
 export type coinInput = RouterInput["create"]['coin'];
 export type coinOutput = RouterOutput["create"]['coin'];

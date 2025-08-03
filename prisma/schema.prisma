@@ -238,9 +238,12 @@ enum Role {
 model Categories {
   id          Int     @id @default(autoincrement())
   title       String
-  description String
   Coins       Coins[]
   Links       Links[]
+  userId    Int
+  user      Users    @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([id])
 }
@@ -285,6 +288,7 @@ model Users {
   videos      Videos[]
   coins       Coins[]
   links       Links[]
+  categories  Categories[]
 
   @@index([id])
   @@index([username])

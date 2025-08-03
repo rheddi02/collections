@@ -34,7 +34,7 @@ interface PageProps {
   };
 }
 
-const TipsPage = ({ params }: PageProps) => {
+const CategoryPage = ({ params }: PageProps) => {
   const { type } = params;
   const pageTitle = type;
   const apiEndpoint = TIP_TYPE_MAP[type];
@@ -133,12 +133,11 @@ const TipsPage = ({ params }: PageProps) => {
     createData({
       ...formData,
       description: formData.description || formData.title,
-      type: formData.type || "general",
     });
   };
 
   const handleUpdate = () => {
-    const tmpForm = formData as CommonOutputType;
+    const tmpForm = formData as unknown as CommonOutputType;
     updateData(tmpForm);
   };
 
@@ -149,7 +148,11 @@ const TipsPage = ({ params }: PageProps) => {
       label: "update",
     });
     setFormData({
-      ...row.original,
+      title: row.original.title,
+      description: row.original.description,
+      url: row.original.url,
+      isPublic: row.original.isPublic,
+      categoryId: 1, // Default categoryId since CommonOutputType doesn't have it
     });
     setModal(true);
   };
@@ -188,4 +191,4 @@ const TipsPage = ({ params }: PageProps) => {
   );
 };
 
-export default TipsPage;
+export default CategoryPage;

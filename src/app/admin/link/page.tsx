@@ -38,7 +38,6 @@ const LinkPage = () => {
     page,
     perPage,
     setPageCount,
-    setCategories
   } = useAppStore((state => ({
     modal: state.modal,
     setModal: state.setModal,
@@ -54,7 +53,6 @@ const LinkPage = () => {
     page: state.page,
     perPage: state.perPage,
     setPageCount: state.setPageCount,
-    setCategories: state.setCategories,
   })));
 
   // Dynamic API calls based on tip type with server-side auth
@@ -99,15 +97,6 @@ const LinkPage = () => {
         setDeleteId(0);
       },
     });
-
-  const { data:categories, isFetched: isFetchedCategories } = api.list.categories.useQuery({
-    page: 1,
-  });
-
-  useEffect(() => {
-    if (!isFetchedCategories) return;
-    setCategories(categories);
-  }, [categories, isFetchedCategories]);
 
   useEffect(() => {
     if (!isFetched) return;
