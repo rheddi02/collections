@@ -60,7 +60,7 @@ const DynamicPage = ({ params }: PageProps) => {
   }));
 
   // Dynamic API calls based on tip type with server-side auth
-  const { data, isFetched, isFetching } = api.list.link.useQuery({
+  const { data, isFetched, isFetching, refetch } = api.list.link.useQuery({
     categoryTitle: pageTitle,
     page,
     perPage,
@@ -193,6 +193,7 @@ const DynamicPage = ({ params }: PageProps) => {
           action={() => setModal(true)}
           setOpenMenu={() => setOpenMenu(!openMenu)}
           isFetching={isFetching}
+          reload={refetch}
         />
         <hr />
         <PageTable 

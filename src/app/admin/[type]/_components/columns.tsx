@@ -45,15 +45,6 @@ export const createColumns = ({ onEdit, onDelete, deleteId, pageTitle }: Columns
     },
   },
   {
-    accessorKey: "type",
-    header: () => {
-      return <div className="font-bold">Type</div>;
-    },
-    cell: ({ row }) => {
-      return <div className="">{row.getValue("type") || pageTitle}</div>;
-    },
-  },
-  {
     accessorKey: "actions",
     header: () => {
       return <div className="font-bold"></div>;
