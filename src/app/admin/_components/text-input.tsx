@@ -64,7 +64,7 @@ export function TextInput({
                 placeholder={placeholder}
                 disabled={disabled}
                 className={cn(
-                  fieldState.error && "border-destructive focus-visible:ring-destructive",
+                  fieldState.error && "border-destructive focus-visible:ring-destructive focus:border-0",
                   (isPasswordField && showPasswordToggle) && "pr-10",
                   className
                 )}

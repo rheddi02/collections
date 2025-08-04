@@ -1,43 +1,66 @@
 "use client";
-import { ReloadIcon } from "@radix-ui/react-icons";
+import { Pencil1Icon, TrashIcon } from "@radix-ui/react-icons";
 import { useRouter, useSelectedLayoutSegments } from "next/navigation";
 import { twMerge } from "tailwind-merge";
 import { Label } from "~/components/ui/label";
 import { cn } from "~/lib/utils";
 import useAppStore from "~/store/app.store";
-import type { NavigationType } from "~/utils/types";
+import { type NavigationType } from "~/utils/types";
 import { useNavigationLists } from "~/utils/navigations";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import CategoryForm from "./category-form";
 import LogoutBtn from "./logout-btn";
 import UserProfile from "./user-profile";
+import DeleteCategoryDialog from "./delete-category-dialog";
 
 export default function Navigation() {
   const navLists = useNavigationLists(); // Now reactive to category changes
-  const handleReload = async (segment: string | undefined) => {};
+  const [deleteCategory, setDeleteCategory] = useState<NavigationType | null>(null);
+
+  const handleEdit = (nav: NavigationType) => {
+    console.log("🚀 ~ handleEdit ~ nav:", nav);
+  };
+  
+  const handleDelete = (nav: NavigationType) => {
+    setDeleteCategory(nav);
+  };
+
+  const handleCloseDialog = () => {
+    setDeleteCategory(null);
+  };
 
   return (
-    <div className="flex h-screen w-72 flex-col gap-2 p-2">
-      <UserProfile />
-      <div className="h-auto overflow-auto custom-scrollbar overscroll-none">
-        <Nav {...{ navLists, handleReload }} />
+    <>
+      <div className="flex h-screen w-72 flex-col gap-2 p-2">
+        <UserProfile />
+        <div className="custom-scrollbar h-auto overflow-auto overscroll-none">
+          <Nav {...{ navLists, handleEdit, handleDelete }} />
+        </div>
+        <div className="mt-auto flex flex-col gap-2">
+          <CategoryForm />
+          <LogoutBtn />
+        </div>
       </div>
-      <div className="mt-auto flex flex-col gap-2">
-        <CategoryForm />
-        <LogoutBtn />
-      </div>
-    </div>
+
+      <DeleteCategoryDialog
+        category={deleteCategory}
+        isOpen={!!deleteCategory}
+        onClose={handleCloseDialog}
+      />
+    </>
   );
 }
 
 const Nav = ({
   navLists,
   isChild = false,
-  handleReload,
+  handleDelete,
+  handleEdit,
 }: {
   navLists: NavigationType[];
   isChild?: boolean;
-  handleReload?: (segment: string | undefined) => Promise<void>;
+  handleDelete?: (nav: NavigationType) => void;
+  handleEdit?: (nav: NavigationType) => void;
 }) => {
   const { openMenu, isLoading } = useAppStore((state) => ({
     openMenu: state.openMenu,
@@ -55,10 +78,6 @@ const Nav = ({
     }
   };
 
-  const handleReloadSegment = async () => {
-    if (handleReload) await handleReload(segment);
-  };
-
   return (
     <div
       className={cn(
@@ -71,7 +90,7 @@ const Nav = ({
           <div
             className={twMerge(
               "group flex items-center justify-between rounded-md p-2 capitalize hover:cursor-pointer hover:bg-gray-400 hover:text-gray-800",
-              navigation.route.includes(segment!) &&
+              segment === navigation.title.toLowerCase().replaceAll(" ", "-") &&
                 !navigation.subRoute.length &&
                 "bg-gray-300 font-semibold text-gray-800",
               isChild && "pl-8",
@@ -79,15 +98,29 @@ const Nav = ({
             onClick={() => handleRoute(navigation)}
           >
             <Label className="select-none">{navigation.title}</Label>
-            {segment == navigation.title.replaceAll(" ", "-") && (
-              <ReloadIcon
-                onClick={handleReloadSegment}
-                className={cn(
-                  isLoading && "animate-spin",
-                  "text-gray-500 group-hover:text-gray-800",
-                )}
-              />
-            )}
+            {segment === navigation.title.toLowerCase().replaceAll(" ", "-") && navigation.id !== 0 ? (
+              <div className="flex gap-1">
+                <div className="group rounded-full p-1 hover:bg-gray-900">
+                  <Pencil1Icon
+                    onClick={() => handleEdit && handleEdit(navigation)}
+                    className={cn(
+                      "h-4 w-4 text-gray-900 group-hover:text-gray-100",
+                    )}
+                  />
+                </div>
+                <div className="group rounded-full p-1 hover:bg-red-900">
+                  <TrashIcon
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete && handleDelete(navigation);
+                    }}
+                    className={cn(
+                      "h-4 w-4 text-red-900 group-hover:text-red-100",
+                    )}
+                  />
+                </div>
+              </div>
+            ) : null}
           </div>
           {!!navigation.subRoute.length && (
             <Nav navLists={navigation.subRoute} isChild={true} />

@@ -9,12 +9,14 @@ export const useNavigationLists = (): NavigationType[] => {
   
   return useMemo(() => [
     {
+      id: 0,
       title: "dashboard",
       route: "/admin/dashboard",
       subRoute: [],
       image: "",
     },
     ...categories.map((category) => ({
+      id: category.id,
       title: category.title,
       route: "/admin/" + category.title.toLowerCase().replaceAll(" ", "-"),
       subRoute: [],

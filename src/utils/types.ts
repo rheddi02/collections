@@ -1,4 +1,5 @@
 export type NavigationType = {
+  id?: number
   title: string
   route: string
   image?: string
