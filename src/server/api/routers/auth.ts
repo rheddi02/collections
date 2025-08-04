@@ -1,8 +1,9 @@
 import { z } from "zod";
 import { createTRPCRouter, authenticatedProcedure } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-// import { Resend } from 'resend';
+import { Resend } from 'resend';
 import nodemailer from 'nodemailer';
+import bcrypt from 'bcryptjs';
 
 /**
  * Email Service Configuration:
@@ -185,6 +186,64 @@ export const authRouter = createTRPCRouter({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to verify OTP. Please try again.",
+        });
+      }
+    }),
+
+  changePassword: authenticatedProcedure
+    .input(z.object({
+      currentPassword: z.string().min(1, "Current password is required"),
+      newPassword: z.string().min(6, "New password must be at least 6 characters"),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      try {
+        // Get user's current password from database
+        const user = await ctx.db.users.findUnique({
+          where: { id: parseInt(ctx.session.user.id) },
+          select: { password: true },
+        });
+
+        if (!user) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "User not found",
+          });
+        }
+
+        // Verify current password
+        const isCurrentPasswordValid = await bcrypt.compare(
+          input.currentPassword,
+          user.password
+        );
+
+        if (!isCurrentPasswordValid) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Current password is incorrect",
+          });
+        }
+
+        // Hash new password
+        const hashedNewPassword = await bcrypt.hash(input.newPassword, 12);
+
+        // Update password in database
+        await ctx.db.users.update({
+          where: { id: parseInt(ctx.session.user.id) },
+          data: { password: hashedNewPassword },
+        });
+
+        return {
+          success: true,
+          message: "Password updated successfully",
+        };
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        console.error("Error changing password:", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to change password. Please try again.",
         });
       }
     }),
