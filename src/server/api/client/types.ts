@@ -6,14 +6,12 @@ type RouterOutput = inferRouterOutputs<AppRouter>;
 
 export type linkInput = RouterInput["create"]["link"];
 export type linkOutput = RouterOutput["create"]['link'];
-
-export type coinInput = RouterInput["create"]['coin'];
-export type coinOutput = RouterOutput["create"]['coin'];
+export type linkListOutput = RouterOutput["list"]["link"];
 
 export type categoryInput = RouterInput["create"]['category'];
 export type categoryOutput = RouterOutput["create"]['category'];
 
 export type CommonOutputType =
-  | coinOutput
   | linkOutput
-  | categoryOutput;
+  | linkListOutput
+  | categoryOutput

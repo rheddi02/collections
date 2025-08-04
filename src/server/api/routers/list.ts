@@ -22,42 +22,32 @@ export const listRouter = createTRPCRouter({
       const skip = (page - 1) * (perPage || 10);
 
       // First find the category by title
-      const category = await ctx.db.categories.findFirst({
+      const category = await ctx.db.categories.findFirstOrThrow({
         where: {
           title: {
             equals: categoryTitle,
             mode: 'insensitive', // Case-insensitive search
           },
+          userId: parseInt(ctx.user.id), // Add user security check
         },
       });
-
-      if (!category) {
-        return {
-          data: [],
-          total: 0,
-          page,
-          perPage: perPage || 10,
-          totalPages: 0,
-        };
-      }
 
       const [data, total] = await Promise.all([
         ctx.db.links.findMany({
           where: {
             categoryId: category.id,
+            userId: parseInt(ctx.user.id), // Add user security check
           },
           skip,
           take: perPage,
           orderBy: {
             id: 'desc',
           },
-          include: {
-            category: true,
-          },
         }),
         ctx.db.links.count({
           where: {
             categoryId: category.id,
+            userId: parseInt(ctx.user.id), // Add user security check
           },
         }),
       ]);
@@ -68,39 +58,7 @@ export const listRouter = createTRPCRouter({
         page,
         perPage,
         totalPages: Math.ceil(total / perPage),
-        category: {
-          id: category.id,
-          title: category.title,
-        },
-      };
-    }),
-
-  coin: authenticatedProcedure
-    .input(paginationInput)
-    .query(async ({ ctx, input }) => {
-      const { page, perPage } = input;
-      const skip = (page - 1) * (perPage||10);
-
-      const [data, total] = await Promise.all([
-        ctx.db.coins.findMany({
-          skip,
-          take: perPage,
-          orderBy: {
-            id: 'desc',
-          },
-          include: {
-            categories: true,
-          },
-        }),
-        ctx.db.coins.count(),
-      ]);
-
-      return {
-        data,
-        total,
-        page,
-        perPage,
-        totalPages: Math.ceil(total / (perPage||10)),
+        category
       };
     }),
   categories: authenticatedProcedure

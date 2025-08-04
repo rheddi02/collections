@@ -7,16 +7,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
 import {
   Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
 } from "~/components/ui/form";
 import { api } from "~/trpc/react";
 import { useToast } from "~/components/ui/use-toast";
@@ -53,6 +45,8 @@ const Profile = () => {
       confirmPassword: "",
     },
   });
+
+  const { data } = api.profile.getCount.useQuery()
 
   // Update password mutation
   const changePasswordMutation = api.auth.changePassword.useMutation({
@@ -145,8 +139,8 @@ const Profile = () => {
             {session?.user.email}
           </p>
           <div className="mt-2 flex gap-5">
-            <span> <strong>1000</strong> Links</span>
-            <span> <strong>100</strong> Categories</span>
+            <span> <strong>{data?.totalLinks}</strong> Links</span>
+            <span> <strong>{data?.totalCategory}</strong> Categories</span>
           </div>
         </div>
       </div>

@@ -93,7 +93,7 @@ const CategoryForm = () => {
 
   const { mutate: createData, isPending: pendingCreate } =
     api.create.category.useMutation({
-      onSuccess: async () => {
+      onSuccess: async (data) => {
         await utils.list.categories.invalidate();
         toast({
           title: "Success",
@@ -101,6 +101,7 @@ const CategoryForm = () => {
         });
         form.reset();
         setIsAdd(false);
+        router.push(`/admin/${data.title}`)
       },
       onError: (error) => {
         toast({

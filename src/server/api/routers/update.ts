@@ -8,6 +8,7 @@ export const updateRouter = createTRPCRouter({
       z.object({
         id: z.number(),
         title: z.string().min(1),
+        isPinned: z.boolean().default(false).optional()
       }),
     )
     .mutation(async ({ ctx, input }) => {

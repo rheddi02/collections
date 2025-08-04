@@ -8,6 +8,10 @@ import { ToastTypes } from "~/utils/types";
 import PageTable from "../_components/table/page-table";
 import { createColumns } from "~/app/admin/[type]/_components/columns";
 import PageHeader from "../_components/page-header";
+import type { linkListOutput } from "~/server/api/client/types";
+
+// Type for individual link data from the list
+type LinkData = NonNullable<linkListOutput['data'][number]>;
 
 interface PageProps {
   params: {
@@ -62,7 +66,7 @@ const DynamicPage = ({ params }: PageProps) => {
     perPage,
   });
 
-  const onEdit = (row: Row<any>) => {
+  const onEdit = (row: Row<LinkData>) => {
     setForm({
       title: "Edit Data",
       description: "Edit selected data",
@@ -78,7 +82,7 @@ const DynamicPage = ({ params }: PageProps) => {
     setModal(true);
   };
 
-  const onDelete = (row: Row<any>) => {
+  const onDelete = (row: Row<LinkData>) => {
     const rowData = row.original;
     setDeleteId(rowData.id);
     deleteData(rowData.id);
@@ -127,7 +131,7 @@ const DynamicPage = ({ params }: PageProps) => {
   useEffect(() => {
     if (!isFetched || !data) return;
     setPageCount(data.totalPages);
-    setCategory(data.category)
+    setCategory(data.category!)
   }, [data, isFetched, perPage, setPageCount]);
 
   useEffect(() => {
@@ -193,9 +197,7 @@ const DynamicPage = ({ params }: PageProps) => {
         <hr />
         <PageTable 
           data={data?.data || []} 
-          columns={columns as any}
-          onEdit={onEdit}
-          onDelete={onDelete}
+          columns={columns}
           loading={isFetching}
         />
       </div>

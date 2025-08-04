@@ -1,21 +1,14 @@
 "use client";
 import DataTableCompact from "~/app/admin/_components/table/table-compact";
 import type { ColumnDef, Row } from "@tanstack/react-table";
-import {
-  EyeOpenIcon,
-  Pencil1Icon,
-  ReloadIcon,
-  TrashIcon,
-} from "@radix-ui/react-icons";
-import type { CommonOutputType } from "~/server/api/client/types";
-import Link from "next/link";
+import type { CommonOutputType, linkListOutput } from "~/server/api/client/types";
 import useAppStore from "~/store/app.store";
-import { Badge } from "~/components/ui/badge";
-import { Label } from "~/components/ui/label";
-import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 import DataTable from "./table";
 import { isMobile } from "react-device-detect";
 import { useEffect, useState } from "react";
+
+// Type for individual link data from the list
+type LinkData = NonNullable<linkListOutput['data'][number]>;
 
 const PageTable = ({
   data,
@@ -25,16 +18,14 @@ const PageTable = ({
   onRowClick,
   hiddenColumns,
   columns,
-  formatDescription
 }: {
-  data: CommonOutputType[];
-  onEdit: (row: Row<CommonOutputType>) => void;
-  onDelete: (row: Row<CommonOutputType>) => void;
-  onRowClick?: (row: Row<CommonOutputType>) => void;
+  data: LinkData[];
+  onEdit?: (row: Row<LinkData>) => void;
+  onDelete?: (row: Row<LinkData>) => void;
+  onRowClick?: (row: Row<LinkData>) => void;
   loading: boolean;
   hiddenColumns?: Record<string, boolean>;
-  formatDescription?: boolean;
-  columns: ColumnDef<CommonOutputType>[];
+  columns: ColumnDef<LinkData>[];
 }) => {
   const [isMobileView, setIsMobileView] = useState(false);
   const { pageCount, setPage } = useAppStore((state) => ({

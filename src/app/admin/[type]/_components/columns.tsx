@@ -1,21 +1,23 @@
 "use client";
 import type { ColumnDef, Row } from "@tanstack/react-table";
 import { EyeOpenIcon, Pencil1Icon, ReloadIcon, TrashIcon } from "@radix-ui/react-icons";
-import { linkOutput } from "~/server/api/client/types";
+import { linkListOutput } from "~/server/api/client/types";
 import Link from "next/link";
 import { Label } from "~/components/ui/label";
 import { Badge } from "~/components/ui/badge";
 import { ToggleGroup } from "~/components/ui/toggle-group";
 import { ToggleGroupItem } from "@radix-ui/react-toggle-group";
 
+type LinkData = NonNullable<linkListOutput['data'][number]>;
+
 interface ColumnsProps {
-  onEdit: (row: Row<linkOutput>) => void;
-  onDelete: (row: Row<linkOutput>) => void;
+  onEdit: (row: Row<LinkData>) => void;
+  onDelete: (row: Row<LinkData>) => void;
   deleteId: number[];
   pageTitle: string;
 }
 
-export const createColumns = ({ onEdit, onDelete, deleteId, pageTitle }: ColumnsProps): ColumnDef<linkOutput>[] => [
+export const createColumns = ({ onEdit, onDelete, deleteId, pageTitle }: ColumnsProps): ColumnDef<LinkData>[] => [
   {
     accessorKey: "id",
   },
@@ -56,7 +58,7 @@ export const createColumns = ({ onEdit, onDelete, deleteId, pageTitle }: Columns
     header: () => {
       return <div className="font-bold"></div>;
     },
-    cell: ({ row }: {row: Row<any>}) => {
+    cell: ({ row }: {row: Row<LinkData>}) => {
       return (
         <div className="flex items-center justify-center gap-2 p-1">
           {deleteId.includes(row.getValue("id")) ? (

@@ -28,25 +28,6 @@ import {
 //     });
 
 export const createRouter = createTRPCRouter({
-  // video: createTipCreateProcedure("videos"),
-  coin: authenticatedProcedure
-    .input(
-      z.object({
-        title: z.string().min(1),
-        categoryId: z.number(),
-        description: z.string().default(""),
-        year: z.string(),
-        type: z.enum(["NEW", "OLD", "SPECIAL"]),
-        url: z.string(),
-        isPublic: z.boolean().default(false),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      // SECURITY: Only authenticated users can create coins
-      return await ctx.db.coins.create({
-        data: { ...input, userId: parseInt(ctx.user.id) },
-      });
-    }),
   category: authenticatedProcedure
     .input(
       z.object({
@@ -68,6 +49,7 @@ export const createRouter = createTRPCRouter({
         description: z.string().default(""),
         url: z.string(),
         categoryId: z.number(),
+        isPinned: z.boolean().default(false).optional()
       }),
     )
     .mutation(async ({ ctx, input }) => {
