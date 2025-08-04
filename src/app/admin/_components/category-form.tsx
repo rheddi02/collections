@@ -7,6 +7,7 @@ import { categoryOutput } from "~/server/api/client/types";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { useSession } from "next-auth/react";
+import { Cross2Icon } from "@radix-ui/react-icons";
 
 // Form state type
 interface FormState {
@@ -160,16 +161,30 @@ const CategoryForm = () => {
           }}
           className="flex flex-col gap-2"
         >
-          <Input
-            className="border border-muted-500 focus:border-muted-700 focus:ring-2 focus:ring-green-200"
-            name="category"
-            value={formState.title}
-            onChange={(e) => handleTitleChange(e.target.value)}
-            placeholder="Enter category name"
-            disabled={formState.isLoading}
-            autoFocus
-            required
-          />
+          <div className="relative">
+            <Input
+              className="border border-muted-500 focus:border-muted-700 focus:ring-2 focus:ring-green-200 pr-8"
+              name="category"
+              value={formState.title}
+              onChange={(e) => handleTitleChange(e.target.value)}
+              placeholder="Enter category name"
+              disabled={formState.isLoading}
+              autoFocus
+              required
+            />
+            {formState.title && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 hover:bg-gray-100"
+                onClick={() => handleTitleChange("")}
+                disabled={formState.isLoading}
+              >
+                <Cross2Icon className="h-3 w-3" />
+              </Button>
+            )}
+          </div>
           <div className="flex justify-end gap-2">
             <Button 
               type="button"
