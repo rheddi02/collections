@@ -1,90 +1,74 @@
 "use client";
-import React, { useEffect, useReducer, useState } from "react";
-import useAppStore from "~/store/app.store";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { api } from "~/trpc/react";
-import type { Row } from "@tanstack/react-table";
 import { categoryOutput } from "~/server/api/client/types";
-import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
+import { Form } from "~/components/ui/form";
+import { TextInput } from "./text-input";
 import { useSession } from "next-auth/react";
-import { Cross2Icon } from "@radix-ui/react-icons";
+import { toast } from "~/components/ui/use-toast";
 
-// Form state type
-interface FormState {
-  title: string;
-  isLoading: boolean;
-}
+// Form schema
+const categoryFormSchema = z.object({
+  title: z.string().min(1, "Category name is required").max(50, "Category name must be less than 50 characters"),
+});
 
-// Form actions
-type FormAction =
-  | { type: "SET_TITLE"; payload: string }
-  | { type: "SET_LOADING"; payload: boolean }
-  | { type: "RESET_FORM" }
-  | { type: "EDIT_MODE"; payload: categoryOutput };
-
-// Initial form state
-const initialFormState: FormState = {
-  title: "",
-  isLoading: false,
-};
-
-// Form reducer
-function formReducer(state: FormState, action: FormAction): FormState {
-  switch (action.type) {
-    case "SET_TITLE":
-      return {
-        ...state,
-        title: action.payload,
-      };
-    case "SET_LOADING":
-      return {
-        ...state,
-        isLoading: action.payload,
-      };
-    case "RESET_FORM":
-      return {
-        ...initialFormState,
-      };
-    case "EDIT_MODE":
-      return {
-        ...state,
-        title: action.payload.title,
-      };
-    default:
-      return state;
-  }
-}
+type CategoryFormValues = z.infer<typeof categoryFormSchema>;
 
 const CategoryForm = () => {
   const { data: session } = useSession();
-  const { setCategories } = useAppStore((state) => ({
-    setCategories: state.setCategories,
-  }));
-
-  const [formState, dispatch] = useReducer(formReducer, initialFormState);
   const [isAdd, setIsAdd] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<categoryOutput | null>(null);
   const utils = api.useUtils();
+
+  const form = useForm<CategoryFormValues>({
+    resolver: zodResolver(categoryFormSchema),
+    defaultValues: {
+      title: "",
+    },
+  });
 
   const { mutate: createData, isPending: pendingCreate } =
     api.create.category.useMutation({
       onSuccess: async () => {
-        await utils.list.categories.invalidate(); // Also invalidate categories for navigation update
-      },
-      onSettled: () => {
-        dispatch({ type: "SET_LOADING", payload: false });
-        dispatch({ type: "RESET_FORM" });
+        await utils.list.categories.invalidate();
+        toast({
+          title: "Success",
+          description: "Category created successfully",
+        });
+        form.reset();
         setIsAdd(false);
+      },
+      onError: (error) => {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
       },
     });
 
   const { mutate: updateData, isPending: pendingUpdate } =
     api.update.category.useMutation({
       onSuccess: async () => {
-        await utils.list.categories.invalidate(); // Also invalidate categories for navigation update
-      },
-      onSettled: () => {
-        dispatch({ type: "RESET_FORM" });
+        await utils.list.categories.invalidate();
+        toast({
+          title: "Success",
+          description: "Category updated successfully",
+        });
+        form.reset();
         setIsAdd(false);
+        setEditingCategory(null);
+      },
+      onError: (error) => {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
       },
     });
 
@@ -92,55 +76,67 @@ const CategoryForm = () => {
     api.delete.category.useMutation({
       onSuccess: async () => {
         await utils.list.coin.invalidate();
-        await utils.list.categories.invalidate(); // Also invalidate categories for navigation update
+        await utils.list.categories.invalidate();
+        toast({
+          title: "Success",
+          description: "Category deleted successfully",
+        });
+      },
+      onError: (error) => {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
       },
     });
 
-  // Update loading state when mutations are pending
-  useEffect(() => {
-    dispatch({
-      type: "SET_LOADING",
-      payload: pendingCreate || pendingUpdate || pendingDelete,
-    });
-  }, [pendingCreate, pendingUpdate, pendingDelete]);
+  const isLoading = pendingCreate || pendingUpdate || pendingDelete;
 
-  const handleSave = () => {
-    if (formState.title.trim()) {
+  const onSubmit = (data: CategoryFormValues) => {
+    if (editingCategory) {
+      // Update existing category
+      updateData({
+        id: editingCategory.id,
+        title: data.title.trim(),
+      });
+    } else {
+      // Create new category
       createData({
-        title: formState.title.trim(),
+        title: data.title.trim(),
       });
     }
   };
 
-  const handleUpdate = () => {
-    // For update, we need the full categoryOutput object
-    // This would need to be passed from the parent component
-    // For now, just log that update is called
-    console.log("Update called for:", formState.title);
-  };
-
-  const onEdit = (row: Row<categoryOutput>) => {
-    dispatch({ type: "EDIT_MODE", payload: row.original });
-    setIsAdd(true); // Show the form when editing
-  };
-
-  const onDelete = (row: Row<categoryOutput>) => {
-    deleteData(row.original.id);
-  };
-
-  // Function to handle input changes
-  const handleTitleChange = (value: string) => {
-    dispatch({ type: "SET_TITLE", payload: value });
-  };
-
   const handleAddCategory = () => {
     if (!session?.user.isVerified) {
-      alert("Please verify your email to add categories.");
+      toast({
+        title: "Verification Required",
+        description: "Please verify your email to add categories.",
+        variant: "destructive",
+      });
       return;
     }
     setIsAdd(true);
-    dispatch({ type: "RESET_FORM" });
+    setEditingCategory(null);
+    form.reset();
   };
+
+  const handleCancel = () => {
+    setIsAdd(false);
+    setEditingCategory(null);
+    form.reset();
+  };
+
+  // const onEdit = (row: Row<categoryOutput>) => {
+  //   setEditingCategory(row.original);
+  //   form.setValue("title", row.original.title);
+  //   setIsAdd(true);
+  // };
+
+  // const onDelete = (row: Row<categoryOutput>) => {
+  //   deleteData(row.original.id);
+  // };
 
   return (
     <div className="flex flex-col gap-4">
@@ -154,61 +150,42 @@ const CategoryForm = () => {
           Add Category
         </Button>
       ) : (
-        <form 
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSave();
-          }}
-          className="flex flex-col gap-2"
-        >
-          <div className="relative">
-            <Input
-              className="border border-muted-500 focus:border-muted-700 focus:ring-2 focus:ring-green-200 pr-8"
-              name="category"
-              value={formState.title}
-              onChange={(e) => handleTitleChange(e.target.value)}
+        <Form {...form}>
+          <form 
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-col gap-2"
+          >
+            <TextInput
+              name="title"
               placeholder="Enter category name"
-              disabled={formState.isLoading}
+              disabled={isLoading}
+              className="border border-muted-500 focus:border-muted-700 focus:ring-2 focus:ring-green-200"
               autoFocus
               required
             />
-            {formState.title && (
-              <Button
+            
+            <div className="flex justify-end gap-2">
+              <Button 
                 type="button"
-                variant="ghost"
-                size="sm"
-                className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 hover:bg-gray-100"
-                onClick={() => handleTitleChange("")}
-                disabled={formState.isLoading}
+                variant={"ghost"} 
+                size={"sm"} 
+                onClick={handleCancel}
+                disabled={isLoading}
               >
-                <Cross2Icon className="h-3 w-3" />
+                Cancel
               </Button>
-            )}
-          </div>
-          <div className="flex justify-end gap-2">
-            <Button 
-              type="button"
-              variant={"ghost"} 
-              size={"sm"} 
-              onClick={() => {
-                setIsAdd(false);
-                dispatch({ type: "RESET_FORM" });
-              }}
-              disabled={formState.isLoading}
-            >
-              Cancel
-            </Button>
-            <Button 
-              type="submit" 
-              variant={"secondary"} 
-              size={"sm"} 
-              className="flex-grow"
-              disabled={formState.isLoading || !formState.title.trim()}
-            >
-              {formState.isLoading ? "Saving..." : "Save"}
-            </Button>
-          </div>
-        </form>
+              <Button 
+                type="submit" 
+                variant={"secondary"} 
+                size={"sm"} 
+                className="flex-grow"
+                disabled={isLoading || !form.watch("title")?.trim()}
+              >
+                {isLoading ? "Saving..." : editingCategory ? "Update" : "Save"}
+              </Button>
+            </div>
+          </form>
+        </Form>
       )}
     </div>
   );

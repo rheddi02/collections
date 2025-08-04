@@ -17,8 +17,15 @@ export default function Navigation() {
   const handleReload = async (segment: string | undefined) => {};
 
   return (
-    <div className="flex h-screen w-72 flex-col gap-2">
-      <Nav {...{ navLists, handleReload }} />
+    <div className="flex h-screen w-72 flex-col gap-2 p-2">
+      <UserProfile />
+      <div className="h-auto overflow-auto custom-scrollbar overscroll-none">
+        <Nav {...{ navLists, handleReload }} />
+      </div>
+      <div className="mt-auto flex flex-col gap-2">
+        <CategoryForm />
+        <LogoutBtn />
+      </div>
     </div>
   );
 }
@@ -59,7 +66,6 @@ const Nav = ({
         openMenu ? "w-full" : "hidden",
       )}
     >
-      <UserProfile />
       {navLists.map((navigation) => (
         <Fragment key={navigation.route}>
           <div
@@ -88,10 +94,6 @@ const Nav = ({
           )}
         </Fragment>
       ))}
-      <div className="mt-auto flex flex-col gap-2 pb-5">
-        <CategoryForm />
-        <LogoutBtn />
-      </div>
     </div>
   );
 };

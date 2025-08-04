@@ -13,18 +13,18 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { credentialsModal, setCredentialsModal } = useAppStore((state) => ({
-    credentialsModal: state.credentialsModal,
-    setCredentialsModal: state.setCredentialsModal,
-  }));
+  // const { credentialsModal, setCredentialsModal } = useAppStore((state) => ({
+  //   credentialsModal: state.credentialsModal,
+  //   setCredentialsModal: state.setCredentialsModal,
+  // }));
 
-  const handleClose = () => {
-    setCredentialsModal(false);
-  };
+  // const handleClose = () => {
+  //   setCredentialsModal(false);
+  // };
 
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
-      <body>
+      <body className="overscroll-none">
         <AuthProvider>
           <TRPCReactProvider>
             {children}

@@ -69,26 +69,28 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-4 p-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {navList.map(({ title }) =>
-        // exclude 'Categories' and Dashboard from the list
-        title === "Categories" || title === "dashboard" ? null : (
-          // Render card for each navigation item
-          <CardTemplate
-            key={title}
-            fetching={isFetching}
-            count={
-              counts?.find((count) => count.categoryName === title)?.count ?? 0
-            }
-            label={title}
-            url={
-              title === "Categories"
-                ? "/admin/categories"
-                : `/admin/${title.toLowerCase()}`
-            }
-          />
-        ),
-      )}
+    <div className="h-full overflow-auto custom-scrollbar">
+      <div className="grid grid-cols-1 gap-4 p-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {navList.map(({ title }) =>
+          // exclude 'Categories' and Dashboard from the list
+          title === "Categories" || title === "dashboard" ? null : (
+            // Render card for each navigation item
+            <CardTemplate
+              key={title}
+              fetching={isFetching}
+              count={
+                counts?.find((count) => count.categoryName === title)?.count ?? 0
+              }
+              label={title}
+              url={
+                title === "Categories"
+                  ? "/admin/categories"
+                  : `/admin/${title.toLowerCase()}`
+              }
+            />
+          ),
+        )}
+      </div>
     </div>
   );
 };

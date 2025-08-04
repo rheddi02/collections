@@ -70,8 +70,22 @@
     * {
       @apply border-border;
     }
+    html {
+      @apply bg-background;
+      overscroll-behavior: none;
+      height: 100%;
+    }
     body {
       @apply bg-background text-foreground;
+      overscroll-behavior: none;
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+    }
+    
+    /* Remove default margins from common elements */
+    h1, h2, h3, h4, h5, h6, p, ul, ol, li, div {
+      margin-bottom: 0;
     }
   }
 
@@ -84,5 +98,41 @@
     }
     .left-fixed {
       @apply absolute top-1/2 left-0 transform -translate-y-1/2
+    }
+    
+    /* Custom scrollbar styles */
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f3f4f6; /* gray-100 */
+      border-radius: 4px;
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #9ca3af; /* gray-400 */
+      border-radius: 4px;
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #6b7280; /* gray-500 */
+    }
+    
+    /* Firefox scrollbar */
+    .custom-scrollbar {
+      scrollbar-width: thin;
+      scrollbar-color: #9ca3af #f3f4f6;
+    }
+    
+    /* Prevent white background on overscroll */
+    html, body {
+      overscroll-behavior: none;
+      background-color: hsl(var(--background));
+    }
+    
+    /* Additional overscroll prevention for containers */
+    .overscroll-none {
+      overscroll-behavior: none;
     }
   }
