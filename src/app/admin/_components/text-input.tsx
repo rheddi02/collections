@@ -8,7 +8,9 @@ import {
   FormMessage 
 } from "~/components/ui/form"
 import { Input } from "~/components/ui/input"
+import { Button } from "~/components/ui/button"
 import { cn } from "~/lib/utils"
+import { EyeOpenIcon, EyeClosedIcon } from "@radix-ui/react-icons"
 
 type TextInputProps = {
   name: string
@@ -20,6 +22,7 @@ type TextInputProps = {
   required?: boolean
   className?: string
   showError?: boolean
+  showPasswordToggle?: boolean
   renderDescription?: (field: any) => React.ReactNode
 } & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'name' | 'type' | 'disabled' | 'required' | 'className'>
 
@@ -33,10 +36,15 @@ export function TextInput({
   required = false,
   className,
   showError = true,
+  showPasswordToggle = false,
   renderDescription,
   ...props 
 }: TextInputProps) {
   const { control } = useFormContext()
+  const [showPassword, setShowPassword] = React.useState(false)
+
+  const isPasswordField = type === "password"
+  const inputType = isPasswordField && showPassword ? "text" : type
 
   return (
     <Controller
@@ -50,17 +58,39 @@ export function TextInput({
             </FormLabel>
           )}
           <FormControl>
-            <Input
-              type={type}
-              placeholder={placeholder}
-              disabled={disabled}
-              className={cn(
-                fieldState.error && "border-destructive focus-visible:ring-destructive",
-                className
+            <div className="relative">
+              <Input
+                type={inputType}
+                placeholder={placeholder}
+                disabled={disabled}
+                className={cn(
+                  fieldState.error && "border-destructive focus-visible:ring-destructive",
+                  (isPasswordField && showPasswordToggle) && "pr-10",
+                  className
+                )}
+                {...field}
+                {...props}
+              />
+              {isPasswordField && showPasswordToggle && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setShowPassword(!showPassword)}
+                  disabled={disabled}
+                >
+                  {!showPassword ? (
+                    <EyeClosedIcon className="h-4 w-4" />
+                  ) : (
+                    <EyeOpenIcon className="h-4 w-4" />
+                  )}
+                  <span className="sr-only">
+                    {!showPassword ? "Hide password" : "Show password"}
+                  </span>
+                </Button>
               )}
-              {...field}
-              {...props}
-            />
+            </div>
           </FormControl>
           {description && !renderDescription && (
             <FormDescription>{description}</FormDescription>

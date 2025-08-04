@@ -188,6 +188,7 @@ const Profile = () => {
               description="Enter your current password to confirm identity."
               disabled={changePasswordMutation.isPending}
               required
+              showPasswordToggle
             />
 
             <TextInput
@@ -197,6 +198,7 @@ const Profile = () => {
               placeholder="Enter new password"
               disabled={changePasswordMutation.isPending}
               required
+              showPasswordToggle
               renderDescription={(field) => {
                 const strength = getPasswordStrength(field.value || "");
                 const strengthInfo = getPasswordStrengthLabel(strength);
@@ -222,6 +224,7 @@ const Profile = () => {
               description="Re-enter your new password to confirm."
               disabled={changePasswordMutation.isPending}
               required
+              showPasswordToggle
             />
           </form>
         </Form>
