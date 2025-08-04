@@ -42,13 +42,9 @@ const Template = ({ children }: { children: ReactNode }) => {
     }
     toast({
       variant:
-        toastType.type == ToastTypes.ADDED
-          ? "success"
-          : toastType.type == ToastTypes.ERROR
-            ? "destructive"
-            : toastType.type == ToastTypes.DELETED
-              ? "info"
-              : "default",
+        toastType.type == ToastTypes.ERROR
+          ? "destructive"
+          : "success",
       title: toastData.title,
       description: toastData.description,
       // action: (

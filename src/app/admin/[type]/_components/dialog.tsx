@@ -1,5 +1,8 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm, Controller } from "react-hook-form"
+import { z } from "zod"
 import {
   Dialog,
   DialogContent,
@@ -9,69 +12,27 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
+import { Form, FormControl, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
+import { TextInput } from "~/app/admin/_components/text-input";
 import useAppStore from "~/store/app.store";
 import { ReloadIcon } from "@radix-ui/react-icons";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select";
-import React, { useEffect, useState, useReducer } from "react";
+import React, { useEffect } from "react";
+
+// Form schema
+const formSchema = z.object({
+  id: z.number().optional(),
+  title: z.string()
+    .min(1, "Title is required")
+    .min(3, "Title must be at least 3 characters"),
+  url: z.string()
+    .min(1, "URL is required")
+    .url("Please enter a valid URL (e.g., https://example.com)"),
+  description: z.string().optional(),
+})
 
 // Form state type
-export interface FormState {
-  id?: number;
-  title: string;
-  url: string;
-  description: string;
-}
-
-// Form actions
-type FormAction =
-  | { type: "SET_FIELD"; field: keyof FormState; value: string | boolean }
-  | { type: "SET_MULTIPLE_FIELDS"; fields: Partial<FormState> }
-  | { type: "RESET_FORM" }
-  | { type: "LOAD_DATA"; payload: Partial<FormState> };
-
-// Initial form state
-const initialFormState: FormState = {
-  id: undefined,
-  title: "",
-  url: "",
-  description: "",
-
-};
-
-// Form reducer
-function formReducer(state: FormState, action: FormAction): FormState {
-  switch (action.type) {
-    case "SET_FIELD":
-      return {
-        ...state,
-        [action.field]: action.value,
-      };
-    case "SET_MULTIPLE_FIELDS":
-      return {
-        ...state,
-        ...action.fields,
-      };
-    case "RESET_FORM":
-      return {
-        ...initialFormState,
-      };
-    case "LOAD_DATA":
-      return {
-        ...state,
-        ...action.payload,
-      };
-    default:
-      return state;
-  }
-}
+export type FormState = z.infer<typeof formSchema>
 
 type Props = {
   action: (formData: FormState) => void;
@@ -81,12 +42,17 @@ type Props = {
   initialData?: Partial<FormState>;
   defaultType?: string;
 };
+
 const CustomDialog = ({ title, description, label, action, initialData, defaultType }: Props) => {
-  const [formData, dispatch] = useReducer(formReducer, initialFormState);
-  const [errors, setErrors] = useState<{
-    title?: string;
-    url?: string;
-  }>({});
+  const form = useForm<FormState>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      id: undefined,
+      title: "",
+      url: "",
+      description: "",
+    },
+  })
   
   const {
     modal,
@@ -101,75 +67,28 @@ const CustomDialog = ({ title, description, label, action, initialData, defaultT
   // Load initial data when modal opens or initialData changes
   useEffect(() => {
     if (modal && initialData) {
-      dispatch({ type: "LOAD_DATA", payload: initialData });
+      form.reset({
+        id: initialData.id,
+        title: initialData.title || "",
+        url: initialData.url || "",
+        description: initialData.description || "",
+      })
     }
-  }, [modal, initialData, defaultType]);
+  }, [modal, initialData, form]);
 
   useEffect(() => {
     if (!modal) {
-      setErrors({});
-      dispatch({ type: "RESET_FORM" });
+      form.reset({
+        id: undefined,
+        title: "",
+        url: "",
+        description: "",
+      })
     }
-  }, [modal]);
+  }, [modal, form]);
 
-  // URL validation function
-  const isValidUrl = (url: string): boolean => {
-    try {
-      new URL(url);
-      return true;
-    } catch {
-      return false;
-    }
-  };
-
-  // Validation function
-  const validateForm = () => {
-    const newErrors: { title?: string; url?: string } = {};
-
-    // Title validation
-    if (!formData.title.trim()) {
-      newErrors.title = "Title is required";
-    } else if (formData.title.trim().length < 3) {
-      newErrors.title = "Title must be at least 3 characters";
-    }
-
-    // URL validation
-    if (!formData.url.trim()) {
-      newErrors.url = "URL is required";
-    } else if (!isValidUrl(formData.url.trim())) {
-      newErrors.url = "Please enter a valid URL (e.g., https://example.com)";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const key = e.target.id as keyof FormState;
-    const value = e.target.value;
-
-    dispatch({
-      type: "SET_FIELD",
-      field: key,
-      value: value,
-    });
-
-    // Clear specific field error when user starts typing
-    if (errors[key as keyof typeof errors]) {
-      setErrors({
-        ...errors,
-        [key]: undefined,
-      });
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (validateForm()) {
-      action(formData);
-    }
+  const handleSubmit = (values: FormState) => {
+    action(values);
   };
 
   return (
@@ -179,55 +98,50 @@ const CustomDialog = ({ title, description, label, action, initialData, defaultT
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit}>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <div>
-                <Input
-                  id="title"
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <TextInput
+                  name="title"
                   placeholder="Title"
-                  value={formData.title}
-                  onChange={handleInputChange}
-                  className={errors.title ? "border-red-500" : ""}
                   required
                   autoFocus
                 />
-                {errors.title && (
-                  <p className="text-sm text-red-500 mt-1">{errors.title}</p>
-                )}
-              </div>
-              <div>
-                <Input
-                  id="url"
+                <TextInput
+                  name="url"
                   placeholder="URL (e.g., https://example.com)"
-                  value={formData.url}
-                  onChange={handleInputChange}
-                  className={errors.url ? "border-red-500" : ""}
                   required
                 />
-                {errors.url && (
-                  <p className="text-sm text-red-500 mt-1">{errors.url}</p>
-                )}
+                <Controller
+                  name="description"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Description"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
-              <Textarea
-                id="description"
-                placeholder="Description"
-                value={formData.description || ""}
-                onChange={handleInputChange}
-              />
             </div>
-          </div>
-          <DialogFooter>
-            <Button
-              disabled={isLoading}
-              type="submit"
-              className="flex items-center gap-2 capitalize"
-            >
-              {isLoading && <ReloadIcon className="animate-spin" />}
-              {label}
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button
+                disabled={isLoading}
+                type="submit"
+                className="flex items-center gap-2 capitalize"
+              >
+                {isLoading && <ReloadIcon className="animate-spin" />}
+                {label}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
