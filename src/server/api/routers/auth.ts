@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createTRPCRouter, authenticatedProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, authenticatedProcedure, publicProcedure } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { Resend } from 'resend';
 import nodemailer from 'nodemailer';
@@ -77,6 +77,49 @@ const sendEmailWithFallback = async (to: string, otp: string) => {
 
   // If both fail, just log for development
   console.log(`⚠️ Email services unavailable. OTP for ${to}: ${otp}`);
+  return { method: 'console', success: false };
+};
+
+const sendPasswordResetEmail = async (to: string, otp: string) => {
+  const emailContent = {
+    subject: 'Password Reset Code',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2>Password Reset Request</h2>
+        <p>You requested to reset your password. Use the code below to proceed:</p>
+        <div style="background-color: #f5f5f5; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0;">
+          <h1 style="color: #333; font-size: 32px; letter-spacing: 8px; margin: 0;">${otp}</h1>
+        </div>
+        <p>This code will expire in 10 minutes.</p>
+        <p><strong>Important:</strong> If you didn't request this password reset, please ignore this email and your password will remain unchanged.</p>
+      </div>
+    `,
+  };
+
+  // Try Gmail first
+  const transporter = createEmailTransporter();
+  if (transporter) {
+    try {
+      await transporter.sendMail({
+        from: process.env.GMAIL_USER,
+        to,
+        ...emailContent,
+      });
+      return { method: 'gmail', success: true };
+    } catch (error) {
+      console.error('Gmail email error:', error);
+    }
+  }
+
+  // Fallback to console in development
+  if (process.env.NODE_ENV === 'development') {
+    console.log('📧 Password Reset Email (Development Mode)');
+    console.log(`To: ${to}`);
+    console.log(`Subject: ${emailContent.subject}`);
+    console.log(`Password Reset Code: ${otp}`);
+    return { method: 'console', success: true };
+  }
+
   return { method: 'console', success: false };
 };
 
@@ -244,6 +287,139 @@ export const authRouter = createTRPCRouter({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to change password. Please try again.",
+        });
+      }
+    }),
+
+  // Forgot Password - Send Reset OTP
+  sendPasswordResetOTP: publicProcedure
+    .input(z.object({
+      email: z.string().email("Invalid email address"),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      try {
+        // Check if user exists
+        const user = await ctx.db.users.findUnique({
+          where: { email: input.email },
+          select: { id: true, email: true },
+        });
+
+        if (!user) {
+          // For security, don't reveal if email exists or not
+          return {
+            success: true,
+            message: "If an account with this email exists, you will receive a password reset code.",
+          };
+        }
+
+        // Generate a 6-digit OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        
+        // Store OTP in database with expiration time (10 minutes)
+        const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
+        
+        await ctx.db.users.update({
+          where: { id: user.id },
+          data: {
+            verificationCode: otp,
+            verificationCodeExpires: expiresAt,
+          },
+        });
+
+        // Send password reset OTP via email
+        const emailResult = await sendPasswordResetEmail(user.email, otp);
+
+        return {
+          success: true,
+          message: "If an account with this email exists, you will receive a password reset code.",
+          emailSent: emailResult.success,
+        };
+      } catch (error) {
+        console.error("Error sending password reset OTP:", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to send password reset code. Please try again.",
+        });
+      }
+    }),
+
+  // Reset Password with OTP
+  resetPasswordWithOTP: publicProcedure
+    .input(z.object({
+      email: z.string().email("Invalid email address"),
+      otp: z.string().length(6, "OTP must be exactly 6 digits"),
+      newPassword: z.string()
+        .min(6, "Password must be at least 6 characters")
+        .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+        .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+        .regex(/[0-9]/, "Password must contain at least one number"),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      try {
+        const user = await ctx.db.users.findUnique({
+          where: { email: input.email },
+          select: {
+            id: true,
+            verificationCode: true,
+            verificationCodeExpires: true,
+          },
+        });
+
+        if (!user) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Invalid email or verification code",
+          });
+        }
+
+        if (!user.verificationCode || !user.verificationCodeExpires) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "No verification code found. Please request a new password reset.",
+          });
+        }
+
+        // Check if OTP has expired
+        if (user.verificationCodeExpires < new Date()) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Verification code has expired. Please request a new password reset.",
+          });
+        }
+
+        // Verify OTP
+        if (user.verificationCode !== input.otp) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Invalid verification code",
+          });
+        }
+
+        // Hash new password
+        const hashedPassword = await bcrypt.hash(input.newPassword, 12);
+
+        // Update password and clear verification code
+        await ctx.db.users.update({
+          where: { id: user.id },
+          data: {
+            password: hashedPassword,
+            verificationCode: null,
+            verificationCodeExpires: null,
+          },
+        });
+
+        return {
+          success: true,
+          message: "Password reset successfully. You can now sign in with your new password.",
+        };
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        console.error("Error resetting password:", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to reset password. Please try again.",
         });
       }
     }),
