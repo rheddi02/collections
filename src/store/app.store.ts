@@ -34,6 +34,8 @@ export interface State {
   setIsFetching: (isFetching: State['isFetching']) => void
   credentialsModal: boolean
   setCredentialsModal: (credentialsModal: State['credentialsModal']) => void
+  editCategory: categoryOutput | null
+  setEditCategory: (editCategory: State['editCategory']) => void
 }
 
 const createStore: StateCreator<State, [], [], State> = (set, get) => ({
@@ -86,6 +88,10 @@ const createStore: StateCreator<State, [], [], State> = (set, get) => ({
   credentialsModal: false,
   setCredentialsModal: (credentialsModal) => {
     set({ credentialsModal })
+  },
+  editCategory: null,
+  setEditCategory: (editCategory) => {
+    set({ editCategory })
   }
 });
 

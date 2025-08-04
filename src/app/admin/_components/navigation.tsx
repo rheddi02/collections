@@ -16,9 +16,24 @@ import DeleteCategoryDialog from "./delete-category-dialog";
 export default function Navigation() {
   const navLists = useNavigationLists(); // Now reactive to category changes
   const [deleteCategory, setDeleteCategory] = useState<NavigationType | null>(null);
+  const { setEditCategory } = useAppStore((state) => ({
+    setEditCategory: state.setEditCategory,
+  }));
 
   const handleEdit = (nav: NavigationType) => {
-    console.log("🚀 ~ handleEdit ~ nav:", nav);
+    // Only allow editing for categories (not dashboard which has id: 0)
+    if (!nav.id || nav.id === 0) return;
+    
+    // Convert NavigationType to categoryOutput format
+    const categoryData = {
+      id: nav.id,
+      title: nav.title,
+      userId: 0, // This will be set by the server
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      isPinned: false, // Default value
+    };
+    setEditCategory(categoryData);
   };
   
   const handleDelete = (nav: NavigationType) => {
@@ -102,7 +117,10 @@ const Nav = ({
               <div className="flex gap-1">
                 <div className="group rounded-full p-1 hover:bg-gray-900">
                   <Pencil1Icon
-                    onClick={() => handleEdit && handleEdit(navigation)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEdit && handleEdit(navigation);
+                    }}
                     className={cn(
                       "h-4 w-4 text-gray-900 group-hover:text-gray-100",
                     )}

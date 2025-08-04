@@ -1,44 +1,13 @@
 import { z } from "zod";
 
-import { createTRPCRouter, authenticatedProcedure, publicProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, authenticatedProcedure } from "~/server/api/trpc";
 
 export const updateRouter = createTRPCRouter({
-  coin: publicProcedure
+  category: authenticatedProcedure
     .input(
       z.object({
         id: z.number(),
         title: z.string().min(1),
-        categoryId: z.number(),
-        description: z.string().default(""),
-        year: z.string(),
-        type: z.enum(["NEW", "OLD", "SPECIAL"]),
-        url: z.string(),
-        isPublic: z.boolean().default(true),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      const { id, ...updateData } = input;
-      
-      // Simplified: just check if coin exists (no ownership validation for demo)
-      const existingCoin = await ctx.db.coins.findUnique({
-        where: { id },
-      });
-
-      if (!existingCoin) {
-        throw new Error("Coin not found");
-      }
-
-      return await ctx.db.coins.update({
-        where: { id },
-        data: updateData,
-      });
-    }),
-  category: publicProcedure
-    .input(
-      z.object({
-        id: z.number(),
-        title: z.string().min(1),
-        description: z.string().default(""),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -46,7 +15,7 @@ export const updateRouter = createTRPCRouter({
       
       // Check if category exists
       const existingCategory = await ctx.db.categories.findUnique({
-        where: { id },
+        where: { id, userId: parseInt(ctx.user.id) },
       });
 
       if (!existingCategory) {

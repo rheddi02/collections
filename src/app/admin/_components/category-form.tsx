@@ -30,7 +30,11 @@ const categoryFormSchema = z.object({
 
 type CategoryFormValues = z.infer<typeof categoryFormSchema>;
 
+import useAppStore from "~/store/app.store";
+import { useRouter } from "next/navigation";
+
 const CategoryForm = () => {
+  const router = useRouter()
   const { data: session } = useSession();
   const [isAdd, setIsAdd] = useState(false);
   const [editingCategory, setEditingCategory] = useState<categoryOutput | null>(
@@ -39,6 +43,12 @@ const CategoryForm = () => {
   const [showInvalidPopover, setShowInvalidPopover] = useState(false);
   const utils = api.useUtils();
   const popoverTimeoutRef = useRef<NodeJS.Timeout>();
+
+  // Get edit category from app store
+  const { editCategory, setEditCategory } = useAppStore((state) => ({
+    editCategory: state.editCategory,
+    setEditCategory: state.setEditCategory,
+  }));
 
   const form = useForm<CategoryFormValues>({
     resolver: zodResolver(categoryFormSchema),
@@ -49,6 +59,16 @@ const CategoryForm = () => {
 
   // Watch the title field for real-time validation
   const watchedTitle = form.watch("title");
+
+  // Handle edit category from app store
+  useEffect(() => {
+    if (editCategory) {
+      setIsAdd(true);
+      setEditingCategory(editCategory);
+      form.setValue("title", editCategory.title);
+      setShowInvalidPopover(true);
+    }
+  }, [editCategory, form]);
 
   useEffect(() => {
     // Clear previous timeout
@@ -93,7 +113,7 @@ const CategoryForm = () => {
 
   const { mutate: updateData, isPending: pendingUpdate } =
     api.update.category.useMutation({
-      onSuccess: async () => {
+      onSuccess: async (data) => {
         await utils.list.categories.invalidate();
         toast({
           title: "Success",
@@ -102,6 +122,8 @@ const CategoryForm = () => {
         form.reset();
         setIsAdd(false);
         setEditingCategory(null);
+        setEditCategory(null); // Clear edit category from store
+        router.push(`/admin/${data.title}`)
       },
       onError: (error) => {
         toast({
@@ -112,26 +134,7 @@ const CategoryForm = () => {
       },
     });
 
-  const { mutate: deleteData, isPending: pendingDelete } =
-    api.delete.category.useMutation({
-      onSuccess: async () => {
-        await utils.list.coin.invalidate();
-        await utils.list.categories.invalidate();
-        toast({
-          title: "Success",
-          description: "Category deleted successfully",
-        });
-      },
-      onError: (error) => {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
-      },
-    });
-
-  const isLoading = pendingCreate || pendingUpdate || pendingDelete;
+  const isLoading = pendingCreate || pendingUpdate;
 
   const onSubmit = (data: CategoryFormValues) => {
     if (editingCategory) {
@@ -166,6 +169,7 @@ const CategoryForm = () => {
   const handleCancel = () => {
     setIsAdd(false);
     setEditingCategory(null);
+    setEditCategory(null); // Clear edit category from store
     form.reset();
     setShowInvalidPopover(false);
     // Clear any pending popover timeout
@@ -173,16 +177,6 @@ const CategoryForm = () => {
       clearTimeout(popoverTimeoutRef.current);
     }
   };
-
-  // const onEdit = (row: Row<categoryOutput>) => {
-  //   setEditingCategory(row.original);
-  //   form.setValue("title", row.original.title);
-  //   setIsAdd(true);
-  // };
-
-  // const onDelete = (row: Row<categoryOutput>) => {
-  //   deleteData(row.original.id);
-  // };
 
   return (
     <div className="flex flex-col gap-4">
@@ -202,52 +196,21 @@ const CategoryForm = () => {
             className="flex flex-col gap-2"
           >
             <div className="flex flex-col gap-2 bg-gray-900 ">
-                  <p className="mt-1 text-xs text-gray-100 p-1">
-                    Category name can only contain letters, numbers, hyphens
-                    (-), and periods (.)
-                  </p>
-                </div>
+              <p className="mt-1 p-1 text-xs text-gray-100">
+                Category name can only contain letters, numbers, hyphens (-),
+                and periods (.)
+              </p>
+            </div>
             <div className="w-full">
-                  <TextInput
-                    name="title"
-                    placeholder="Enter category name"
-                    disabled={isLoading}
-                    className="border-muted-500 focus:border-muted-700 w-full border focus:ring-2 focus:ring-green-200"
-                    autoFocus
-                    required
-                  />
-                </div>
-            {/* <Popover
-              open={showInvalidPopover}
-              onOpenChange={setShowInvalidPopover}
-            >
-              <PopoverTrigger asChild>
-                <div className="w-full">
-                  <TextInput
-                    name="title"
-                    placeholder="Enter category name"
-                    disabled={isLoading}
-                    className="border-muted-500 focus:border-muted-700 w-full border focus:ring-2 focus:ring-green-200"
-                    autoFocus
-                    required
-                  />
-                </div>
-              </PopoverTrigger>
-              <PopoverContent
-                className="border-red-200 bg-red-50 p-3"
-                side="top"
-                align="start"
-                style={{ width: "var(--radix-popover-trigger-width)" }}
-              >
-                <div className="flex items-start gap-2">
-                  <p className="mt-1 text-xs text-gray-900">
-                    Category name can only contain letters, numbers, hyphens
-                    (-), and periods (.)
-                  </p>
-                </div>
-              </PopoverContent>
-            </Popover> */}
-
+              <TextInput
+                name="title"
+                placeholder="Enter category name"
+                disabled={isLoading}
+                className="border-muted-500 focus:border-muted-700 w-full border focus:ring-2 focus:ring-green-200"
+                autoFocus
+                required
+              />
+            </div>
             <div className="flex justify-end gap-2">
               <Button
                 type="button"
