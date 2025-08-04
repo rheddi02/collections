@@ -11,6 +11,7 @@ import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
 import { Form } from "~/components/ui/form"
 import { TextInput } from "~/app/admin/_components/text-input"
+import { getPasswordStrength, getPasswordStrengthLabel } from "~/utils/password-strength"
 
 // Form schema
 const registerSchema = z.object({
@@ -25,7 +26,10 @@ const registerSchema = z.object({
     .email("Please enter a valid email address"),
   password: z
     .string()
-    .min(6, "Password must be at least 6 characters long"),
+    .min(6, "Password must be at least 6 characters")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number"),
   confirmPassword: z
     .string()
 }).refine((data) => data.password === data.confirmPassword, {
@@ -156,6 +160,24 @@ export default function Register() {
                 placeholder="Password"
                 disabled={isLoading}
                 showPasswordToggle={true}
+                renderDescription={(field) => {
+                  const strength = getPasswordStrength(field.value || "");
+                  const strengthInfo = getPasswordStrengthLabel(strength);
+
+                  return (
+                    <>
+                      Password must contain at least 6 characters with uppercase,
+                      lowercase, and number.
+                      {field.value && (
+                        <span
+                          className={`ml-2 font-medium ${strengthInfo.color}`}
+                        >
+                          Strength: {strengthInfo.label}
+                        </span>
+                      )}
+                    </>
+                  );
+                }}
               />
               <TextInput
                 name="confirmPassword"
