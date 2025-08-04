@@ -1,7 +1,5 @@
 "use client";
-import {
-  ReloadIcon,
-} from "@radix-ui/react-icons";
+import { ReloadIcon } from "@radix-ui/react-icons";
 import { useRouter, useSelectedLayoutSegments } from "next/navigation";
 import { twMerge } from "tailwind-merge";
 import { Label } from "~/components/ui/label";
@@ -19,7 +17,7 @@ export default function Navigation() {
   const handleReload = async (segment: string | undefined) => {};
 
   return (
-    <div className="flex h-screen flex-col gap-2">
+    <div className="flex h-screen w-72 flex-col gap-2">
       <Nav {...{ navLists, handleReload }} />
     </div>
   );
@@ -58,7 +56,7 @@ const Nav = ({
     <div
       className={cn(
         "relative flex h-screen flex-col gap-2",
-        openMenu ? "w-40" : "hidden",
+        openMenu ? "w-full" : "hidden",
       )}
     >
       <UserProfile />
@@ -90,9 +88,9 @@ const Nav = ({
           )}
         </Fragment>
       ))}
-      <div className="mt-auto pb-5 flex flex-col gap-2">
-      <CategoryForm />
-      <LogoutBtn />
+      <div className="mt-auto flex flex-col gap-2 pb-5">
+        <CategoryForm />
+        <LogoutBtn />
       </div>
     </div>
   );

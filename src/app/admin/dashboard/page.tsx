@@ -9,8 +9,6 @@ import { useState } from "react";
 
 const Dashboard = () => {
   const { data: session, update } = useSession();
-  console.log("🚀 ~ Dashboard ~ session:", session)
-  console.log("🚀 ~ Dashboard ~ isVerified:", session?.user?.isVerified)
   const [isSent, setIsSent] = useState(false);
   const navList = useNavigationLists(); // Now reactive to category changes
   
@@ -36,17 +34,6 @@ const Dashboard = () => {
     },
   });
 
-  const forceVerifyMutation = api.auth.forceVerify.useMutation({
-    onSuccess: async () => {
-      await update();
-      alert("User verified successfully!");
-    },
-    onError: (error) => {
-      console.error("Failed to force verify:", error);
-      alert("Failed to force verify. Please try again.");
-    },
-  });
-
   const handleVerify = () => {
     sendOTPMutation.mutate();
   };
@@ -65,21 +52,6 @@ const Dashboard = () => {
               disabled={sendOTPMutation.isPending}
             >
               {sendOTPMutation.isPending ? "Sending..." : "Verify Now"}
-            </Button>
-            <Button 
-              variant="outline" 
-              onClick={() => update()}
-              className="mt-2"
-            >
-              Refresh Status
-            </Button>
-            <Button 
-              variant="destructive" 
-              onClick={() => forceVerifyMutation.mutate()}
-              className="mt-2"
-              disabled={forceVerifyMutation.isPending}
-            >
-              {forceVerifyMutation.isPending ? "Verifying..." : "Force Verify (Dev)"}
             </Button>
           </>
         )}

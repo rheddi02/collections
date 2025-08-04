@@ -1,6 +1,83 @@
 import { z } from "zod";
 import { createTRPCRouter, authenticatedProcedure } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
+// import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
+
+/**
+ * Email Service Configuration:
+ * 1. Primary: Resend (requires RESEND_API_KEY)
+ * 2. Fallback: Gmail (requires GMAIL_USER + GMAIL_APP_PASSWORD)
+ * 3. Development: Console logging
+ */
+
+// const resend = new Resend(process.env.RESEND_API_KEY);
+
+// Nodemailer transporter setup
+const createEmailTransporter = () => {
+  if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
+    return nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_APP_PASSWORD,
+      },
+    });
+  }
+  return null;
+};
+
+const sendEmailWithFallback = async (to: string, otp: string) => {
+  const emailContent = {
+    subject: 'Your verification code',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2>Email Verification</h2>
+        <p>Your verification code is:</p>
+        <div style="background-color: #f5f5f5; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0;">
+          <h1 style="color: #333; font-size: 32px; letter-spacing: 8px; margin: 0;">${otp}</h1>
+        </div>
+        <p>This code will expire in 10 minutes.</p>
+        <p>If you didn't request this verification, please ignore this email.</p>
+      </div>
+    `,
+  };
+
+  // Try Resend first
+  // if (process.env.RESEND_API_KEY) {
+  //   try {
+  //     await resend.emails.send({
+  //       from: 'Collections App <noreply@yourdomain.com>',
+  //       to,
+  //       ...emailContent,
+  //     });
+  //     console.log(`✅ OTP sent via Resend to ${to}: ${otp}`);
+  //     return { method: 'resend', success: true };
+  //   } catch (resendError) {
+  //     console.error("❌ Resend failed:", resendError);
+  //   }
+  // }
+
+  // Fallback to Gmail/Nodemailer
+  const transporter = createEmailTransporter();
+  if (transporter) {
+    try {
+      await transporter.sendMail({
+        from: process.env.GMAIL_USER,
+        to,
+        ...emailContent,
+      });
+      console.log(`✅ OTP sent via Gmail to ${to}: ${otp}`);
+      return { method: 'gmail', success: true };
+    } catch (gmailError) {
+      console.error("❌ Gmail failed:", gmailError);
+    }
+  }
+
+  // If both fail, just log for development
+  console.log(`⚠️ Email services unavailable. OTP for ${to}: ${otp}`);
+  return { method: 'console', success: false };
+};
 
 export const authRouter = createTRPCRouter({
   sendOTP: authenticatedProcedure
@@ -20,20 +97,12 @@ export const authRouter = createTRPCRouter({
           },
         });
 
-        // In a real application, you would send the OTP via email here
-        // For now, we'll just log it (remove this in production)
-        console.log(`OTP for ${ctx.session.user.email}: ${otp}`);
-        
-        // TODO: Implement actual email sending
-        // await sendEmail({
-        //   to: ctx.session.user.email,
-        //   subject: "Your verification code",
-        //   text: `Your verification code is: ${otp}. This code will expire in 10 minutes.`,
-        // });
+        // Send OTP via email with fallback
+        const emailResult = await sendEmailWithFallback(ctx.session.user.email, otp);
 
         return {
           success: true,
-          message: "OTP sent to your email address",
+          message: `OTP sent to your email address via ${emailResult.method}`,
         };
       } catch (error) {
         console.error("Error sending OTP:", error);

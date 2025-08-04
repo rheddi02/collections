@@ -161,7 +161,7 @@ const CategoryForm = () => {
           className="flex flex-col gap-2"
         >
           <Input
-            className="border border-green-500 focus:border-green-700 focus:ring-2 focus:ring-green-200"
+            className="border border-muted-500 focus:border-muted-700 focus:ring-2 focus:ring-green-200"
             name="category"
             value={formState.title}
             onChange={(e) => handleTitleChange(e.target.value)}
