@@ -12,7 +12,7 @@ export default function Home() {
       if (session) {
         router.push("/admin/dashboard");
       } else {
-        router.push("/client");
+        router.push("/auth/signin");
       }
     }
   }, [session, status, router]);

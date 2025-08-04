@@ -9,7 +9,7 @@ const createTipDeleteProcedure = (tableName: string, entityName: string) =>
     .mutation(async ({ ctx, input }) => {
       // SECURITY: Check if record exists AND belongs to authenticated user
       const existingRecord = await (ctx.db as any)[tableName].findUnique({
-        where: { id: input },
+        where: { id: input, userId: parseInt(ctx.user.id) },
       });
 
       if (!existingRecord) {
@@ -27,39 +27,35 @@ const createTipDeleteProcedure = (tableName: string, entityName: string) =>
     });
 
 export const deleteRouter = createTRPCRouter({
-  beautyTip: createTipDeleteProcedure("beautyTips", "Beauty tip"),
-  equipmentTip: createTipDeleteProcedure("equipmentTips", "Equipment tip"),
-  foodTip: createTipDeleteProcedure("foodTips", "Food tip"),
-  healthTip: createTipDeleteProcedure("healthTips", "Health tip"),
-  homeTip: createTipDeleteProcedure("homeTips", "Home tip"),
-  petTip: createTipDeleteProcedure("petTips", "Pet tip"),
-  clothTip: createTipDeleteProcedure("clothTips", "Cloth tip"),
-  plantTip: createTipDeleteProcedure("plantTips", "Plant tip"),
-  machineryTip: createTipDeleteProcedure("machineryTips", "Machinery tip"),
-  rideTip: createTipDeleteProcedure("rideTips", "Ride tip"),
-  leisureTip: createTipDeleteProcedure("leisureTips", "Leisure tip"),
-  energyTip: createTipDeleteProcedure("energyTips", "Energy tip"),
-  video: createTipDeleteProcedure("videos", "Video"),
-  coin: createTipDeleteProcedure("coins", "Coin"),
-  category: publicProcedure
+  link: createTipDeleteProcedure("links", "Link"),
+  category: authenticatedProcedure
     .input(z.number())
     .mutation(async ({ ctx, input }) => {
-      // Categories don't have userId, so we might want to restrict this to admin users only
-      // For now, let's just check if the category exists and allow any authenticated user to delete
+      // SECURITY: Check if category exists AND belongs to authenticated user
       const existingCategory = await ctx.db.categories.findUnique({
-        where: {
-          id: input,
-        },
+        where: { id: input, userId: parseInt(ctx.user.id) },
       });
 
       if (!existingCategory) {
         throw new Error("Category not found");
       }
 
-      return await ctx.db.categories.delete({
-        where: {
-          id: input,
+      // CRITICAL SECURITY CHECK: Only allow users to delete their own data
+      if (existingCategory.userId !== parseInt(ctx.user.id)) {
+        throw new Error("Unauthorized: You can only delete your own category");
+      }
+
+      // First delete all links that belong to this category
+      await ctx.db.links.deleteMany({
+        where: { 
+          categoryId: input,
+          userId: parseInt(ctx.user.id) // Additional security check
         },
       });
-    }),
+
+      // Then delete the category
+      return await ctx.db.categories.delete({
+        where: { id: input },
+      });
+    })
 });

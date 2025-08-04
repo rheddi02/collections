@@ -42,6 +42,7 @@ export const authOptions: NextAuthOptions = {
             id: user.id.toString(),
             email: user.email,
             name: user.username || user.email,
+            isVerified: user.isVerified,
           }
         } catch (error) {
           console.error("Auth error:", error)
@@ -54,12 +55,28 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id
+        token.isVerified = user.isVerified
+      } else if (token.id && token.isVerified === false) {
+        // Only fetch from database if user is currently unverified
+        // This way we can detect when they become verified
+        try {
+          const dbUser = await db.users.findUnique({
+            where: { id: parseInt(token.id as string) },
+            select: { isVerified: true }
+          })
+          if (dbUser) {
+            token.isVerified = dbUser.isVerified
+          }
+        } catch (error) {
+          console.error("Error fetching user verification status:", error)
+        }
       }
       return token
     },
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id as string
+        session.user.isVerified = token.isVerified as boolean
       }
       return session
     },

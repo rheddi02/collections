@@ -11,225 +11,6 @@ datasource db {
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
-model BeautyTips {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String
-  type        String
-  url         String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  isPublic   Boolean   @default(true) @map("is_public")
-  userId    Int
-  user      Users     @relation(fields: [userId], references: [id])
-
-  @@index([id])
-}
-
-model EquipmentTips {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String
-  type        String
-  url         String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  isPublic   Boolean   @default(true) @map("is_public")
-  userId    Int
-  user      Users     @relation(fields: [userId], references: [id])
-
-  @@index([id])
-}
-
-model HealthTips {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String
-  type        String
-  url         String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  isPublic   Boolean   @default(true) @map("is_public")
-  userId    Int
-  user      Users     @relation(fields: [userId], references: [id])
-
-  @@index([id])
-}
-
-model HomeTips {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String
-  type        String
-  url         String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  isPublic   Boolean   @default(true) @map("is_public")
-  userId    Int
-  user      Users     @relation(fields: [userId], references: [id])
-
-  @@index([id])
-}
-
-model FoodTips {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String
-  type        String
-  url         String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  isPublic   Boolean   @default(true) @map("is_public")
-  userId    Int
-  user      Users     @relation(fields: [userId], references: [id])
-
-  @@index([id])
-}
-
-model PetTips {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String
-  type        String
-  url         String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  isPublic   Boolean   @default(true) @map("is_public")
-  userId    Int
-  user      Users     @relation(fields: [userId], references: [id])
-
-  @@index([id])
-}
-
-model ClothTips {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String
-  type        String
-  url         String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  isPublic   Boolean   @default(true) @map("is_public")
-  userId    Int
-  user      Users     @relation(fields: [userId], references: [id])
-
-  @@index([id])
-}
-
-model PlantTips {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String
-  type        String
-  url         String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  isPublic   Boolean   @default(true) @map("is_public")
-  userId    Int
-  user      Users     @relation(fields: [userId], references: [id])
-
-  @@index([id])
-}
-
-model MachineryTips {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String
-  type        String
-  url         String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  isPublic   Boolean   @default(true) @map("is_public")
-  userId    Int
-  user      Users     @relation(fields: [userId], references: [id])
-
-  @@index([id])
-}
-
-model RideTips {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String
-  type        String
-  url         String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  isPublic   Boolean   @default(true) @map("is_public")
-  userId    Int
-  user      Users     @relation(fields: [userId], references: [id])
-
-  @@index([id])
-}
-
-model LeisureTips {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String
-  type        String
-  url         String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  isPublic   Boolean   @default(true) @map("is_public")
-  userId    Int
-  user      Users     @relation(fields: [userId], references: [id])
-
-  @@index([id])
-}
-
-model EnergyTips {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String
-  type        String
-  url         String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  isPublic   Boolean   @default(true) @map("is_public")
-  userId    Int
-  user      Users     @relation(fields: [userId], references: [id])
-
-  @@index([id])
-}
-
-model Videos {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String
-  type        String
-  url         String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  isPublic   Boolean   @default(true) @map("is_public")
-  userId    Int
-  user      Users     @relation(fields: [userId], references: [id])
-
-  @@index([id])
-}
-
-model Coins {
-  id          Int        @id @default(autoincrement())
-  title       String
-  categoryId  Int
-  description String
-  year        String
-  type        Type
-  url         String     @unique()
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  categories  Categories @relation(fields: [categoryId], references: [id])
-  isPublic   Boolean   @default(true) @map("is_public")
-  userId    Int
-  user      Users     @relation(fields: [userId], references: [id])
-
-  @@index([id])
-}
-
-enum Type {
-  NEW
-  OLD
-  SPECIAL
-}
-
 enum Role {
   USER
   ADMIN
@@ -238,10 +19,31 @@ enum Role {
 model Categories {
   id          Int     @id @default(autoincrement())
   title       String
-  description String
-  Coins       Coins[]
+  Links       Links[]
+  isPinned    Boolean @default(false)  @map("is_pinned")
+  userId    Int
+  user      Users    @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([id])
+  @@unique([title, userId])
+}
+
+model Links {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  url         String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      Int
+  user        Users    @relation(fields: [userId], references: [id])
+  categoryId  Int
+  category    Categories @relation(fields: [categoryId], references: [id])
+
+  @@index([id])
+  @@unique([url, userId])
 }
 
 model Users {
@@ -251,22 +53,14 @@ model Users {
   password    String
   role        Role     @default(USER)
   isVerified  Boolean  @default(false) @map("is_verified")
+  verificationCode String? @map("verification_code")
+  verificationCodeExpires DateTime? @map("verification_code_expires")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
-  beautyTips  BeautyTips[]
-  equipmentTips EquipmentTips[]
-  healthTips  HealthTips[]
-  homeTips    HomeTips[]
-  foodTips    FoodTips[]
-  petTips     PetTips[]
-  clothTips   ClothTips[]
-  plantTips   PlantTips[]
-  machineryTips MachineryTips[]
-  rideTips    RideTips[]
-  leisureTips LeisureTips[]
-  energyTips  EnergyTips[]
-  videos      Videos[]
-  coins       Coins[]
+  profile     String?  @map("profile") // Optional profile field for user profile information
+  cover       String?  @map("cover") // Optional cover field for user profile information
+  links       Links[]
+  categories  Categories[]
 
   @@index([id])
   @@index([username])

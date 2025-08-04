@@ -4,17 +4,34 @@ import { useState, useEffect } from "react"
 import { signIn, useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
 import { Button } from "~/components/ui/button"
-import { Input } from "~/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
+import { Form } from "~/components/ui/form"
+import { TextInput } from "~/app/admin/_components/text-input"
+import { toast } from "~/components/ui/use-toast"
+
+const signInSchema = z.object({
+  usernameOrEmail: z.string().min(1, "Username or email is required"),
+  password: z.string().min(1, "Password is required"),
+})
+
+type SignInFormValues = z.infer<typeof signInSchema>
 
 export default function SignIn() {
-  const [usernameOrEmail, setUsernameOrEmail] = useState("")
-  const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("")
   const router = useRouter()
   const { data: session, status } = useSession()
+
+  const form = useForm<SignInFormValues>({
+    resolver: zodResolver(signInSchema),
+    defaultValues: {
+      usernameOrEmail: "",
+      password: "",
+    },
+  })
 
   // Redirect authenticated users to dashboard
   useEffect(() => {
@@ -23,26 +40,36 @@ export default function SignIn() {
     }
   }, [status, session, router])
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const onSubmit = async (data: SignInFormValues) => {
     setIsLoading(true)
-    setError("")
 
     try {
       const result = await signIn("credentials", {
-        usernameOrEmail,
-        password,
+        usernameOrEmail: data.usernameOrEmail,
+        password: data.password,
         redirect: false,
       })
 
       if (result?.error) {
-        setError("Invalid credentials")
+        toast({
+          title: "Error",
+          description: "Invalid credentials",
+          variant: "destructive",
+        })
       } else if (result?.ok) {
+        toast({
+          title: "Success",
+          description: "Signed in successfully",
+        })
         // Successful login - redirect to admin dashboard
         router.push("/admin/dashboard")
       }
     } catch (error) {
-      setError("An error occurred during sign in")
+      toast({
+        title: "Error",
+        description: "An error occurred during sign in",
+        variant: "destructive",
+      })
     } finally {
       setIsLoading(false)
     }
@@ -82,42 +109,48 @@ export default function SignIn() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Input
-                type="text"
-                placeholder="Username or Email"
-                value={usernameOrEmail}
-                onChange={(e) => setUsernameOrEmail(e.target.value)}
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <TextInput
+                name="usernameOrEmail"
+                label="Username or Email"
+                placeholder="Enter your username or email"
+                disabled={isLoading}
                 required
               />
-            </div>
-            <div>
-              <Input
+
+              <TextInput
+                name="password"
+                label="Password"
                 type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                disabled={isLoading}
                 required
+                showPasswordToggle
               />
-            </div>
-            {error && (
-              <p className="text-red-600 text-sm">{error}</p>
-            )}
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isLoading}
-            >
-              {isLoading ? "Signing in..." : "Sign In"}
-            </Button>
-            <div className="text-center text-sm text-gray-600">
-              Don't have an account?{" "}
-              <Link href="/client" className="text-blue-600 hover:underline">
-                Contact admin for registration
+
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={isLoading}
+              >
+                {isLoading ? "Signing in..." : "Sign In"}
+              </Button>
+            </form>
+          </Form>
+          <div className="mt-4 text-center space-y-2">
+            <p className="text-sm text-gray-600">
+              <Link href="/auth/forgot-password" className="text-blue-600 hover:underline">
+                Forgot your password?
               </Link>
-            </div>
-          </form>
+            </p>
+            <p className="text-sm text-gray-600">
+              Don't have an account?{" "}
+              <Link href="/auth/register" className="text-blue-600 hover:underline">
+                Create one
+              </Link>
+            </p>
+          </div>
         </CardContent>
       </Card>
     </div>

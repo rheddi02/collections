@@ -6,28 +6,23 @@ import { ToastTypes } from "~/utils/types";
 
 const Template = ({ children }: { children: ReactNode }) => {
   const { toast } = useToast();
-  const { toastType, setData } = useAppStore(
+  const { toastType } = useAppStore(
     (state) => ({
       toastType: state.toastType,
-      setData: state.setData,
     }),
   );
 
   useEffect(() => {
-    if (toastType == ToastTypes.DEFAULT) return;
+    if (toastType.type == ToastTypes.DEFAULT) return;
     showToast(toastType);
   }, [toastType]);
 
-  useEffect(() => {
-    setData([])
-  }, []);
-
-  const showToast = (type: ToastTypes) => {
+  const showToast = (toastType: { type: ToastTypes; data?: string }) => {
     const toastData = {
       title: "",
       description: "",
     };
-    switch (type) {
+    switch (toastType.type) {
       case ToastTypes.ADDED:
         toastData.title = "Added";
         toastData.description = "Record has been added successfully.";
@@ -40,18 +35,16 @@ const Template = ({ children }: { children: ReactNode }) => {
         toastData.title = "Deleted";
         toastData.description = "Record has been deleted successfully.";
         break;
-      // default:
-      //   toastData.title = 'Title'
-      //   toastData.description = 'Title description.'
-      //   break;
+      case ToastTypes.ERROR:
+        toastData.title = 'Error'
+        toastData.description = toastType.data || "An error occurred.";
+        break;
     }
     toast({
       variant:
-        toastType == ToastTypes.ADDED
-          ? "success"
-          : toastType == ToastTypes.DELETED
-            ? "destructive"
-            : "default",
+        toastType.type == ToastTypes.ERROR
+          ? "destructive"
+          : "success",
       title: toastData.title,
       description: toastData.description,
       // action: (

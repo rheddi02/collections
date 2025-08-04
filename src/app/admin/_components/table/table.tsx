@@ -30,7 +30,6 @@ import * as React from "react";
 import { useEffect, useState } from "react";
 import { DataTablePaginationPage } from "./pagination";
 import { cn } from "~/lib/utils";
-import useAppStore from "~/store/app.store";
 import { isMobile } from 'react-device-detect';
 
 interface DataTableProps<TData, TValue> {

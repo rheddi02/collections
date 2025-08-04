@@ -1,13 +1,10 @@
 export type NavigationType = {
+  id?: number
   title: string
   route: string
   image?: string
   subRoute: NavigationType[]
   description?: string
-}
-export type TypeListType = {
-  label: string
-  value: string
 }
 export type PageType = {
   page: number
@@ -19,4 +16,5 @@ export enum ToastTypes {
   UPDATED = 'updated',
   DELETED = 'deleted',
   DEFAULT = 'default',
+  ERROR = 'error',
 }

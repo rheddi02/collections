@@ -3,85 +3,69 @@ import _ from "lodash";
 import type { StateCreator } from "zustand";
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
-import type { CommonOutputType, formData } from "~/server/api/client/types";
+import type { categoryOutput } from "~/server/api/client/types";
 import { ToastTypes } from '~/utils/types';
 
 export interface State {
   filters: {
     search: string
   }
+  categories: categoryOutput[]
+  setCategories: (categories: State['categories']) => void
   setFilters: (filters: State['filters']) => void
   isMe: boolean,
   setIsMe: (isMe: State['isMe']) => void
   modal: boolean;
   isLoading: boolean
   actionable: boolean
-  formData: formData
-  formDataDefault: State['formData']
-  toastType: ToastTypes
+  toastType: {
+    type:ToastTypes
+    data?: string
+  }
   setToastType: (toastType: State['toastType']) => void
-  setFormData: (formData: State['formData']) => void
-  resetForm: () => void
   setIsLoading: (isLoading: boolean) => void
   setActionable: (actionable: boolean) => void
   setModal: (modal: State["modal"]) => void;
   openMenu: boolean
   setOpenMenu: (openMenu: State['openMenu']) => void
-  data: CommonOutputType[]
-  setData: (data: State['data']) => void
   deleteId: number[]
   setDeleteId: (deleteId:number) => void
   isFetching: boolean
   setIsFetching: (isFetching: State['isFetching']) => void
   credentialsModal: boolean
   setCredentialsModal: (credentialsModal: State['credentialsModal']) => void
+  editCategory: categoryOutput | null
+  setEditCategory: (editCategory: State['editCategory']) => void
 }
 
 const createStore: StateCreator<State, [], [], State> = (set, get) => ({
+  categories: [],
+  setCategories: (categories) => {
+    set({ categories })
+  },
   filters: {
     search: '',
   },
   setFilters: (filters) => {
     set({ filters })
   },
-  data: [],
   modal: false,
   openMenu: true,
   isLoading: false,
   actionable: false,
-  formDataDefault: {
-    title: '',
-    description: '',
-    url: '',
-    type: ''
+  toastType: {
+    type: ToastTypes.DEFAULT,
+    data: ''
   },
-  formData: {
-    title: '',
-    description: '',
-    url: '',
-    type: ''
-  },
-  toastType: ToastTypes.DEFAULT,
   deleteId: [],
   setDeleteId: (deleteId) => {
     set({ deleteId: [...get().deleteId, deleteId] })
-  },
-  setData: (data) => {
-    set({ toastType: ToastTypes.DEFAULT })
-    set({ data })
   },
   setToastType: (toastType) => {
     set({ toastType })
   },
   setOpenMenu: (openMenu: State['openMenu']) => {
     set({ openMenu })
-  },
-  resetForm: () => {
-    set({ formData: _.cloneDeep(get().formDataDefault) })
-  },
-  setFormData: (formData) => {
-    if (formData.title.trim()) set({ actionable: true })
-    set({ formData })
   },
   setActionable: (actionable: boolean) => {
     set({ actionable })
@@ -104,6 +88,10 @@ const createStore: StateCreator<State, [], [], State> = (set, get) => ({
   credentialsModal: false,
   setCredentialsModal: (credentialsModal) => {
     set({ credentialsModal })
+  },
+  editCategory: null,
+  setEditCategory: (editCategory) => {
+    set({ editCategory })
   }
 });
 
