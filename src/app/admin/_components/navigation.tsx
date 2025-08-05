@@ -48,7 +48,7 @@ export default function Navigation() {
     <>
       <div className="flex h-screen w-72 flex-col gap-2 p-2">
         <UserProfile />
-        <div className="custom-scrollbar h-auto overflow-auto overscroll-none">
+        <div className="custom-scrollbar h-auto flex-1 overflow-y-auto overscroll-none">
           <Nav {...{ navLists, handleEdit, handleDelete }} />
         </div>
         <div className="mt-auto flex flex-col gap-2">
@@ -96,7 +96,7 @@ const Nav = ({
   return (
     <div
       className={cn(
-        "relative flex h-screen flex-col gap-2",
+        "relative flex flex-col gap-2",
         openMenu ? "w-full" : "hidden",
       )}
     >

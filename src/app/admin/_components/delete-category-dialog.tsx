@@ -32,8 +32,6 @@ export default function DeleteCategoryDialog({
   const { mutate: DeleteCategoryMutation, isPending: isDeleting } = api.delete.category.useMutation({
     onSuccess: async () => {
       await utils.list.categories.invalidate();
-      await utils.list.link.invalidate();
-      await utils.count.links.invalidate();
       toast({
         title: "Success",
         description: "Category and associated links deleted successfully",

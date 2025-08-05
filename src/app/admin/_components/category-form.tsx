@@ -10,11 +10,6 @@ import { Form } from "~/components/ui/form";
 import { TextInput } from "./text-input";
 import { useSession } from "next-auth/react";
 import { toast } from "~/components/ui/use-toast";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "~/components/ui/popover";
 
 // Form schema
 const categoryFormSchema = z.object({
@@ -40,7 +35,6 @@ const CategoryForm = () => {
   const [editingCategory, setEditingCategory] = useState<categoryOutput | null>(
     null,
   );
-  const [showInvalidPopover, setShowInvalidPopover] = useState(false);
   const utils = api.useUtils();
   const popoverTimeoutRef = useRef<NodeJS.Timeout>();
 
@@ -66,30 +60,8 @@ const CategoryForm = () => {
       setIsAdd(true);
       setEditingCategory(editCategory);
       form.setValue("title", editCategory.title);
-      setShowInvalidPopover(true);
     }
   }, [editCategory, form]);
-
-  useEffect(() => {
-    // Clear previous timeout
-    if (popoverTimeoutRef.current) {
-      clearTimeout(popoverTimeoutRef.current);
-    }
-
-    // Check for invalid characters with debounce
-    const invalidChars = watchedTitle?.match(/[^a-zA-Z0-9.-]/g);
-    if (invalidChars && watchedTitle.length > 0) {
-      setShowInvalidPopover(true);
-      // Auto-hide popover after 3 seconds only if there are invalid characters
-      popoverTimeoutRef.current = setTimeout(() => {
-        setShowInvalidPopover(false);
-      }, 3000);
-    } else if (watchedTitle?.length > 0) {
-      // If there are no invalid characters but there's content, hide the popover
-      setShowInvalidPopover(false);
-    }
-    // Don't hide popover when input is empty to keep it open for guidance
-  }, [watchedTitle]);
 
   const { mutate: createData, isPending: pendingCreate } =
     api.create.category.useMutation({
@@ -164,7 +136,6 @@ const CategoryForm = () => {
     setIsAdd(true);
     setEditingCategory(null);
     form.reset();
-    setShowInvalidPopover(true); // Keep popover open when adding category
   };
 
   const handleCancel = () => {
@@ -172,7 +143,6 @@ const CategoryForm = () => {
     setEditingCategory(null);
     setEditCategory(null); // Clear edit category from store
     form.reset();
-    setShowInvalidPopover(false);
     // Clear any pending popover timeout
     if (popoverTimeoutRef.current) {
       clearTimeout(popoverTimeoutRef.current);
