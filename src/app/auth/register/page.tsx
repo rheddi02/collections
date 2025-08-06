@@ -6,38 +6,12 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
 import { Form } from "~/components/ui/form"
 import { TextInput } from "~/app/admin/_components/text-input"
 import { getPasswordStrength, getPasswordStrengthLabel } from "~/utils/password-strength"
-
-// Form schema
-const registerSchema = z.object({
-  username: z
-    .string()
-    .min(3, "Username must be at least 3 characters long")
-    .max(20, "Username must be less than 20 characters")
-    .regex(/^[a-zA-Z0-9._-]+$/, "Username can only contain letters, numbers, dots, hyphens, and underscores")
-    .refine(val => !val.includes(' '), "Username cannot contain spaces"),
-  email: z
-    .string()
-    .email("Please enter a valid email address"),
-  password: z
-    .string()
-    .min(6, "Password must be at least 6 characters")
-    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-    .regex(/[0-9]/, "Password must contain at least one number"),
-  confirmPassword: z
-    .string()
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
-})
-
-type RegisterFormValues = z.infer<typeof registerSchema>
+import { registerFormSchema, type RegisterFormValues } from "~/utils/validation-schemas"
 
 export default function Register() {
   const [isLoading, setIsLoading] = useState(false)
@@ -47,7 +21,7 @@ export default function Register() {
   const { data: session, status } = useSession()
 
   const form = useForm<RegisterFormValues>({
-    resolver: zodResolver(registerSchema),
+    resolver: zodResolver(registerFormSchema),
     defaultValues: {
       username: "",
       email: "",

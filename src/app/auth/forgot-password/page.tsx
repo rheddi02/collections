@@ -4,7 +4,6 @@ import { useState } from "react"
 import Link from "next/link"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
 import { Form } from "~/components/ui/form"
@@ -12,41 +11,27 @@ import { TextInput } from "~/app/admin/_components/text-input"
 import { OTPInput } from "~/app/admin/_components/otp-input"
 import { toast } from "~/components/ui/use-toast"
 import { api } from "~/trpc/react"
-
-const emailSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
-})
-
-const resetSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
-  otp: z.string().length(6, "OTP must be exactly 6 digits"),
-  newPassword: z.string()
-    .min(6, "Password must be at least 6 characters")
-    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-    .regex(/[0-9]/, "Password must contain at least one number"),
-  confirmPassword: z.string(),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-})
-
-type EmailFormValues = z.infer<typeof emailSchema>
-type ResetFormValues = z.infer<typeof resetSchema>
+import { getPasswordStrength, getPasswordStrengthLabel } from "~/utils/password-strength"
+import { 
+  forgotPasswordEmailSchema, 
+  resetPasswordSchema,
+  type ForgotPasswordEmailValues,
+  type ResetPasswordValues 
+} from "~/utils/validation-schemas"
 
 export default function ForgotPassword() {
   const [step, setStep] = useState<"email" | "reset">("email")
   const [email, setEmail] = useState("")
 
-  const emailForm = useForm<EmailFormValues>({
-    resolver: zodResolver(emailSchema),
+  const emailForm = useForm<ForgotPasswordEmailValues>({
+    resolver: zodResolver(forgotPasswordEmailSchema),
     defaultValues: {
       email: "",
     },
   })
 
-  const resetForm = useForm<ResetFormValues>({
-    resolver: zodResolver(resetSchema),
+  const resetForm = useForm<ResetPasswordValues>({
+    resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
       email: "",
       otp: "",
@@ -95,40 +80,18 @@ export default function ForgotPassword() {
     },
   })
 
-  const onEmailSubmit = async (data: EmailFormValues) => {
+  const onEmailSubmit = async (data: ForgotPasswordEmailValues) => {
     setEmail(data.email)
     sendOtpMutation.mutate({ email: data.email })
   }
 
-  const onResetSubmit = async (data: ResetFormValues) => {
+  const onResetSubmit = async (data: ResetPasswordValues) => {
     resetPasswordMutation.mutate({
       email: data.email,
       otp: data.otp,
       newPassword: data.newPassword,
     })
   }
-
-  const getPasswordStrength = (password: string) => {
-    let strength = 0;
-    if (password.length >= 6) strength++;
-    if (/[a-z]/.test(password)) strength++;
-    if (/[A-Z]/.test(password)) strength++;
-    if (/[0-9]/.test(password)) strength++;
-    if (/[^A-Za-z0-9]/.test(password)) strength++;
-    return strength;
-  };
-
-  const getPasswordStrengthLabel = (strength: number) => {
-    switch (strength) {
-      case 0:
-      case 1: return { label: "Very Weak", color: "text-red-500" };
-      case 2: return { label: "Weak", color: "text-orange-500" };
-      case 3: return { label: "Fair", color: "text-yellow-500" };
-      case 4: return { label: "Good", color: "text-blue-500" };
-      case 5: return { label: "Strong", color: "text-green-500" };
-      default: return { label: "", color: "" };
-    }
-  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">

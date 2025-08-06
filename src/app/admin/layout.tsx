@@ -33,7 +33,7 @@ export default function RootLayout({
         <div className="h-full w-full overflow-auto bg-transparent p-2 text-gray-800">
           <div className="h-full rounded-md bg-gray-100">{children}</div>
         </div>
-        <Toaster />
+        {/* <Toaster /> */}
       </div>
     </ProtectedRoute>
   );

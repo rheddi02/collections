@@ -121,18 +121,3 @@ export const authenticatedProcedure = t.procedure.use(async ({ ctx, next }) => {
   });
 });
 
-/**
- * Optional authenticated procedure - works with or without auth
- *
- * This procedure works for both authenticated and unauthenticated users.
- * Check ctx.user to see if user is authenticated.
- */
-export const optionalAuthProcedure = t.procedure.use(async ({ ctx, next }) => {
-  return next({
-    ctx: {
-      ...ctx,
-      session: ctx.session,
-      user: ctx.user, // May be null
-    },
-  });
-});
