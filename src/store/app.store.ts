@@ -1,98 +1,91 @@
 import { type PaginationState, createPaginationStore } from './pagination.store';
-import _ from "lodash";
 import type { StateCreator } from "zustand";
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 import type { categoryOutput } from "~/server/api/client/types";
 import { ToastTypes } from '~/utils/types';
 
-export interface State {
-  filters: {
-    search: string
-  }
-  categories: categoryOutput[]
-  setCategories: (categories: State['categories']) => void
-  setFilters: (filters: State['filters']) => void
-  isMe: boolean,
-  setIsMe: (isMe: State['isMe']) => void
+// UI State interfaces
+interface UIState {
   modal: boolean;
-  isLoading: boolean
-  actionable: boolean
-  toastType: {
-    type:ToastTypes
-    data?: string
-  }
-  setToastType: (toastType: State['toastType']) => void
-  setIsLoading: (isLoading: boolean) => void
-  setActionable: (actionable: boolean) => void
-  setModal: (modal: State["modal"]) => void;
-  openMenu: boolean
-  setOpenMenu: (openMenu: State['openMenu']) => void
-  deleteId: number[]
-  setDeleteId: (deleteId:number) => void
-  isFetching: boolean
-  setIsFetching: (isFetching: State['isFetching']) => void
-  credentialsModal: boolean
-  setCredentialsModal: (credentialsModal: State['credentialsModal']) => void
-  editCategory: categoryOutput | null
-  setEditCategory: (editCategory: State['editCategory']) => void
+  openMenu: boolean;
+  isLoading: boolean;
 }
 
+interface UIActions {
+  setModal: (modal: boolean) => void;
+  setOpenMenu: (openMenu: boolean) => void;
+  setIsLoading: (isLoading: boolean) => void;
+}
+
+// Data State interfaces
+interface DataState {
+  categories: categoryOutput[];
+  editCategory: categoryOutput | null;
+  deleteId: number[];
+}
+
+interface DataActions {
+  setCategories: (categories: categoryOutput[]) => void;
+  setEditCategory: (editCategory: categoryOutput | null) => void;
+  setDeleteId: (deleteId: number) => void;
+  // Utility methods
+  resetDeleteIds: () => void;
+  removeDeleteId: (id: number) => void;
+}
+
+// UI Actions interfaces  
+interface UtilityActions {
+  toggleModal: () => void;
+  toggleMenu: () => void;
+}
+
+// Toast State interfaces
+interface ToastState {
+  toastType: {
+    type: ToastTypes;
+    data?: string;
+  };
+}
+
+interface ToastActions {
+  setToastType: (toastType: ToastState['toastType']) => void;
+}
+
+// Combined State interface
+export interface State extends UIState, DataState, ToastState, UIActions, DataActions, ToastActions, UtilityActions {}
+
 const createStore: StateCreator<State, [], [], State> = (set, get) => ({
-  categories: [],
-  setCategories: (categories) => {
-    set({ categories })
-  },
-  filters: {
-    search: '',
-  },
-  setFilters: (filters) => {
-    set({ filters })
-  },
+  // UI State
   modal: false,
   openMenu: true,
   isLoading: false,
-  actionable: false,
+  // Data State
+  categories: [],
+  editCategory: null,
+  deleteId: [],
+  // Toast State
   toastType: {
     type: ToastTypes.DEFAULT,
     data: ''
   },
-  deleteId: [],
-  setDeleteId: (deleteId) => {
-    set({ deleteId: [...get().deleteId, deleteId] })
-  },
-  setToastType: (toastType) => {
-    set({ toastType })
-  },
-  setOpenMenu: (openMenu: State['openMenu']) => {
-    set({ openMenu })
-  },
-  setActionable: (actionable: boolean) => {
-    set({ actionable })
-  },
-  setIsLoading: (isLoading) => {
-    if (isLoading) set({ actionable: false})
-    set({ isLoading })
-  },
-  setModal: (modal) => {
-    set({ modal });
-  },
-  isFetching: false,
-  setIsFetching: (isFetching) => {
-    set({ isFetching })
-  },
-  isMe: false,
-  setIsMe: (isMe) => {
-    set({ isMe })
-  },
-  credentialsModal: false,
-  setCredentialsModal: (credentialsModal) => {
-    set({ credentialsModal })
-  },
-  editCategory: null,
-  setEditCategory: (editCategory) => {
-    set({ editCategory })
-  }
+  // UI Actions
+  setModal: (modal) => set({ modal }),
+  setOpenMenu: (openMenu) => set({ openMenu }),
+  setIsLoading: (isLoading) => set({ isLoading }),
+  // Data Actions
+  setCategories: (categories) => set({ categories }),
+  setEditCategory: (editCategory) => set({ editCategory }),
+  setDeleteId: (deleteId) => set({ deleteId: [...get().deleteId, deleteId] }),
+  // Toast Actions
+  setToastType: (toastType) => set({ toastType }),
+  // Utility methods for common operations
+  resetDeleteIds: () => set({ deleteId: [] }),
+  removeDeleteId: (id: number) => set({ 
+    deleteId: get().deleteId.filter(deleteId => deleteId !== id) 
+  }),
+  toggleModal: () => set({ modal: !get().modal }),
+  toggleMenu: () => set({ openMenu: !get().openMenu }),
 });
 
 const useAppStore = create<State & PaginationState>()(

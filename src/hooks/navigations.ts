@@ -1,5 +1,5 @@
 "use client";
-import type { NavigationType } from "./types";
+import type { NavigationType } from "../utils/types";
 import useAppStore from "~/store/app.store";
 import { useMemo } from "react";
 

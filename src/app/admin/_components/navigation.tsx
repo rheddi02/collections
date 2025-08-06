@@ -6,7 +6,7 @@ import { Label } from "~/components/ui/label";
 import { cn } from "~/lib/utils";
 import useAppStore from "~/store/app.store";
 import { type NavigationType } from "~/utils/types";
-import { useNavigationLists } from "~/utils/navigations";
+import { useNavigationLists } from "~/hooks/navigations";
 import { Fragment, useState } from "react";
 import CategoryForm from "./category-form";
 import LogoutBtn from "./logout-btn";
