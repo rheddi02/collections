@@ -20,7 +20,7 @@ const UserProfile = () => {
   };
 
   const handleCategoriesClick = () => {
-    router.push("/admin/category");
+    router.push("/admin/categories");
   };
 
   return (
