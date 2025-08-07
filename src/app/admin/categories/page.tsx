@@ -138,17 +138,6 @@ const CategoryManagementPage = () => {
     deletingIds: deleteIdState,
   });
 
-  if (isLoading) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <div className="text-center">
-          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-gray-900"></div>
-          <p className="mt-2 text-gray-600">Loading categories...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="container mx-auto p-6">
       <div className="mb-5 flex flex-col gap-2 font-bold sm:flex-row sm:items-center sm:justify-between">
