@@ -6,10 +6,17 @@ import { Badge } from "~/components/ui/badge";
 import { Checkbox } from "~/components/ui/checkbox";
 import type { categoryOutput } from "~/server/api/client/types";
 
+// Define the category type with count
+type CategoryWithCount = categoryOutput & {
+  _count?: {
+    Links: number;
+  };
+};
+
 interface CategoryColumnsProps {
-  onView: (category: categoryOutput) => void;
-  onEdit: (category: categoryOutput) => void;
-  onDelete: (category: categoryOutput) => void;
+  onView: (category: CategoryWithCount) => void;
+  onEdit: (category: CategoryWithCount) => void;
+  onDelete: (category: CategoryWithCount) => void;
   deletingIds: number[];
 }
 
@@ -18,7 +25,7 @@ export const createCategoryColumns = ({
   onEdit,
   onDelete,
   deletingIds,
-}: CategoryColumnsProps): ColumnDef<categoryOutput>[] => [
+}: CategoryColumnsProps): ColumnDef<CategoryWithCount>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -53,19 +60,20 @@ export const createCategoryColumns = ({
   },
   {
     accessorKey: "title",
-    header: "Category Name",
+    header: "Name",
     cell: ({ row }) => (
       <span className="font-medium capitalize">{row.getValue("title")}</span>
     ),
   },
   {
-    accessorKey: "isPinned",
-    header: "Status",
-    cell: ({ row }) => (
-      <Badge variant={row.getValue("isPinned") ? "default" : "outline"}>
-        {row.getValue("isPinned") ? "Pinned" : "Active"}
-      </Badge>
-    ),
+    accessorKey: "_count.Links",
+    header: "Links Count",
+    cell: ({ row }) => {
+      const count = row.original._count?.Links ?? 0;
+      return (
+        <span className="font-mono text-sm">{count}</span>
+      );
+    },
   },
   {
     accessorKey: "createdAt",

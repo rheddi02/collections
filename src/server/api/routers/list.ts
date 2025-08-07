@@ -71,6 +71,11 @@ export const listRouter = createTRPCRouter({
             where: {
               userId: parseInt(ctx.user.id), // Add user security check
             },
+            include: {
+              _count: {
+                select: { Links: true },
+              },
+            },
             skip,
             take: perPage,
             orderBy: {

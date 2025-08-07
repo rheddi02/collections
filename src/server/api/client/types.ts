@@ -10,6 +10,7 @@ export type linkListOutput = RouterOutput["list"]["link"];
 
 export type categoryInput = RouterInput["create"]['category'];
 export type categoryOutput = RouterOutput["create"]['category'];
+export type categoryListOutput = RouterOutput["list"]["categories"];
 
 export type CommonOutputType =
   | linkOutput
