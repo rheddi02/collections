@@ -10,6 +10,7 @@ import PageTable from "../_components/table/page-table";
 import { useConfirmDialog } from "~/hooks/useConfirmDialog";
 import PageHeader from "../_components/page-header";
 import CreateCategoryPopover from "./_components/create-category-popover";
+import EditCategoryPopover from "./_components/edit-category-popover";
 import { useState, useEffect } from "react";
 import { useApiUtils } from "~/hooks/useApiUtils";
 import { Button } from "~/components/ui/button";
@@ -186,6 +187,7 @@ const CategoryManagementPage = () => {
           </p>
         </div>
       )}
+      <EditCategoryPopover />
     </div>
   );
 };

@@ -105,18 +105,6 @@ export const createCategoryColumns = ({
                 size="sm"
                 onClick={(e) => {
                   e.stopPropagation();
-                  onView(category);
-                }}
-                className="h-8 w-8 p-0"
-                title="View category"
-              >
-                <EyeOpenIcon className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
                   onEdit(category);
                 }}
                 className="h-8 w-8 p-0"

@@ -8,7 +8,7 @@ import { InputOTPForm } from "../_components/otp-code";
 import { useState } from "react";
 
 const Dashboard = () => {
-  const { data: session, update } = useSession();
+  const { data: session, status } = useSession();
   const [isSent, setIsSent] = useState(false);
   const navList = useNavigationLists(); // Now reactive to category changes
   
@@ -38,6 +38,16 @@ const Dashboard = () => {
     sendOTPMutation.mutate();
   };
 
+  // Show loading state while authentication is being checked
+  if (status === "loading") {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        <p className="mt-4 text-gray-600">Loading...</p>
+      </div>
+    );
+  }
+
   if (!session?.user.isVerified) {
     return (
       <div className="flex h-screen flex-col items-center justify-center ">
@@ -55,6 +65,28 @@ const Dashboard = () => {
             </Button>
           </>
         )}
+      </div>
+    );
+  }
+
+  if (status === "authenticated") {
+    console.log("🚀 ~ navList:", navList.length)
+    if (navList.length <= 1) 
+    return (
+      <div className="flex h-screen flex-col items-center justify-center">
+        <h1 className="text-2xl font-bold mb-4">Welcome to the Dashboard</h1>
+        <p className="text-gray-600 mb-6">You are logged in as {session.user.name}</p>
+        <p>Create your first category</p>
+        <Button
+          variant="default"
+          className="mt-4"
+          onClick={() => window.location.href = "/admin/categories"}
+        >
+          Create Category
+        </Button>
+        <p className="mt-4 text-sm text-gray-500">
+          Note: You can manage categories and links from the admin panel.
+        </p>
       </div>
     );
   }

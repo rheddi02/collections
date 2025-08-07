@@ -18,6 +18,7 @@ import { categoryFormSchema, CategoryFormValues } from "~/utils/schemas";
 import { useApiUtils } from "~/hooks";
 import useAppStore from "~/store/app.store";
 import { ToastTypes } from "~/utils/types";
+import PageAction from "../../_components/page-action";
 
 const CreateCategoryPopover = () => {
   const [open, setOpen] = useState(false);
@@ -59,13 +60,18 @@ const CreateCategoryPopover = () => {
     setOpen(false);
   };
 
+  const handleOpenChange = (open: boolean) => {
+    // Prevent closing popover while mutation is in progress
+    if (!open && createCategoryMutation.isPending) {
+      return;
+    }
+    setOpen(open);
+  };
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
-        <Button className="flex gap-2">
-          <PlusIcon className="h-4 w-4" />
-          Add New
-        </Button>
+        <PageAction label="Add New" />
       </PopoverTrigger>
       <PopoverContent className="w-80" align="end">
         <Form {...form}>

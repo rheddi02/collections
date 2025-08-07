@@ -11,6 +11,7 @@ import PageHeader from "../_components/page-header";
 import type { linkListOutput } from "~/server/api/client/types";
 import { useApiUtils } from "~/hooks/useApiUtils";
 import { LinkFormValues } from "~/utils/schemas";
+import PageAction from "../_components/page-action";
 
 // Type for individual link data from the list
 type LinkData = NonNullable<linkListOutput['data'][number]>;
@@ -196,12 +197,7 @@ const DynamicPage = ({ params }: PageProps) => {
             isFetching={isFetching}
             reload={refetch}
           />
-          <button
-            onClick={() => setModal(true)}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          >
-            Add New
-          </button>
+          <PageAction label="Add New" action={() => setModal(true)} />
         </div>
         <hr />
         <PageTable 

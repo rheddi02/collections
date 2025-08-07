@@ -5,28 +5,6 @@ import {
   authenticatedProcedure,
 } from "~/server/api/trpc";
 
-// // Generic create function for tips - NOW WITH PROPER AUTH SECURITY
-// const createTipCreateProcedure = (tableName: string) =>
-//   authenticatedProcedure
-//     .input(
-//       z.object({
-//         title: z.string().min(1),
-//         description: z.string().default(""),
-//         url: z.string(),
-//         type: z.string(),
-//         isPublic: z.boolean().default(true),
-//       }),
-//     )
-//     .mutation(async ({ ctx, input }) => {
-//       // SECURITY: Only authenticated users can create, data is linked to their user ID
-//       return await (ctx.db as any)[tableName].create({
-//         data: {
-//           ...input,
-//           userId: parseInt(ctx.user.id), // Use authenticated user's ID
-//         },
-//       });
-//     });
-
 export const createRouter = createTRPCRouter({
   category: authenticatedProcedure
     .input(
@@ -35,10 +13,28 @@ export const createRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const userId = parseInt(ctx.user.id);
+      
+      // Check if category with this title already exists for this user
+      const existingCategory = await ctx.db.categories.findFirst({
+        where: {
+          title: {
+            equals: input.title,
+            mode: "insensitive", // Case-insensitive comparison
+          },
+          userId: userId,
+        },
+      });
+
+      if (existingCategory) {
+        throw new Error("A category with this name already exists");
+      }
+
       return await ctx.db.categories.create({
         data: {
           ...input,
-          userId: parseInt(ctx.user.id), // Use authenticated user's ID
+          slug: input.title.toLowerCase().replace(/\s+/g, '-'), // Generate slug from title
+          userId: userId,
         },
       });
     }),

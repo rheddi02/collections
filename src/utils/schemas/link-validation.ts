@@ -9,7 +9,7 @@ export const urlSchema = z
 export const titleSchema = z
   .string()
   .min(1, "Title is required")
-  .min(3, "Title must be at least 3 characters")
+  .min(2, "Title must be at least 3 characters")
 
 export const descriptionSchema = z
   .string()

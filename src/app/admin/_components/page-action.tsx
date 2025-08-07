@@ -3,17 +3,39 @@ import React from "react";
 import { Button } from "~/components/ui/button";
 
 type Props = {
-  action: () => void;
+  action?: () => void;
   label: string;
-};
+} & React.ComponentProps<typeof Button>;
 
-const PageAction = ({ label, action }: Props) => {
+const PageAction = React.forwardRef<
+  React.ElementRef<typeof Button>,
+  Props
+>(({ label, action, onClick, ...props }, ref) => {
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    // If there's a custom action, call it
+    if (action) {
+      action();
+    }
+    // If there's an onClick prop (from PopoverTrigger), call it
+    if (onClick) {
+      onClick(event);
+    }
+  };
+
   return (
-    <Button onClick={action} className="flex gap-2">
+    <Button 
+      ref={ref}
+      onClick={handleClick} 
+      className="flex gap-2" 
+      variant="outline"
+      {...props}
+    >
       <PlusIcon className="h-4 w-4" />
       {label}
     </Button>
   );
-};
+});
+
+PageAction.displayName = "PageAction";
 
 export default PageAction;

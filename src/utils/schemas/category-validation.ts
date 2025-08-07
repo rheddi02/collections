@@ -1,14 +1,32 @@
 import { z } from "zod"
 
-// Category validation schemas
+// Basic category validation schema (for client-side validation)
 export const categoryTitleSchema = z
   .string()
   .min(1, "Category name is required")
   .max(40, "Category name must be less than 50 characters")
   .regex(
-    /^[a-zA-Z0-9.-]+$/,
-    "Category name can only contain letters, numbers, hyphens (-), and periods (.)",
+    /^[a-zA-Z0-9.\s-]+$/,
+    "Category name can only contain letters, numbers, spaces, hyphens (-), and periods (.)",
   )
+
+// Enhanced schema with async uniqueness validation
+// Note: This requires an API call and should be used carefully
+export const categoryTitleSchemaWithUniqueness = (
+  checkUniqueness: (title: string, excludeId?: number) => Promise<boolean>
+) => categoryTitleSchema.refine(
+  async (title) => {
+    try {
+      return await checkUniqueness(title);
+    } catch {
+      // If API call fails, skip validation to avoid blocking form
+      return true;
+    }
+  },
+  {
+    message: "A category with this name already exists",
+  }
+);
 
 // Form schemas for different use cases
 export const categoryFormSchema = z.object({
