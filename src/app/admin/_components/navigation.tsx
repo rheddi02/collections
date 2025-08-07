@@ -1,67 +1,30 @@
 "use client";
-import { Pencil1Icon, TrashIcon } from "@radix-ui/react-icons";
 import { useRouter, useSelectedLayoutSegments } from "next/navigation";
 import { twMerge } from "tailwind-merge";
 import { Label } from "~/components/ui/label";
 import { cn } from "~/lib/utils";
 import useAppStore from "~/store/app.store";
 import { type NavigationType } from "~/utils/types";
-import { useNavigationLists } from "~/hooks/navigations";
-import { Fragment, useState } from "react";
+import { useNavigationLists } from "~/hooks/useNavigationLists";
+import { Fragment } from "react";
 import CategoryForm from "./category-form";
 import LogoutBtn from "./logout-btn";
 import UserProfile from "./user-profile";
-import DeleteCategoryDialog from "./delete-category-dialog";
 
 export default function Navigation() {
   const navLists = useNavigationLists(); // Now reactive to category changes
-  const [deleteCategory, setDeleteCategory] = useState<NavigationType | null>(null);
-  const { setEditCategory } = useAppStore((state) => ({
-    setEditCategory: state.setEditCategory,
-  }));
-
-  const handleEdit = (nav: NavigationType) => {
-    // Only allow editing for categories (not dashboard which has id: 0)
-    if (!nav.id || nav.id === 0) return;
-    
-    // Convert NavigationType to categoryOutput format
-    const categoryData = {
-      id: nav.id,
-      title: nav.title,
-      userId: 0, // This will be set by the server
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      isPinned: false, // Default value
-    };
-    setEditCategory(categoryData);
-  };
-  
-  const handleDelete = (nav: NavigationType) => {
-    setDeleteCategory(nav);
-  };
-
-  const handleCloseDialog = () => {
-    setDeleteCategory(null);
-  };
 
   return (
     <>
       <div className="flex h-screen w-72 flex-col gap-2 p-2">
         <UserProfile />
         <div className="custom-scrollbar h-auto flex-1 overflow-y-auto overscroll-none">
-          <Nav {...{ navLists, handleEdit, handleDelete }} />
+          <Nav navLists={navLists} />
         </div>
         <div className="mt-auto flex flex-col gap-2">
-          <CategoryForm />
           <LogoutBtn />
         </div>
       </div>
-
-      <DeleteCategoryDialog
-        category={deleteCategory}
-        isOpen={!!deleteCategory}
-        onClose={handleCloseDialog}
-      />
     </>
   );
 }
@@ -69,17 +32,12 @@ export default function Navigation() {
 const Nav = ({
   navLists,
   isChild = false,
-  handleDelete,
-  handleEdit,
 }: {
   navLists: NavigationType[];
   isChild?: boolean;
-  handleDelete?: (nav: NavigationType) => void;
-  handleEdit?: (nav: NavigationType) => void;
 }) => {
-  const { openMenu, isLoading } = useAppStore((state) => ({
+  const { openMenu } = useAppStore((state) => ({
     openMenu: state.openMenu,
-    isLoading: state.isLoading,
   }));
   const router = useRouter();
   const segments = useSelectedLayoutSegments();
@@ -113,32 +71,6 @@ const Nav = ({
             onClick={() => handleRoute(navigation)}
           >
             <Label className="select-none">{navigation.title}</Label>
-            {segment === navigation.title.toLowerCase().replaceAll(" ", "-") && navigation.id !== 0 ? (
-              <div className="flex gap-1">
-                <div className="group rounded-full p-1 hover:bg-gray-900">
-                  <Pencil1Icon
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleEdit && handleEdit(navigation);
-                    }}
-                    className={cn(
-                      "h-4 w-4 text-gray-900 group-hover:text-gray-100",
-                    )}
-                  />
-                </div>
-                <div className="group rounded-full p-1 hover:bg-red-900">
-                  <TrashIcon
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete && handleDelete(navigation);
-                    }}
-                    className={cn(
-                      "h-4 w-4 text-red-900 group-hover:text-red-100",
-                    )}
-                  />
-                </div>
-              </div>
-            ) : null}
           </div>
           {!!navigation.subRoute.length && (
             <Nav navLists={navigation.subRoute} isChild={true} />

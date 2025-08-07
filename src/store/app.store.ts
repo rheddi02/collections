@@ -10,12 +10,25 @@ interface UIState {
   modal: boolean;
   openMenu: boolean;
   isLoading: boolean;
+  confirmDialog: {
+    isOpen: boolean;
+    title: string;
+    description: string;
+    warningText?: string;
+    confirmText: string;
+    cancelText: string;
+    variant: 'default' | 'destructive';
+    isLoading: boolean;
+    onConfirm: () => void | Promise<void>;
+  } | null;
 }
 
 interface UIActions {
   setModal: (modal: boolean) => void;
   setOpenMenu: (openMenu: boolean) => void;
   setIsLoading: (isLoading: boolean) => void;
+  setConfirmDialog: (dialog: UIState['confirmDialog']) => void;
+  closeConfirmDialog: () => void;
 }
 
 // Data State interfaces
@@ -60,6 +73,7 @@ const createStore: StateCreator<State, [], [], State> = (set, get) => ({
   modal: false,
   openMenu: true,
   isLoading: false,
+  confirmDialog: null,
   // Data State
   categories: [],
   editCategory: null,
@@ -73,6 +87,8 @@ const createStore: StateCreator<State, [], [], State> = (set, get) => ({
   setModal: (modal) => set({ modal }),
   setOpenMenu: (openMenu) => set({ openMenu }),
   setIsLoading: (isLoading) => set({ isLoading }),
+  setConfirmDialog: (confirmDialog) => set({ confirmDialog }),
+  closeConfirmDialog: () => set({ confirmDialog: null }),
   // Data Actions
   setCategories: (categories) => set({ categories }),
   setEditCategory: (editCategory) => set({ editCategory }),

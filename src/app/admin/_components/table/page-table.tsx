@@ -1,7 +1,7 @@
 "use client";
 import DataTableCompact from "~/app/admin/_components/table/table-compact";
 import type { ColumnDef, Row } from "@tanstack/react-table";
-import type { CommonOutputType, linkListOutput } from "~/server/api/client/types";
+import type { linkListOutput } from "~/server/api/client/types";
 import useAppStore from "~/store/app.store";
 import DataTable from "./table";
 import { isMobile } from "react-device-detect";
@@ -10,23 +10,22 @@ import { useEffect, useState } from "react";
 // Type for individual link data from the list
 type LinkData = NonNullable<linkListOutput['data'][number]>;
 
-const PageTable = ({
+// Generic PageTable component that accepts any data type
+function PageTable<T = LinkData>({
   data,
-  onEdit,
-  onDelete,
   loading,
   onRowClick,
+  onRowChange,
   hiddenColumns,
   columns,
 }: {
-  data: LinkData[];
-  onEdit?: (row: Row<LinkData>) => void;
-  onDelete?: (row: Row<LinkData>) => void;
-  onRowClick?: (row: Row<LinkData>) => void;
+  data: T[];
+  onRowClick?: (row: Row<T>) => void;
+  onRowChange?: (rows: T[]) => void;
   loading: boolean;
   hiddenColumns?: Record<string, boolean>;
-  columns: ColumnDef<LinkData>[];
-}) => {
+  columns: ColumnDef<T>[];
+}): JSX.Element {
   const [isMobileView, setIsMobileView] = useState(false);
   const { pageCount, setPage } = useAppStore((state) => ({
     pageCount: state.pageCount,
@@ -49,6 +48,7 @@ const PageTable = ({
           columns: columns,
           onPaginationChange,
           onRowClick,
+          onRowChange,
           hiddenColumns: hiddenColumns ?? {
             id: false,
             title: true,
@@ -70,6 +70,7 @@ const PageTable = ({
         columns: columns,
         onPaginationChange,
         onRowClick,
+        onRowChange,
         hiddenColumns: hiddenColumns ?? {
           id: false,
           title: true,
@@ -86,4 +87,5 @@ const PageTable = ({
   );
 };
 
+export { PageTable };
 export default PageTable;

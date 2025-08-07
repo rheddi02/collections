@@ -12,7 +12,7 @@ import { api } from "~/trpc/react";
 import { useToast } from "~/components/ui/use-toast";
 import { TextInput } from "../_components/text-input";
 import { getPasswordStrength, getPasswordStrengthLabel } from "~/utils/password-strength";
-import { profileFormSchema, type ProfileFormValues } from "~/utils/validation-schemas";
+import { profileFormSchema, ProfileFormValues } from "~/utils/schemas";
 
 const Profile = () => {
   const { data: session } = useSession();

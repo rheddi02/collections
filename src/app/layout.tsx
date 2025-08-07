@@ -4,7 +4,6 @@ import "~/styles/globals.css";
 import { GeistSans } from "geist/font/sans";
 import { TRPCReactProvider } from "~/trpc/react";
 import { Toaster } from "~/components/ui/toaster";
-import useAppStore from "~/store/app.store";
 import AuthProvider from "~/components/AuthProvider";
 import { SessionDebug } from "~/components/SessionDebug";
 
@@ -13,15 +12,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // const { credentialsModal, setCredentialsModal } = useAppStore((state) => ({
-  //   credentialsModal: state.credentialsModal,
-  //   setCredentialsModal: state.setCredentialsModal,
-  // }));
-
-  // const handleClose = () => {
-  //   setCredentialsModal(false);
-  // };
-
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
       <body className="overscroll-none">
@@ -29,7 +19,7 @@ export default function RootLayout({
           <TRPCReactProvider>
             {children}
             <Toaster />
-            <SessionDebug />
+            {/* <SessionDebug /> */}
           </TRPCReactProvider>
         </AuthProvider>
       </body>

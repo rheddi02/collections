@@ -2,13 +2,15 @@
 import useAppStore from "~/store/app.store";
 import type { Row } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
-import CustomDialog, { FormState } from "~/app/admin/[type]/_components/dialog";
+import CustomDialog from "~/app/admin/[type]/_components/dialog";
 import { api } from "~/trpc/react";
 import { ToastTypes } from "~/utils/types";
 import PageTable from "../_components/table/page-table";
 import { createColumns } from "~/app/admin/[type]/_components/columns";
 import PageHeader from "../_components/page-header";
 import type { linkListOutput } from "~/server/api/client/types";
+import { useApiUtils } from "~/hooks/useApiUtils";
+import { LinkFormValues } from "~/utils/schemas";
 
 // Type for individual link data from the list
 type LinkData = NonNullable<linkListOutput['data'][number]>;
@@ -22,11 +24,11 @@ interface PageProps {
 const DynamicPage = ({ params }: PageProps) => {
   const { type: pageTitle } = params;
 
-  const utils = api.useUtils();
+  const utils = useApiUtils();
   const [category, setCategory] = useState<
     { id: number; title: string } | undefined
   >();
-  const [initialData, setInitialData] = useState<Partial<FormState> | undefined>();
+  const [initialData, setInitialData] = useState<Partial<LinkFormValues> | undefined>();
   const [form, setForm] = useState({
     title: "Create New",
     description: "Add new data",
@@ -150,7 +152,7 @@ const DynamicPage = ({ params }: PageProps) => {
     }
   }, [modal]);
 
-  const handleSave = (formData: FormState) => {
+  const handleSave = (formData: LinkFormValues) => {
     setIsLoading(true);
 
     // Type guard and data preparation
@@ -162,7 +164,7 @@ const DynamicPage = ({ params }: PageProps) => {
     });
   };
 
-  const handleUpdate = (formData: FormState) => {
+  const handleUpdate = (formData: LinkFormValues) => {
     setIsLoading(true);
     if (!category || typeof formData.id !== "number") return;
     updateData({
@@ -179,7 +181,7 @@ const DynamicPage = ({ params }: PageProps) => {
       <CustomDialog
         {...{
           initialData: initialData,
-          defaultType: pageTitle,
+          open: modal,
           action: form.label == "update" ? handleUpdate : handleSave,
           title: form.title,
           description: form.description,
@@ -187,14 +189,20 @@ const DynamicPage = ({ params }: PageProps) => {
         }}
       />
       <div className="flex flex-col gap-2 p-5">
-        <PageHeader
-          title={pageTitle} 
-          label='Add New'
-          action={() => setModal(true)}
-          setOpenMenu={() => setOpenMenu(!openMenu)}
-          isFetching={isFetching}
-          reload={refetch}
-        />
+        <div className="flex flex-col gap-2 font-bold sm:flex-row sm:items-center sm:justify-between mb-5">
+          <PageHeader
+            title={pageTitle}
+            setOpenMenu={() => setOpenMenu(!openMenu)}
+            isFetching={isFetching}
+            reload={refetch}
+          />
+          <button
+            onClick={() => setModal(true)}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            Add New
+          </button>
+        </div>
         <hr />
         <PageTable 
           data={data?.data || []} 

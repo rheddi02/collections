@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, Controller } from "react-hook-form"
-import { z } from "zod"
 import {
   Dialog,
   DialogContent,
@@ -18,41 +17,26 @@ import { TextInput } from "~/app/admin/_components/text-input";
 import useAppStore from "~/store/app.store";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import React, { useEffect } from "react";
-
-// Form schema
-const formSchema = z.object({
-  id: z.number().optional(),
-  title: z.string()
-    .min(1, "Title is required")
-    .min(3, "Title must be at least 3 characters"),
-  url: z.string()
-    .min(1, "URL is required")
-    .url("Please enter a valid URL (e.g., https://example.com)"),
-  description: z.string().optional(),
-})
-
-// Form state type
-export type FormState = z.infer<typeof formSchema>
+import { linkFormSchema, LinkFormValues } from "~/utils/schemas";
 
 type Props = {
-  action: (formData: FormState) => void;
+  action: (formData: LinkFormValues) => void;
   title: string;
   description: string;
+  open: boolean;
   label: string;
-  initialData?: Partial<FormState>;
-  defaultType?: string;
+  initialData?: Partial<LinkFormValues>;
 };
 
-const CustomDialog = ({ title, description, label, action, initialData, defaultType }: Props) => {
-  const form = useForm<FormState>({
-    resolver: zodResolver(formSchema),
+const FormDialog = ({ action, title, description, open, label, initialData }: Props) => {
+  const form = useForm<LinkFormValues>({
+    resolver: zodResolver(linkFormSchema),
     defaultValues: {
-      id: undefined,
       title: "",
       url: "",
       description: "",
     },
-  })
+  });
   
   const {
     modal,
@@ -87,7 +71,7 @@ const CustomDialog = ({ title, description, label, action, initialData, defaultT
     }
   }, [modal, form]);
 
-  const handleSubmit = (values: FormState) => {
+  const handleSubmit = (values: LinkFormValues) => {
     action(values);
   };
 
@@ -147,4 +131,4 @@ const CustomDialog = ({ title, description, label, action, initialData, defaultT
   );
 };
 
-export default CustomDialog;
+export default FormDialog;

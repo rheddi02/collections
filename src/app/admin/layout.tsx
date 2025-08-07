@@ -4,6 +4,7 @@ import "~/styles/globals.css";
 import { Toaster } from "~/components/ui/toaster";
 import Navigation from "./_components/navigation";
 import { ProtectedRoute } from "~/components/ProtectedRoute";
+import { GlobalConfirmDialog } from "./_components/global-confirm-dialog";
 import { useEffect } from "react";
 import useAppStore from "~/store/app.store";
 import { api } from "~/trpc/react";
@@ -19,7 +20,7 @@ export default function RootLayout({
   }));
 
   const { data: categories, isFetched: isFetchedCategories } =
-    api.list.categories.useQuery();
+    api.list.categories.useQuery({});
 
   useEffect(() => {
     if (!isFetchedCategories || !categories) return;
@@ -33,7 +34,7 @@ export default function RootLayout({
         <div className="h-full w-full overflow-auto bg-transparent p-2 text-gray-800">
           <div className="h-full rounded-md bg-gray-100">{children}</div>
         </div>
-        {/* <Toaster /> */}
+        <GlobalConfirmDialog />
       </div>
     </ProtectedRoute>
   );

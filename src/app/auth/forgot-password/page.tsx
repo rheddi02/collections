@@ -17,7 +17,7 @@ import {
   resetPasswordSchema,
   type ForgotPasswordEmailValues,
   type ResetPasswordValues 
-} from "~/utils/validation-schemas"
+} from "~/utils/schemas"
 
 export default function ForgotPassword() {
   const [step, setStep] = useState<"email" | "reset">("email")

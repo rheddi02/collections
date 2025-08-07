@@ -2,7 +2,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { api } from "~/trpc/react";
 import { categoryOutput } from "~/server/api/client/types";
 import { Button } from "~/components/ui/button";
@@ -10,23 +9,11 @@ import { Form } from "~/components/ui/form";
 import { TextInput } from "./text-input";
 import { useSession } from "next-auth/react";
 import { toast } from "~/components/ui/use-toast";
-
-// Form schema
-const categoryFormSchema = z.object({
-  title: z
-    .string()
-    .min(1, "Category name is required")
-    .max(40, "Category name must be less than 50 characters")
-    .regex(
-      /^[a-zA-Z0-9.-]+$/,
-      "Category name can only contain letters, numbers, hyphens (-), and periods (.)",
-    ),
-});
-
-type CategoryFormValues = z.infer<typeof categoryFormSchema>;
+import { useApiUtils } from "~/hooks/useApiUtils";
 
 import useAppStore from "~/store/app.store";
 import { useRouter } from "next/navigation";
+import { categoryFormSchema, CategoryFormValues } from "~/utils/schemas";
 
 const CategoryForm = () => {
   const router = useRouter()
@@ -35,7 +22,7 @@ const CategoryForm = () => {
   const [editingCategory, setEditingCategory] = useState<categoryOutput | null>(
     null,
   );
-  const utils = api.useUtils();
+  const utils = useApiUtils();
   const popoverTimeoutRef = useRef<NodeJS.Timeout>();
 
   // Get edit category from app store

@@ -1,7 +1,7 @@
 import type { StateCreator } from 'zustand';
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
-import { PAGE_LIMIT } from '~/lib/utils';
+import { PAGE_LIMIT } from '~/utils/contants/page-limit';
 
 export interface PaginationState {
   page: number;

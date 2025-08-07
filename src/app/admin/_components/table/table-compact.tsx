@@ -58,8 +58,9 @@ export default function DataTableCompact<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const { data: session } = useSession();
   const [rowSelection, setRowSelection] = useState({});
+  const currentPage = useAppStore((state) => state.page);
   const [page, setPage] = useState<PaginationState>({
-    pageIndex: 0,
+    pageIndex: currentPage - 1, // Convert from 1-based to 0-based
     pageSize: 0,
   });
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
@@ -67,6 +68,14 @@ export default function DataTableCompact<TData, TValue>({
   });
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = React.useState<SortingState>([]);
+
+  // Sync with app store page changes
+  useEffect(() => {
+    setPage(prev => ({
+      ...prev,
+      pageIndex: currentPage - 1 // Convert from 1-based to 0-based
+    }));
+  }, [currentPage]);
 
   useEffect(() => {
     if (onPaginationChange) {

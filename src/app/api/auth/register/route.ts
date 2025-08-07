@@ -2,19 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { db } from '~/server/db';
 import { z } from 'zod';
-
-const registerSchema = z.object({
-  username: z.string().min(3).max(50),
-  email: z.string().email(),
-  password: z.string().min(6),
-});
+import { registerApiSchema } from '~/utils/schemas';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     
     // Validate input
-    const { username, email, password } = registerSchema.parse(body);
+    const { username, email, password } = registerApiSchema.parse(body);
 
     // Check if user already exists
     const existingUser = await db.users.findFirst({
