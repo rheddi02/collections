@@ -18,6 +18,7 @@ function PageTable<T = LinkData>({
   onRowChange,
   hiddenColumns,
   columns,
+  selectedRows
 }: {
   data: T[];
   onRowClick?: (row: Row<T>) => void;
@@ -25,6 +26,7 @@ function PageTable<T = LinkData>({
   loading: boolean;
   hiddenColumns?: Record<string, boolean>;
   columns: ColumnDef<T>[];
+  selectedRows?: T[];
 }): JSX.Element {
   const [isMobileView, setIsMobileView] = useState(false);
   const { pageCount, setPage } = useAppStore((state) => ({
@@ -49,6 +51,7 @@ function PageTable<T = LinkData>({
           onPaginationChange,
           onRowClick,
           onRowChange,
+          selectedRows: selectedRows,
           hiddenColumns: hiddenColumns ?? {
             id: false,
             title: true,
@@ -71,6 +74,7 @@ function PageTable<T = LinkData>({
         onPaginationChange,
         onRowClick,
         onRowChange,
+        selectedRows: selectedRows,
         hiddenColumns: hiddenColumns ?? {
           id: false,
           title: true,

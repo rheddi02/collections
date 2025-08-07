@@ -43,6 +43,7 @@ interface DataTableProps<TData, TValue> {
   onRowClick?: (row: Row<TData>) => void;
   onRowChange?: (row: TData[]) => void;
   hiddenColumns?: Record<string, boolean>;
+  selectedRows?: TData[];
 }
 
 export default function DataTable<TData, TValue>({
@@ -55,9 +56,9 @@ export default function DataTable<TData, TValue>({
   onRowClick,
   onRowChange,
   hiddenColumns = {},
+  selectedRows = [],
 }: DataTableProps<TData, TValue>) {
   const { data: session } = useSession();
-  const [rowSelection, setRowSelection] = useState({});
   const currentPage = useAppStore((state) => state.page);
   const [page, setPage] = useState<PaginationState>({
     pageIndex: currentPage - 1, // Convert from 1-based to 0-based
@@ -68,6 +69,26 @@ export default function DataTable<TData, TValue>({
   });
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = React.useState<SortingState>([]);
+
+  // Convert selectedRows to rowSelection object for the table
+  const rowSelectionFromProps = React.useMemo(() => {
+    if (!selectedRows || selectedRows.length === 0) {
+      return {};
+    }
+    const selection: Record<string, boolean> = {};
+    data.forEach((item, index) => {
+      const isSelected = selectedRows.some(selectedItem => 
+        JSON.stringify(selectedItem) === JSON.stringify(item)
+      );
+      if (isSelected) {
+        selection[index.toString()] = true;
+      }
+    });
+    return selection;
+  }, [selectedRows, data]);
+
+  // Use the computed selection instead of state
+  const currentRowSelection = rowSelectionFromProps;
 
   // Sync with app store page changes
   useEffect(() => {
@@ -98,7 +119,7 @@ export default function DataTable<TData, TValue>({
     state: {
       sorting,
       columnVisibility,
-      rowSelection,
+      rowSelection: currentRowSelection,
       columnFilters,
       pagination: page,
     },
@@ -106,7 +127,14 @@ export default function DataTable<TData, TValue>({
     onPaginationChange: setPage,
     manualPagination: true,
     enableRowSelection: true,
-    onRowSelectionChange: setRowSelection,
+    onRowSelectionChange: (updater) => {
+      // Handle row selection changes and notify parent
+      const newSelection = typeof updater === 'function' ? updater(currentRowSelection) : updater;
+      const selectedItems = data.filter((item, index) => newSelection[index.toString()]);
+      if (onRowChange) {
+        onRowChange(selectedItems);
+      }
+    },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
@@ -116,11 +144,6 @@ export default function DataTable<TData, TValue>({
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
-
-  useEffect(() => {
-    if (onRowChange)
-      onRowChange(table.getSelectedRowModel().flatRows.map((x) => x.original));
-  }, [table.getSelectedRowModel()]);
 
   const TableRowActions = (props: { type: "loading" | "empty" }) => {
     const actions = {

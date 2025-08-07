@@ -8,6 +8,7 @@ import CreateCategoryPopover from "../create-category-popover";
 const mockMutate = jest.fn();
 const mockInvalidate = jest.fn();
 const mockToast = jest.fn();
+const mockSetToastType = jest.fn();
 
 // Mock the dependencies
 jest.mock("~/trpc/react", () => ({
@@ -37,6 +38,23 @@ jest.mock("~/hooks", () => ({
 
 jest.mock("~/components/ui/use-toast", () => ({
   toast: jest.fn(),
+}));
+
+jest.mock("~/store/app.store", () => ({
+  __esModule: true,
+  default: jest.fn(() => ({
+    setToastType: jest.fn(),
+  })),
+}));
+
+jest.mock("~/utils/types", () => ({
+  ToastTypes: {
+    ADDED: 'added',
+    UPDATED: 'updated',
+    DELETED: 'deleted',
+    DEFAULT: 'default',
+    ERROR: 'error',
+  },
 }));
 
 jest.mock("~/app/admin/_components/text-input", () => {
@@ -80,9 +98,11 @@ describe("CreateCategoryPopover", () => {
       },
     });
 
-    // Setup toast mock
-    const { toast } = require("~/components/ui/use-toast");
-    toast.mockImplementation(mockToast);
+    // Setup app store mock to return our mock function
+    const useAppStore = require("~/store/app.store").default;
+    useAppStore.mockReturnValue({
+      setToastType: mockSetToastType,
+    });
   });
 
   it("renders the create button", () => {
@@ -292,12 +312,10 @@ describe("CreateCategoryPopover", () => {
     const submitButton = screen.getByRole("button", { name: /^create$/i });
     await user.click(submitButton);
 
-    // Verify mutation was called (don't worry about exact arguments due to mocking complexity)
+    // Verify success side effects
     await waitFor(() => {
-      // Verify success side effects
-      expect(mockToast).toHaveBeenCalledWith({
-        title: "Success",
-        description: "Category created successfully",
+      expect(mockSetToastType).toHaveBeenCalledWith({
+        type: 'added',
       });
     });
 
@@ -335,12 +353,11 @@ describe("CreateCategoryPopover", () => {
     const submitButton = screen.getByRole("button", { name: /^create$/i });
     await user.click(submitButton);
 
-    // Verify error handling
+    // Verify error handling - errors still use the direct toast function
     await waitFor(() => {
-      expect(mockToast).toHaveBeenCalledWith({
-        title: "Error",
-        description: "Category already exists",
-        variant: "destructive",
+      expect(mockSetToastType).toHaveBeenCalledWith({
+        type: 'error',
+        data: 'Category already exists',
       });
     });
   });

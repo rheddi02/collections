@@ -41,7 +41,7 @@ interface DataState {
 interface DataActions {
   setCategories: (categories: categoryOutput[]) => void;
   setEditCategory: (editCategory: categoryOutput | null) => void;
-  setDeleteId: (deleteId: number) => void;
+  setDeleteId: (deleteId: number | number[]) => void;
   // Utility methods
   resetDeleteIds: () => void;
   removeDeleteId: (id: number) => void;
@@ -92,7 +92,7 @@ const createStore: StateCreator<State, [], [], State> = (set, get) => ({
   // Data Actions
   setCategories: (categories) => set({ categories }),
   setEditCategory: (editCategory) => set({ editCategory }),
-  setDeleteId: (deleteId) => set({ deleteId: [...get().deleteId, deleteId] }),
+  setDeleteId: (deleteId) => set({ deleteId: deleteId instanceof Array ? deleteId : [deleteId] }),
   // Toast Actions
   setToastType: (toastType) => set({ toastType }),
   // Utility methods for common operations

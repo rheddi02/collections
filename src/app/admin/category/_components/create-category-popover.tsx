@@ -16,6 +16,8 @@ import { api } from "~/trpc/react";
 import TextInput from "../../_components/text-input";
 import { categoryFormSchema, CategoryFormValues } from "~/utils/schemas";
 import { useApiUtils } from "~/hooks";
+import useAppStore from "~/store/app.store";
+import { ToastTypes } from "~/utils/types";
 
 const CreateCategoryPopover = () => {
   const [open, setOpen] = useState(false);
@@ -27,25 +29,22 @@ const CreateCategoryPopover = () => {
     },
   });
 
+  const { setToastType } = useAppStore((state) => ({
+    setToastType: state.setToastType,
+  }));
+
   const utils = useApiUtils();
 
   const createCategoryMutation = api.create.category.useMutation({
     onSuccess: async () => {
-      toast({
-        title: "Success",
-        description: "Category created successfully",
-      });
+      setToastType({ type: ToastTypes.ADDED });
       form.reset();
       setOpen(false);
       // Invalidate categories to refetch
       await utils.list.categories.invalidate();
     },
     onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to create category",
-        variant: "destructive",
-      });
+      setToastType({ type: ToastTypes.ERROR, data: error.message });
     },
   });
 
