@@ -10,7 +10,7 @@ import { Button } from "~/components/ui/button";
 import { Form } from "~/components/ui/form";
 import { api } from "~/trpc/react";
 import { useToast } from "~/components/ui/use-toast";
-import { TextInput } from "../_components/text-input";
+import TextInput from "../_components/text-input";
 import { getPasswordStrength, getPasswordStrengthLabel } from "~/utils/password-strength";
 import { profileFormSchema, ProfileFormValues } from "~/utils/schemas";
 

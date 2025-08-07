@@ -3,7 +3,6 @@ import "~/styles/globals.css";
 
 import { Toaster } from "~/components/ui/toaster";
 import Navigation from "./_components/navigation";
-import { ProtectedRoute } from "~/components/ProtectedRoute";
 import { GlobalConfirmDialog } from "./_components/global-confirm-dialog";
 import { useEffect } from "react";
 import useAppStore from "~/store/app.store";
@@ -28,14 +27,13 @@ export default function RootLayout({
   }, [categories, isFetchedCategories]);
 
   return (
-    <ProtectedRoute>
-      <div className="flex h-screen bg-gray-800 text-gray-300">
-        <Navigation />
-        <div className="h-full w-full overflow-auto bg-transparent p-2 text-gray-800">
-          <div className="h-full rounded-md bg-gray-100">{children}</div>
-        </div>
-        <GlobalConfirmDialog />
+    <div className="flex h-screen bg-gray-800 text-gray-300">
+      <Navigation />
+      <div className="h-full w-full overflow-auto bg-transparent p-2 text-gray-800">
+        <div className="h-full rounded-md bg-gray-100">{children}</div>
       </div>
-    </ProtectedRoute>
+      <GlobalConfirmDialog />
+      <Toaster />
+    </div>
   );
 }

@@ -13,7 +13,7 @@ import {
 import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
 import { Form, FormControl, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
-import { TextInput } from "~/app/admin/_components/text-input";
+import TextInput from "~/app/admin/_components/text-input";
 import useAppStore from "~/store/app.store";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import React, { useEffect } from "react";

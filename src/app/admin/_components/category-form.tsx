@@ -6,7 +6,7 @@ import { api } from "~/trpc/react";
 import { categoryOutput } from "~/server/api/client/types";
 import { Button } from "~/components/ui/button";
 import { Form } from "~/components/ui/form";
-import { TextInput } from "./text-input";
+import TextInput from "./text-input";
 import { useSession } from "next-auth/react";
 import { toast } from "~/components/ui/use-toast";
 import { useApiUtils } from "~/hooks/useApiUtils";

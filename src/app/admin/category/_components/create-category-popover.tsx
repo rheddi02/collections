@@ -13,7 +13,7 @@ import {
 } from "~/components/ui/popover";
 import { toast } from "~/components/ui/use-toast";
 import { api } from "~/trpc/react";
-import { TextInput } from "../../_components/text-input";
+import TextInput from "../../_components/text-input";
 import { categoryFormSchema, CategoryFormValues } from "~/utils/schemas";
 import { useApiUtils } from "~/hooks";
 
@@ -65,7 +65,7 @@ const CreateCategoryPopover = () => {
       <PopoverTrigger asChild>
         <Button className="flex gap-2">
           <PlusIcon className="h-4 w-4" />
-          Create
+          Add New
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80" align="end">

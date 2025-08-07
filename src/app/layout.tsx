@@ -3,9 +3,8 @@ import "~/styles/globals.css";
 
 import { GeistSans } from "geist/font/sans";
 import { TRPCReactProvider } from "~/trpc/react";
-import { Toaster } from "~/components/ui/toaster";
-import AuthProvider from "~/components/AuthProvider";
 import { SessionDebug } from "~/components/SessionDebug";
+import { SessionProvider } from "next-auth/react";
 
 export default function RootLayout({
   children,
@@ -15,13 +14,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
       <body className="overscroll-none">
-        <AuthProvider>
+        <SessionProvider>
           <TRPCReactProvider>
             {children}
-            <Toaster />
-            {/* <SessionDebug /> */}
+            <SessionDebug />
           </TRPCReactProvider>
-        </AuthProvider>
+        </SessionProvider>
       </body>
     </html>
   );

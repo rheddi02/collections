@@ -26,7 +26,7 @@ type TextInputProps = {
   renderDescription?: (field: any) => React.ReactNode
 } & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'name' | 'type' | 'disabled' | 'required' | 'className'>
 
-export function TextInput({ 
+export default function TextInput({ 
   name, 
   label, 
   placeholder, 
