@@ -17,7 +17,7 @@ import { Button } from "~/components/ui/button";
 import { ToastTypes } from "~/utils/types";
 
 const CategoryManagementPage = () => {
-  const { toast } = useToast();
+  // const { toast } = useToast();
   const router = useRouter();
   const { confirm } = useConfirmDialog();
   const [selectedCategories, setSelectedCategories] = useState<
@@ -27,7 +27,6 @@ const CategoryManagementPage = () => {
   const {
     setEditCategory,
     setDeleteId,
-    removeDeleteId,
     page,
     perPage,
     setPageCount,
@@ -70,11 +69,12 @@ const CategoryManagementPage = () => {
       await utils.list.categories.invalidate();
     },
     onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      // toast({
+      //   title: "Error",
+      //   description: error.message,
+      //   variant: "destructive",
+      // });
+      setToastType({ type: ToastTypes.ERROR, data: error.message });
     },
   });
 
@@ -120,7 +120,7 @@ const CategoryManagementPage = () => {
         try {
           await deleteCategoryMutation.mutateAsync([category.id]);
         } finally {
-          removeDeleteId(category.id);
+          setDeleteId(0);
         }
       },
     });
@@ -169,17 +169,6 @@ const CategoryManagementPage = () => {
         onRowChange={handleRowSelectionChange}
         selectedRows={selectedCategories}
       />
-
-      {selectedCategories.length > 0 && (
-        <div className="mt-4 rounded-lg border bg-blue-50 p-4">
-          <p className="text-sm text-gray-700">
-            Selected {selectedCategories.length} category{selectedCategories.length === 1 ? "" : "ies"}:
-            <span className="ml-2 font-medium">
-              {selectedCategories.map((cat) => cat.title).join(", ")}
-            </span>
-          </p>
-        </div>
-      )}
       <EditCategoryPopover />
     </div>
   );

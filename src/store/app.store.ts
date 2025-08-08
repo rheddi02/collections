@@ -44,7 +44,6 @@ interface DataActions {
   setDeleteId: (deleteId: number | number[]) => void;
   // Utility methods
   resetDeleteIds: () => void;
-  removeDeleteId: (id: number) => void;
 }
 
 // UI Actions interfaces  
@@ -97,9 +96,6 @@ const createStore: StateCreator<State, [], [], State> = (set, get) => ({
   setToastType: (toastType) => set({ toastType }),
   // Utility methods for common operations
   resetDeleteIds: () => set({ deleteId: [] }),
-  removeDeleteId: (id: number) => set({ 
-    deleteId: get().deleteId.filter(deleteId => deleteId !== id) 
-  }),
   toggleModal: () => set({ modal: !get().modal }),
   toggleMenu: () => set({ openMenu: !get().openMenu }),
 });
