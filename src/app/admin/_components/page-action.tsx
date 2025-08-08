@@ -26,7 +26,7 @@ const PageAction = React.forwardRef<
     <Button 
       ref={ref}
       onClick={handleClick} 
-      className="sm:flex gap-2 w-full" 
+      className="flex gap-2 md:w-auto w-full" 
       variant="outline"
       {...props}
     >

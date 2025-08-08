@@ -12,6 +12,8 @@ import type { linkListOutput } from "~/server/api/client/types";
 import { useApiUtils } from "~/hooks/useApiUtils";
 import { LinkFormValues } from "~/utils/schemas";
 import PageAction from "../_components/page-action";
+import { cn } from "~/lib/utils";
+import { isMobile } from "react-device-detect";
 
 // Type for individual link data from the list
 type LinkData = NonNullable<linkListOutput['data'][number]>;
@@ -35,6 +37,13 @@ const DynamicPage = ({ params }: PageProps) => {
     description: "Add new data",
     label: "Create",
   });
+
+  const [isClient, setIsClient] = useState(false);
+
+  // Set client flag after hydration
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const {
     modal,
@@ -178,7 +187,7 @@ const DynamicPage = ({ params }: PageProps) => {
   };
 
   return (
-    <>
+      <div className={cn(isClient && isMobile && 'overscroll-none overflow-hidden')}>
       <CustomDialog
         {...{
           initialData: initialData,
@@ -190,7 +199,7 @@ const DynamicPage = ({ params }: PageProps) => {
           
         }}
       />
-      <div className="flex flex-col gap-2 p-5">
+      <div className={cn("flex flex-col gap-2 p-5", isClient && isMobile && 'overscroll-none overflow-hidden max-h-screen')}>
         <div className="flex flex-col gap-2 font-bold sm:flex-row sm:items-center sm:justify-between mb-5">
           <PageHeader
             title={pageTitle}
@@ -201,13 +210,15 @@ const DynamicPage = ({ params }: PageProps) => {
           <PageAction label="Add New" action={() => setModal(true)} />
         </div>
         <hr />
-        <PageTable 
-          data={data?.data || []} 
-          columns={columns}
-          loading={isFetching}
-        />
+        <div className={cn(isClient && isMobile && 'overflow-auto max-h-[calc(100vh-200px)]')}>
+          <PageTable 
+            data={data?.data || []} 
+            columns={columns}
+            loading={isFetching}
+          />
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 

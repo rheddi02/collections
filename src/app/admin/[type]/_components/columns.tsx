@@ -1,6 +1,11 @@
 "use client";
 import type { ColumnDef, Row } from "@tanstack/react-table";
-import { EyeOpenIcon, Pencil1Icon, ReloadIcon, TrashIcon } from "@radix-ui/react-icons";
+import {
+  EyeOpenIcon,
+  Pencil1Icon,
+  ReloadIcon,
+  TrashIcon,
+} from "@radix-ui/react-icons";
 import { linkListOutput } from "~/server/api/client/types";
 import Link from "next/link";
 import { Label } from "~/components/ui/label";
@@ -8,7 +13,7 @@ import { Badge } from "~/components/ui/badge";
 import { ToggleGroup } from "~/components/ui/toggle-group";
 import { ToggleGroupItem } from "@radix-ui/react-toggle-group";
 
-type LinkData = NonNullable<linkListOutput['data'][number]>;
+type LinkData = NonNullable<linkListOutput["data"][number]>;
 
 interface ColumnsProps {
   onEdit: (row: Row<LinkData>) => void;
@@ -17,7 +22,12 @@ interface ColumnsProps {
   pageTitle: string;
 }
 
-export const createColumns = ({ onEdit, onDelete, deleteId, pageTitle }: ColumnsProps): ColumnDef<LinkData>[] => [
+export const createColumns = ({
+  onEdit,
+  onDelete,
+  deleteId,
+  pageTitle,
+}: ColumnsProps): ColumnDef<LinkData>[] => [
   {
     accessorKey: "id",
   },
@@ -36,12 +46,8 @@ export const createColumns = ({ onEdit, onDelete, deleteId, pageTitle }: Columns
       return <div className="font-bold">Description</div>;
     },
     cell: ({ row }) => {
-      const descriptions: string = row.getValue("description")
-      return <>
-        {
-          <div className="">{descriptions}</div>
-        }
-      </>;
+      const descriptions: string = row.getValue("description");
+      return <>{<div className="">{descriptions}</div>}</>;
     },
   },
   {
@@ -49,7 +55,7 @@ export const createColumns = ({ onEdit, onDelete, deleteId, pageTitle }: Columns
     header: () => {
       return <div className="font-bold"></div>;
     },
-    cell: ({ row }: {row: Row<LinkData>}) => {
+    cell: ({ row }: { row: Row<LinkData> }) => {
       return (
         <div className="flex items-center justify-center gap-2 p-1">
           {deleteId.includes(row.getValue("id")) ? (
@@ -62,20 +68,20 @@ export const createColumns = ({ onEdit, onDelete, deleteId, pageTitle }: Columns
               <Pencil1Icon
                 className=" size-5 hover:cursor-pointer hover:text-red-600 group-hover:flex "
                 onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  onEdit(row)
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onEdit(row);
                 }}
               />
               <TrashIcon
                 className=" size-5 hover:cursor-pointer hover:text-red-600 group-hover:flex "
                 onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  onDelete(row)
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onDelete(row);
                 }}
               />
-              <Link href={row.original.url || '#'} target="_blank">
+              <Link href={row.original.url || "#"} target="_blank">
                 <EyeOpenIcon className=" size-5 hover:cursor-pointer hover:text-red-600 group-hover:flex " />
               </Link>
             </>
@@ -91,9 +97,11 @@ export const createColumns = ({ onEdit, onDelete, deleteId, pageTitle }: Columns
     },
     cell: ({ row }) => {
       return (
-        <div className="flex flex-col justify-center gap-2 p-1">
-          <Label>{row.getValue("title")}</Label>
-          <div>{row.getValue("description")}</div>
+        <div className="flex justify-between gap-2 p-1">
+          <div className="flex flex-col">
+            <Label className="text-xl">{row.getValue("title")}</Label>
+            <div>{row.getValue("description")}</div>
+          </div>
           <div className="flex justify-between">
             {deleteId.includes(row.getValue("id")) ? (
               <div className="flex items-center gap-1">
@@ -106,8 +114,8 @@ export const createColumns = ({ onEdit, onDelete, deleteId, pageTitle }: Columns
                   value="edit"
                   aria-label="Toggle edit"
                   onClick={(e) => {
-                    e.stopPropagation()
-                    onEdit(row)
+                    e.stopPropagation();
+                    onEdit(row);
                   }}
                 >
                   <Pencil1Icon className="flex size-5 hover:cursor-pointer hover:text-red-600" />
@@ -116,8 +124,8 @@ export const createColumns = ({ onEdit, onDelete, deleteId, pageTitle }: Columns
                   value="delete"
                   aria-label="Toggle delete"
                   onClick={(e) => {
-                    e.stopPropagation()
-                    onDelete(row)
+                    e.stopPropagation();
+                    onDelete(row);
                   }}
                 >
                   <TrashIcon className="flex size-5 hover:cursor-pointer hover:text-red-600" />

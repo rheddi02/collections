@@ -57,43 +57,51 @@ export default function DataTable<TData, TValue>({
   onRowChange,
   hiddenColumns = {},
   selectedRows = [],
-  isMobile = false
+  isMobile = false,
 }: DataTableProps<TData, TValue>) {
-  const { data: session } = useSession();
   const currentPage = useAppStore((state) => state.page);
   const [page, setPage] = useState<PaginationState>({
     pageIndex: currentPage - 1, // Convert from 1-based to 0-based
     pageSize: 0,
   });
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(() => {
-    // Start with default visibility (desktop) to match SSR
-    return { mobile: false };
-  });
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+    () => {
+      // Always start with desktop view to match SSR
+      return { mobile: false };
+    },
+  );
 
-  // Update column visibility when mobile state changes (only on client)
+  const [isClient, setIsClient] = useState(false);
+
+  // Set client flag after hydration
   useEffect(() => {
-    const visibility: VisibilityState = {};
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    // Only update column visibility after client hydration
+    if (!isClient) return;
     
+    const visibility: VisibilityState = {};
+
     columns.forEach((column) => {
-      // Get column ID from various possible sources
-      const columnId = column.id || 
-                      (column as any).accessorKey || 
-                      (column as any).accessorFn?.name || 
-                      '';
-      
+      const columnId =
+        column.id ||
+        (column as any).accessorKey ||
+        (column as any).accessorFn?.name ||
+        "";
+
       if (columnId) {
         if (isMobile) {
-          // On mobile: show ONLY mobile column, hide all others
-          visibility[columnId] = columnId === 'mobile';
+          visibility[columnId] = columnId === "mobile";
         } else {
-          // On desktop: hide ONLY mobile column, show all others
-          visibility[columnId] = columnId !== 'mobile';
+          visibility[columnId] = columnId !== "mobile";
         }
       }
     });
-    
+
     setColumnVisibility(visibility);
-  }, [isMobile, columns]);
+  }, [isMobile, columns, isClient]);
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -192,7 +200,7 @@ export default function DataTable<TData, TValue>({
     <>
       <div className="max-h-[80vh] overflow-auto">
         <Table className="border">
-          {!isMobile && (
+          {(!isMobile || !isClient) && (
             <TableHeader className="">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -227,7 +235,7 @@ export default function DataTable<TData, TValue>({
               ))}
             </TableHeader>
           )}
-          <TableBody>
+          <TableBody className="max-h-[80vh] overflow-y-auto">
             {loading ? (
               <TableRowActions type={"loading"} />
             ) : table.getRowModel().rows?.length ? (

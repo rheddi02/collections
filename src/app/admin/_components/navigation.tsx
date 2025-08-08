@@ -49,6 +49,10 @@ const Nav = ({
       router.push(route.subRoute[0]!.route);
     } else {
       router.push(route.route);
+      if (isMobile) {
+        // Close the menu on mobile after navigation
+        useAppStore.getState().setOpenMenu(false);
+      }
     }
   };
 
