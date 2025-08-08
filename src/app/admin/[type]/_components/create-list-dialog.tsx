@@ -21,7 +21,7 @@ type Props = {
   initialData?: Partial<LinkFormValues>;
 };
 
-const FormDialog = ({ action, title, description, open, label, initialData }: Props) => {
+const CreateFormDialog = ({ action, title, description, open, label, initialData }: Props) => {
   const { showDialog, hideDialog } = useGlobalDialog();
   
   const form = useForm<LinkFormValues>({
@@ -165,4 +165,4 @@ const FormDialog = ({ action, title, description, open, label, initialData }: Pr
   return null; // No direct JSX since we're using global dialog
 };
 
-export default FormDialog;
+export default CreateFormDialog;

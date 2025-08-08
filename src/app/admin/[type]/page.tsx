@@ -2,11 +2,11 @@
 import useAppStore from "~/store/app.store";
 import type { Row } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
-import CustomDialog from "~/app/admin/[type]/_components/dialog";
+import CustomDialog from "~/app/admin/[type]/_components/create-list-dialog";
 import { api } from "~/trpc/react";
 import { ToastTypes } from "~/utils/types";
 import PageTable from "../_components/table/page-table";
-import { createColumns } from "~/app/admin/[type]/_components/columns";
+import { createListColumns } from "~/app/admin/[type]/_components/create-list-columns";
 import PageHeader from "../_components/page-header";
 import type { linkListOutput } from "~/server/api/client/types";
 import { useApiUtils } from "~/hooks/useApiUtils";
@@ -101,7 +101,7 @@ const DynamicPage = ({ params }: PageProps) => {
   };
 
   // Create columns with handlers
-  const columns = createColumns({
+  const columns = createListColumns({
     onEdit,
     onDelete,
     deleteId,

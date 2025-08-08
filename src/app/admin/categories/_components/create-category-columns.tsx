@@ -8,14 +8,12 @@ import { Label } from "~/components/ui/label";
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 
 interface CategoryColumnsProps {
-  onView: (category: categoryListOutput) => void;
   onEdit: (category: categoryListOutput) => void;
   onDelete: (category: categoryListOutput) => void;
   deletingIds: number[];
 }
 
 export const createCategoryColumns = ({
-  onView,
   onEdit,
   onDelete,
   deletingIds,
@@ -46,13 +44,6 @@ export const createCategoryColumns = ({
     maxSize: 20,
   },
   {
-    accessorKey: "id",
-    header: "ID",
-    cell: ({ row }) => (
-      <span className="font-mono text-sm">{row.getValue("id")}</span>
-    ),
-  },
-  {
     accessorKey: "title",
     header: "Name",
     cell: ({ row }) => (
@@ -80,7 +71,7 @@ export const createCategoryColumns = ({
     accessorKey: "actions",
     header: "Actions",
     cell: ({ row }) => {
-      const isDeleting = deletingIds.includes(row.getValue("id"));
+      const isDeleting = deletingIds.includes(row.original.id);
 
       return (
         <div className="flex items-center gap-1">

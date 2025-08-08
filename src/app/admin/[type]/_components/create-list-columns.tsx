@@ -9,9 +9,9 @@ import {
 import { linkListOutput } from "~/server/api/client/types";
 import Link from "next/link";
 import { Label } from "~/components/ui/label";
-import { Badge } from "~/components/ui/badge";
 import { ToggleGroup } from "~/components/ui/toggle-group";
 import { ToggleGroupItem } from "@radix-ui/react-toggle-group";
+import { Checkbox } from "~/components/ui/checkbox";
 
 type LinkData = NonNullable<linkListOutput["data"][number]>;
 
@@ -22,15 +22,37 @@ interface ColumnsProps {
   pageTitle: string;
 }
 
-export const createColumns = ({
+export const createListColumns = ({
   onEdit,
   onDelete,
   deleteId,
   pageTitle,
 }: ColumnsProps): ColumnDef<LinkData>[] => [
   {
-    accessorKey: "id",
-  },
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+      size: 20,
+      minSize: 20,
+      maxSize: 20,
+    },
   {
     accessorKey: "title",
     header: () => {
@@ -58,7 +80,7 @@ export const createColumns = ({
     cell: ({ row }: { row: Row<LinkData> }) => {
       return (
         <div className="flex items-center justify-center gap-2 p-1">
-          {deleteId.includes(row.getValue("id")) ? (
+          {deleteId.includes(row.original.id) ? (
             <div className="flex items-center gap-1 rounded-full border px-2 py-1">
               <ReloadIcon className="animate-spin" />
               Deleting ...

@@ -2,7 +2,7 @@ import { type PaginationState, createPaginationStore } from './pagination.store'
 import type { StateCreator } from "zustand";
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
-import type { categoryOutput } from "~/server/api/client/types";
+import type { categoryListOutput } from "~/server/api/client/types";
 import { ToastTypes } from '~/utils/types';
 
 // UI State interfaces
@@ -33,14 +33,14 @@ interface UIActions {
 
 // Data State interfaces
 interface DataState {
-  categories: categoryOutput[];
-  editCategory: categoryOutput | null;
+  categories: categoryListOutput[];
+  editCategory: categoryListOutput | null;
   deleteId: number[];
 }
 
 interface DataActions {
-  setCategories: (categories: categoryOutput[]) => void;
-  setEditCategory: (editCategory: categoryOutput | null) => void;
+  setCategories: (categories: categoryListOutput[]) => void;
+  setEditCategory: (editCategory: categoryListOutput | null) => void;
   setDeleteId: (deleteId: number | number[]) => void;
   // Utility methods
   resetDeleteIds: () => void;
