@@ -1,6 +1,6 @@
 "use client";
 import { useSession } from "next-auth/react";
-import CardTemplate from "~/app/admin/_components/card";
+import CardTemplate from "~/app/admin/_components/card-template";
 import { Button } from "~/components/ui/button";
 import { api } from "~/trpc/react";
 import { useNavigationLists } from "~/hooks/useNavigationLists";
