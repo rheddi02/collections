@@ -21,7 +21,6 @@ export const appRouter = createTRPCRouter({
   delete: deleteRouter,
   get: getRouter,
   list: listRouter,
-  profile: profileCountRouter
 });
 
 // export type definition of API

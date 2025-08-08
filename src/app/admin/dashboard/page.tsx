@@ -70,7 +70,6 @@ const Dashboard = () => {
   }
 
   if (status === "authenticated") {
-    console.log("🚀 ~ navList:", navList.length)
     if (navList.length <= 1) 
     return (
       <div className="flex h-screen flex-col items-center justify-center">

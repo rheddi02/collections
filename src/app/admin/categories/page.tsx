@@ -144,7 +144,7 @@ const CategoryManagementPage = () => {
   });
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="mx-auto p-6">
       <div className="mb-5 flex flex-col gap-2 font-bold sm:flex-row sm:items-center sm:justify-between">
         <PageHeader
           title="Category Management"

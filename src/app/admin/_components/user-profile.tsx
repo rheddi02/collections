@@ -63,9 +63,8 @@ const UserProfile = () => {
           className="cursor-pointer flex items-center gap-2"
         >
           <PersonIcon className="size-4" />
-          Go to Profile
+          Profile Settings
         </DropdownMenuItem>
-        <DropdownMenuSeparator />
         <DropdownMenuItem 
           onClick={handleCategoriesClick}
           className="cursor-pointer flex items-center gap-2"
@@ -73,6 +72,7 @@ const UserProfile = () => {
           <TableIcon className="size-4" />
           Manage Categories
         </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuItem 
           onClick={handleLogoutClick}
           className="cursor-pointer flex items-center gap-2"

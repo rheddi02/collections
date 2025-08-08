@@ -1,5 +1,9 @@
 "use client";
-import { CameraIcon, UpdateIcon } from "@radix-ui/react-icons";
+import {
+  CameraIcon,
+  HamburgerMenuIcon,
+  UpdateIcon,
+} from "@radix-ui/react-icons";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import React from "react";
@@ -11,13 +15,16 @@ import { Form } from "~/components/ui/form";
 import { api } from "~/trpc/react";
 import { useToast } from "~/components/ui/use-toast";
 import TextInput from "../_components/text-input";
-import { getPasswordStrength, getPasswordStrengthLabel } from "~/utils/password-strength";
+import {
+  getPasswordStrength,
+  getPasswordStrengthLabel,
+} from "~/utils/password-strength";
 import { profileFormSchema, ProfileFormValues } from "~/utils/schemas";
+import useAppStore from "~/store/app.store";
 
 const Profile = () => {
   const { data: session } = useSession();
   const { toast } = useToast();
-
   // Initialize form with react-hook-form and Zod validation
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
@@ -28,8 +35,12 @@ const Profile = () => {
       confirmPassword: "",
     },
   });
+  const { setOpenMenu, openMenu } = useAppStore((state) => ({
+    setOpenMenu: state.setOpenMenu,
+    openMenu: state.openMenu,
+  }));
 
-  const { data, isFetching: countFetching } = api.profile.getCount.useQuery();
+  const { data, isFetching: isFetchingUser } = api.get.user.useQuery();
 
   // Update password mutation
   const changePasswordMutation = api.auth.changePassword.useMutation({
@@ -66,11 +77,18 @@ const Profile = () => {
   };
 
   return (
-    <div className="overflow-auto h-full">
+    <div className="h-full overflow-auto">
       <div className="relative flex h-80 items-center justify-center bg-gray-200">
-        {session?.user.cover ? (
+        <Button
+          className="absolute left-5 top-5 z-50 p-2"
+          variant={"default"}
+          onClick={() => setOpenMenu(!openMenu)}
+        >
+          <HamburgerMenuIcon className="block h-5 w-5 sm:hidden" />
+        </Button>
+        {data?.cover ? (
           <Image
-            src={session?.user.cover || ""}
+            src={data.cover || ""}
             alt="cover"
             fill
             className="object-cover"
@@ -79,12 +97,12 @@ const Profile = () => {
           <CameraIcon className="h-10 w-10" />
         )}
       </div>
-      <div className="flex gap-5">
-        <div className="-mt-28 w-1/4">
-          <div className="relative ml-auto flex h-60 w-60 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-gray-300">
-            {session?.user.profile ? (
+      <div className="flex flex-col lg:flex-row gap-5 items-center lg:items-start justify-center lg:justify-start">
+        <div className="-mt-28 mx-auto md:ml-auto md:w-1/4 w-full">
+          <div className="relative flex h-60 w-60 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-gray-300 mx-auto lg:mx-0">
+            {data?.profile ? (
               <Image
-                src={session?.user.profile || ""}
+                src={data.profile || ""}
                 alt="profile"
                 fill
                 className="object-cover"
@@ -94,27 +112,23 @@ const Profile = () => {
             )}
           </div>
         </div>
-        <div className="mt-5">
-          <p className="text-2xl font-bold uppercase">{session?.user.name}</p>
-          <p>{session?.user.email}</p>
-          <div className="mt-2 flex gap-5">
+        <div className="mt-5 flex flex-col items-center lg:items-start lg:ml-5 text-center lg:text-left w-full">
+          <p className="text-2xl font-bold uppercase">{data?.username}</p>
+          <p>{data?.email}</p>
+          <div className="mt-2 flex gap-5 justify-center lg:justify-start">
             <span className="flex items-center gap-2">
-              {" "}
-              {countFetching ? (
+              {isFetchingUser ? (
                 <UpdateIcon className="animate-spin" />
               ) : (
-                <strong>{data?.totalLinks}</strong>
-              )}{" "}
-              Links
+                <strong>{data?.linkCount}</strong>
+              )} Links
             </span>
             <span className="flex items-center gap-2">
-              {" "}
-              {countFetching ? (
+              {isFetchingUser ? (
                 <UpdateIcon className="animate-spin" />
               ) : (
-                <strong>{data?.totalCategory}</strong>
-              )}{" "}
-              Categories
+                <strong>{data?.categoryCount}</strong>
+              )} Categories
             </span>
           </div>
         </div>
@@ -122,9 +136,9 @@ const Profile = () => {
       <div className="mx-auto mt-10 w-3/4">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="flex justify-between">
+            <div className="flex flex-col md:flex-row md:justify-between">
               <p className="text-lg font-semibold">Profile Settings</p>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-col-reverse md:flex-row">
                 <Button
                   type="button"
                   variant="outline"
