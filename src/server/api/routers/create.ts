@@ -45,13 +45,15 @@ export const createRouter = createTRPCRouter({
         description: z.string().default(""),
         url: z.string(),
         categoryId: z.number(),
-        isPinned: z.boolean().default(false).optional()
       }),
     )
     .mutation(async ({ ctx, input }) => {
       try {
         await ctx.db.links.create({
-        data: { ...input, userId: parseInt(ctx.user.id) },
+        data: { 
+          ...input, 
+          slug: input.title.toLowerCase().replace(/\s+/g, '-'), // Generate slug from title
+          userId: parseInt(ctx.user.id) },
       });
     } catch (error) {
         if (error instanceof Error && error.message.toLowerCase().includes("unique constraint failed")) {

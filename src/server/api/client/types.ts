@@ -16,3 +16,4 @@ export type CommonOutputType =
   | linkOutput
   | linkListOutput
   | categoryOutput
+  | categoryListOutput;

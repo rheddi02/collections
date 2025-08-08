@@ -22,7 +22,6 @@ describe('Category Creation API Integration', () => {
       
       const invalidInputs = [
         { title: '' }, // Empty title
-        { title: 'invalid category name' }, // Spaces not allowed
         { title: 'a'.repeat(41) }, // Too long
         { title: 'invalid@category' }, // Invalid characters
         { title: 'invalid#category' }, // Invalid characters
@@ -60,6 +59,7 @@ describe('Category Creation API Integration', () => {
         'category-with-hyphens',
         'category.with.dots',
         'Category123',
+        'Category 123',
         'category-123.test',
         'a',
         'A',
@@ -77,9 +77,10 @@ describe('Category Creation API Integration', () => {
       const { categoryFormSchema } = await import('~/utils/schemas/category-validation')
       
       const invalidChars = [
-        ' ', '@', '#', '$', '%', '^', '&', '*', '(', ')', 
-        '+', '=', '[', ']', '{', '}', '|', '\\', ':', ';', 
-        '"', "'", '<', '>', ',', '?', '/', '!', '~', '`'
+        '@', '#', '$', '%', '^', '&', '*', '(', ')',
+        '+', '=', '[', ']', '{', '}', '|', '\\', ':', ';',
+        '"', "'", '<', '>', ',', '?', '/', '!', '~', '`',
+        '_', // underscore should also be invalid
       ]
 
       invalidChars.forEach(char => {
@@ -88,7 +89,7 @@ describe('Category Creation API Integration', () => {
         expect(result.success).toBe(false)
         if (!result.success) {
           expect(result.error.issues[0]?.message).toBe(
-            'Category name can only contain letters, numbers, hyphens (-), and periods (.)'
+            'Category name can only contain letters, numbers, spaces, hyphens (-), and periods (.)'
           )
         }
       })

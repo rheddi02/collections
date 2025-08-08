@@ -81,7 +81,12 @@ export const listRouter = createTRPCRouter({
             orderBy: {
               id: "desc",
             },
-          }),
+          }).then(categories => 
+            categories.map(category => ({
+              ...category,
+              categoryLinks: category._count.Links,
+            }))
+          ),
           ctx.db.categories.count({
             where: {
               userId: parseInt(ctx.user.id), // Add user security check
@@ -97,11 +102,21 @@ export const listRouter = createTRPCRouter({
         };
       }
 
-      return await ctx.db.categories.findMany({
+      const categories = await ctx.db.categories.findMany({
         where: { userId: Number(ctx.user.id) },
+        include: {
+          _count: {
+            select: { Links: true },
+          },
+        },
         orderBy: {
           title: "asc", // Sort categories alphabetically
         },
       });
+
+      return categories.map(category => ({
+        ...category,
+        categoryLinks: category._count.Links,
+      }));
     }),
 });

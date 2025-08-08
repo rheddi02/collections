@@ -74,7 +74,11 @@ export const updateRouter = createTRPCRouter({
 
       return await ctx.db.links.update({
         where: { id },
-        data: updateData,
+        data: {
+          ...updateData,
+          slug: updateData.title.toLowerCase().replace(/\s+/g, '-'), // Generate slug from title
+          userId: parseInt(ctx.user.id) // Ensure userId is set
+        },
       });
     }),
 });

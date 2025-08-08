@@ -31,7 +31,9 @@ const CategoryManagementPage = () => {
     page,
     perPage,
     setPageCount,
-    setToastType
+    setToastType,
+    setOpenMenu,
+    openMenu,
   } = useAppStore((state) => ({
     setEditCategory: state.setEditCategory,
     setDeleteId: state.setDeleteId,
@@ -39,7 +41,9 @@ const CategoryManagementPage = () => {
     page: state.page,
     perPage: state.perPage,
     setPageCount: state.setPageCount,
-    setToastType: state.setToastType
+    setToastType: state.setToastType,
+    setOpenMenu: state.setOpenMenu,
+    openMenu: state.openMenu,
   }));
 
   const {
@@ -145,7 +149,7 @@ const CategoryManagementPage = () => {
           title="Category Management"
           subtitle="Manage your collection categories"
           isFetching={isFetching}
-          setOpenMenu={() => useAppStore.getState().setOpenMenu(true)}
+          setOpenMenu={() => setOpenMenu(!openMenu)}
           reload={refetch}
         />
         <div className="flex gap-2">

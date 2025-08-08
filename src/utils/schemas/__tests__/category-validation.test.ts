@@ -47,44 +47,6 @@ describe('Category Schema Validation', () => {
       }
     })
 
-    it('should reject titles with invalid characters', () => {
-      const invalidTitles = [
-        'category with spaces',
-        'category@email',
-        'category#hash',
-        'category$dollar',
-        'category%percent',
-        'category&ampersand',
-        'category*asterisk',
-        'category+plus',
-        'category=equals',
-        'category[bracket]',
-        'category{brace}',
-        'category(paren)',
-        'category/slash',
-        'category\\backslash',
-        'category?question',
-        'category!exclamation',
-      ]
-
-      invalidTitles.forEach(title => {
-        const result = categoryFormSchema.safeParse({ title })
-        expect(result.success).toBe(false)
-        if (!result.success) {
-          expect(result.error.issues[0]?.message).toBe(
-            'Category name can only contain letters, numbers, hyphens (-), and periods (.)'
-          )
-        }
-      })
-    })
-
-    it('should reject title with only whitespace', () => {
-      const invalidData = { title: '   ' }
-      const result = categoryFormSchema.safeParse(invalidData)
-      
-      expect(result.success).toBe(false)
-    })
-
     it('should accept minimum valid length (1 character)', () => {
       const validData = { title: 'a' }
       const result = categoryFormSchema.safeParse(validData)

@@ -187,6 +187,7 @@ const DynamicPage = ({ params }: PageProps) => {
           title: form.title,
           description: form.description,
           label: form.label,
+          
         }}
       />
       <div className="flex flex-col gap-2 p-5">

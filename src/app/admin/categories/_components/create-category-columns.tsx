@@ -1,22 +1,16 @@
 "use client";
 import type { ColumnDef } from "@tanstack/react-table";
-import { EyeOpenIcon, Pencil1Icon, TrashIcon, ReloadIcon } from "@radix-ui/react-icons";
+import { Pencil1Icon, TrashIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { Button } from "~/components/ui/button";
-import { Badge } from "~/components/ui/badge";
 import { Checkbox } from "~/components/ui/checkbox";
-import type { categoryOutput } from "~/server/api/client/types";
-
-// Define the category type with count
-type CategoryWithCount = categoryOutput & {
-  _count?: {
-    Links: number;
-  };
-};
+import type { categoryListOutput } from "~/server/api/client/types";
+import { Label } from "~/components/ui/label";
+import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 
 interface CategoryColumnsProps {
-  onView: (category: CategoryWithCount) => void;
-  onEdit: (category: CategoryWithCount) => void;
-  onDelete: (category: CategoryWithCount) => void;
+  onView: (category: categoryListOutput) => void;
+  onEdit: (category: categoryListOutput) => void;
+  onDelete: (category: categoryListOutput) => void;
   deletingIds: number[];
 }
 
@@ -25,7 +19,7 @@ export const createCategoryColumns = ({
   onEdit,
   onDelete,
   deletingIds,
-}: CategoryColumnsProps): ColumnDef<CategoryWithCount>[] => [
+}: CategoryColumnsProps): ColumnDef<categoryListOutput>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -66,13 +60,11 @@ export const createCategoryColumns = ({
     ),
   },
   {
-    accessorKey: "_count.Links",
+    accessorKey: "categoryLinks",
     header: "Links Count",
     cell: ({ row }) => {
-      const count = row.original._count?.Links ?? 0;
-      return (
-        <span className="font-mono text-sm">{count}</span>
-      );
+      const count = (row.getValue("categoryLinks") as number) ?? 0;
+      return <span className="font-mono text-sm">{count}</span>;
     },
   },
   {
@@ -88,14 +80,13 @@ export const createCategoryColumns = ({
     accessorKey: "actions",
     header: "Actions",
     cell: ({ row }) => {
-      const category = row.original;
-      const isDeleting = deletingIds.includes(category.id);
+      const isDeleting = deletingIds.includes(row.getValue("id"));
 
       return (
         <div className="flex items-center gap-1">
           {isDeleting ? (
             <div className="flex items-center gap-1 rounded-full border px-2 py-1">
-              <ReloadIcon className="animate-spin h-4 w-4" />
+              <ReloadIcon className="h-4 w-4 animate-spin" />
               Deleting...
             </div>
           ) : (
@@ -105,7 +96,7 @@ export const createCategoryColumns = ({
                 size="sm"
                 onClick={(e) => {
                   e.stopPropagation();
-                  onEdit(category);
+                  onEdit(row.original);
                 }}
                 className="h-8 w-8 p-0"
                 title="Edit category"
@@ -117,7 +108,7 @@ export const createCategoryColumns = ({
                 size="sm"
                 onClick={(e) => {
                   e.stopPropagation();
-                  onDelete(category);
+                  onDelete(row.original);
                 }}
                 className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-600"
                 title="Delete category"
@@ -126,6 +117,55 @@ export const createCategoryColumns = ({
               </Button>
             </>
           )}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "mobile",
+    header: () => {
+      return <div className="font-bold"></div>;
+    },
+    cell: ({ row }) => {
+      return (
+        <div className="flex justify-between gap-2 p-1">
+          <div className="flex flex-col">
+            <Label className="text-xl">{row.getValue("title")}</Label>
+            <div className="text-sm text-gray-600">
+              Links: {row.getValue("categoryLinks")}
+            </div>
+          </div>
+          <div className="flex justify-between">
+            {deletingIds.includes(row.getValue("id")) ? (
+              <div className="flex items-center gap-1">
+                <ReloadIcon className="animate-spin" />
+                Deleting...
+              </div>
+            ) : (
+              <ToggleGroup type="single" size="sm">
+                <ToggleGroupItem
+                  value="edit"
+                  aria-label="Toggle edit"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit(row.original);
+                  }}
+                >
+                  <Pencil1Icon className="flex size-5 hover:cursor-pointer hover:text-red-600" />
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="delete"
+                  aria-label="Toggle delete"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(row.original);
+                  }}
+                >
+                  <TrashIcon className="flex size-5 hover:cursor-pointer hover:text-red-600" />
+                </ToggleGroupItem>
+              </ToggleGroup>
+            )}
+          </div>
         </div>
       );
     },

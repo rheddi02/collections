@@ -5,6 +5,7 @@ import { GeistSans } from "geist/font/sans";
 import { TRPCReactProvider } from "~/trpc/react";
 import { SessionDebug } from "~/components/SessionDebug";
 import { SessionProvider } from "next-auth/react";
+import { GlobalDialogProvider } from "~/hooks/useGlobalDialog";
 
 export default function RootLayout({
   children,
@@ -16,8 +17,10 @@ export default function RootLayout({
       <body className="overscroll-none">
         <SessionProvider>
           <TRPCReactProvider>
-            {children}
-            <SessionDebug />
+            <GlobalDialogProvider>
+              {children}
+              {/* <SessionDebug /> */}
+            </GlobalDialogProvider>
           </TRPCReactProvider>
         </SessionProvider>
       </body>

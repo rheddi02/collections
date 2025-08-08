@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { useSession } from "next-auth/react";
 import useAppStore from "~/store/app.store";
@@ -31,7 +31,6 @@ import * as React from "react";
 import { useEffect, useState } from "react";
 import { DataTablePaginationPage } from "./pagination";
 import { cn } from "~/lib/utils";
-import { isMobile } from 'react-device-detect';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -44,6 +43,7 @@ interface DataTableProps<TData, TValue> {
   onRowChange?: (row: TData[]) => void;
   hiddenColumns?: Record<string, boolean>;
   selectedRows?: TData[];
+  isMobile: boolean;
 }
 
 export default function DataTable<TData, TValue>({
@@ -57,6 +57,7 @@ export default function DataTable<TData, TValue>({
   onRowChange,
   hiddenColumns = {},
   selectedRows = [],
+  isMobile = false
 }: DataTableProps<TData, TValue>) {
   const { data: session } = useSession();
   const currentPage = useAppStore((state) => state.page);
@@ -64,9 +65,36 @@ export default function DataTable<TData, TValue>({
     pageIndex: currentPage - 1, // Convert from 1-based to 0-based
     pageSize: 0,
   });
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
-    ...hiddenColumns,
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(() => {
+    // Start with default visibility (desktop) to match SSR
+    return { mobile: false };
   });
+
+  // Update column visibility when mobile state changes (only on client)
+  useEffect(() => {
+    const visibility: VisibilityState = {};
+    
+    columns.forEach((column) => {
+      // Get column ID from various possible sources
+      const columnId = column.id || 
+                      (column as any).accessorKey || 
+                      (column as any).accessorFn?.name || 
+                      '';
+      
+      if (columnId) {
+        if (isMobile) {
+          // On mobile: show ONLY mobile column, hide all others
+          visibility[columnId] = columnId === 'mobile';
+        } else {
+          // On desktop: hide ONLY mobile column, show all others
+          visibility[columnId] = columnId !== 'mobile';
+        }
+      }
+    });
+    
+    setColumnVisibility(visibility);
+  }, [isMobile, columns]);
+
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
@@ -77,8 +105,8 @@ export default function DataTable<TData, TValue>({
     }
     const selection: Record<string, boolean> = {};
     data.forEach((item, index) => {
-      const isSelected = selectedRows.some(selectedItem => 
-        JSON.stringify(selectedItem) === JSON.stringify(item)
+      const isSelected = selectedRows.some(
+        (selectedItem) => JSON.stringify(selectedItem) === JSON.stringify(item),
       );
       if (isSelected) {
         selection[index.toString()] = true;
@@ -92,9 +120,9 @@ export default function DataTable<TData, TValue>({
 
   // Sync with app store page changes
   useEffect(() => {
-    setPage(prev => ({
+    setPage((prev) => ({
       ...prev,
-      pageIndex: currentPage - 1 // Convert from 1-based to 0-based
+      pageIndex: currentPage - 1, // Convert from 1-based to 0-based
     }));
   }, [currentPage]);
 
@@ -103,15 +131,6 @@ export default function DataTable<TData, TValue>({
       onPaginationChange(page.pageIndex + 1);
     }
   }, [page.pageIndex]);
-
-  useEffect(() => {
-    if (isMobile) {
-      Object.keys(hiddenColumns).map((key: string)=>hiddenColumns[key] = false)
-      setColumnVisibility({ ...hiddenColumns, id: false, actions: false, mobile: true })
-      // setColumnVisibility({ title: false, id:false ,description: false, type: false, actions: false })
-    }
-    else setColumnVisibility({ ...hiddenColumns, actions: !!session })
-  }, [hiddenColumns]);
 
   const table = useReactTable({
     data: data,
@@ -129,8 +148,11 @@ export default function DataTable<TData, TValue>({
     enableRowSelection: true,
     onRowSelectionChange: (updater) => {
       // Handle row selection changes and notify parent
-      const newSelection = typeof updater === 'function' ? updater(currentRowSelection) : updater;
-      const selectedItems = data.filter((item, index) => newSelection[index.toString()]);
+      const newSelection =
+        typeof updater === "function" ? updater(currentRowSelection) : updater;
+      const selectedItems = data.filter(
+        (item, index) => newSelection[index.toString()],
+      );
       if (onRowChange) {
         onRowChange(selectedItems);
       }
@@ -168,57 +190,49 @@ export default function DataTable<TData, TValue>({
 
   return (
     <>
-    <div className="max-h-[80vh] overflow-auto">
-      <Table className="-mt-20 border-separate border-spacing-y-3 sm:-mt-5 sm:px-2">
-        <TableHeader className="[&_tr]:border-none [&_tr]:hover:bg-transparent">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow
-              key={headerGroup.id}
-              className="[&_th]:px-5 sm:[&_th]:px-8"
-            >
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead
-                    key={header.id}
-                    style={{ width: `${header.getSize()}px` }}
-                    className={cn(
-                      header.column.getCanSort()
-                        ? "cursor-pointer select-none"
-                        : "",
-                    )}
-                    onClick={header.column.getToggleSortingHandler()}
-                  >
-                      <div className="flex gap-2">
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
-                        {{
-                          asc: " 🔼",
-                          desc: " 🔽",
-                        }[header.column.getIsSorted() as string] ?? null}
-                      </div>
+      <div className="max-h-[80vh] overflow-auto">
+        <Table className="border">
+          {!isMobile && (
+            <TableHeader className="">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead
+                        key={header.id}
+                        style={{ width: `${header.getSize()}px` }}
+                        className={cn(
+                          header.column.getCanSort()
+                            ? "cursor-pointer select-none"
+                            : "",
+                        )}
+                        onClick={header.column.getToggleSortingHandler()}
+                      >
+                        <div className="flex gap-2">
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              )}
+                          {{
+                            asc: " 🔼",
+                            desc: " 🔽",
+                          }[header.column.getIsSorted() as string] ?? null}
+                        </div>
                       </TableHead>
-                );
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody className="">
-          {loading && <TableRowActions type={"loading"} />}
-          {table.getRowModel().rows?.length
-            ? table.getRowModel().rows.map((row) => (
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+          )}
+          <TableBody>
+            {loading ? (
+              <TableRowActions type={"loading"} />
+            ) : table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
                 <TableRow
-                  className={cn(
-                    'group',
-                    "sm:rounded-xl sm:outline sm:outline-1",
-                    "[&_td]:px-5 [&_td]:sm:px-8 [&_td]:sm:py-[18px]",
-                    row.getIsSelected()
-                      ? "!bg-transparent sm:outline-gray-500"
-                      : "outline-gray-500",
-                  )}
                   onClick={() => {
                     if (onRowClick) {
                       onRowClick(row);
@@ -226,12 +240,10 @@ export default function DataTable<TData, TValue>({
                   }}
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className="group"
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      className="border-b-2 py-4 sm:border-b-0"
-                    >
+                    <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),
@@ -240,11 +252,13 @@ export default function DataTable<TData, TValue>({
                   ))}
                 </TableRow>
               ))
-            : !loading && <TableRowActions type={"empty"} />}
-        </TableBody>
-      </Table>
-    </div>
-    {pagination && <DataTablePaginationPage table={table} />}
+            ) : (
+              !loading && <TableRowActions type={"empty"} />
+            )}
+          </TableBody>
+        </Table>
+      </div>
+      {pagination && <DataTablePaginationPage table={table} />}
     </>
   );
 }

@@ -95,9 +95,6 @@ export const createColumns = ({ onEdit, onDelete, deleteId, pageTitle }: Columns
           <Label>{row.getValue("title")}</Label>
           <div>{row.getValue("description")}</div>
           <div className="flex justify-between">
-            <Badge variant="default" className="uppercase text-[10px]">
-              {row.getValue("type") || pageTitle}
-            </Badge>
             {deleteId.includes(row.getValue("id")) ? (
               <div className="flex items-center gap-1">
                 <ReloadIcon className="animate-spin" />

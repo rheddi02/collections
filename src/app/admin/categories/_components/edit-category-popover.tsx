@@ -5,18 +5,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "~/components/ui/button";
 import { Form } from "~/components/ui/form";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "~/components/ui/dialog";
 import { api } from "~/trpc/react";
 import TextInput from "../../_components/text-input";
 import { categoryFormSchema, CategoryFormValues } from "~/utils/schemas";
 import { useApiUtils } from "~/hooks";
 import useAppStore from "~/store/app.store";
 import { ToastTypes } from "~/utils/types";
+import { useGlobalDialog } from "~/hooks/useGlobalDialog";
 
 const EditCategoryPopover = () => {
   const { editCategory, setEditCategory, setToastType } = useAppStore((state) => ({
@@ -24,6 +19,8 @@ const EditCategoryPopover = () => {
     setEditCategory: state.setEditCategory,
     setToastType: state.setToastType,
   }));
+
+  const { showDialog, hideDialog } = useGlobalDialog();
 
   const form = useForm<CategoryFormValues>({
     resolver: zodResolver(categoryFormSchema),
@@ -34,19 +31,11 @@ const EditCategoryPopover = () => {
 
   const utils = useApiUtils();
 
-  // Reset form when editCategory changes
-  useEffect(() => {
-    if (editCategory) {
-      form.reset({
-        title: editCategory.title,
-      });
-    }
-  }, [editCategory, form]);
-
   const updateCategoryMutation = api.update.category.useMutation({
     onSuccess: async () => {
       setToastType({ type: ToastTypes.UPDATED });
       setEditCategory(null);
+      hideDialog();
       // Invalidate categories to refetch
       await utils.list.categories.invalidate();
     },
@@ -76,7 +65,74 @@ const EditCategoryPopover = () => {
   const handleCancel = () => {
     form.reset();
     setEditCategory(null);
+    hideDialog();
   };
+
+  // Reset form when editCategory changes
+  useEffect(() => {
+    if (editCategory) {
+      form.reset({
+        title: editCategory.title,
+      });
+    }
+  }, [editCategory, form]);
+
+  // Show global dialog when editCategory is set
+  useEffect(() => {
+    if (editCategory) {
+      showDialog({
+        title: "Edit Category",
+        hideFooter: true,
+        onCancel: () => {
+          form.reset();
+          setEditCategory(null);
+        },
+        children: (
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <div className="space-y-2">
+                <div className="flex flex-col gap-2 bg-gray-900 rounded p-2">
+                  <p className="text-xs text-gray-100">
+                    Category name can only contain letters, numbers, spaces, hyphens (-), and periods (.)
+                  </p>
+                </div>
+              </div>
+              <div className="w-full">
+                <TextInput
+                  name="title"
+                  placeholder="Enter category name"
+                  disabled={updateCategoryMutation.isPending}
+                  className="border-muted-500 focus:border-muted-700 w-full border focus:ring-2 focus:ring-green-200"
+                  autoFocus
+                  required
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={handleCancel}
+                  disabled={updateCategoryMutation.isPending}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  variant="default"
+                  disabled={updateCategoryMutation.isPending || !form.watch("title")?.trim()}
+                >
+                  {updateCategoryMutation.isPending ? "Updating..." : "Update"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        ),
+        onConfirm: () => {
+          // This won't be used since we're using hideFooter: true
+        },
+      });
+    }
+  }, [editCategory]); // Removed problematic dependencies
 
   const handleOpenChange = (open: boolean) => {
     // Prevent closing dialog while mutation is in progress
@@ -89,56 +145,7 @@ const EditCategoryPopover = () => {
     }
   };
 
-  return (
-    <Dialog open={!!editCategory} onOpenChange={handleOpenChange}>
-      <DialogContent 
-        className="sm:max-w-[425px]"
-        hideCloseButton={updateCategoryMutation.isPending}
-      >
-        <DialogHeader>
-          <DialogTitle>Edit Category</DialogTitle>
-        </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex flex-col gap-2 bg-gray-900 rounded p-2">
-                <p className="text-xs text-gray-100">
-                  Category name can only contain letters, numbers, hyphens (-), and periods (.)
-                </p>
-              </div>
-            </div>
-            <div className="w-full">
-              <TextInput
-                name="title"
-                placeholder="Enter category name"
-                disabled={updateCategoryMutation.isPending}
-                className="border-muted-500 focus:border-muted-700 w-full border focus:ring-2 focus:ring-green-200"
-                autoFocus
-                required
-              />
-            </div>
-            <div className="flex justify-end gap-2">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={handleCancel}
-                disabled={updateCategoryMutation.isPending}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                variant="default"
-                disabled={updateCategoryMutation.isPending || !form.watch("title")?.trim()}
-              >
-                {updateCategoryMutation.isPending ? "Updating..." : "Update"}
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
-  );
+  return null; // No direct JSX since we're using global dialog
 };
 
 export default EditCategoryPopover;

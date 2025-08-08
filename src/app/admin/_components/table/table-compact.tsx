@@ -64,9 +64,37 @@ export default function DataTableCompact<TData, TValue>({
     pageIndex: currentPage - 1, // Convert from 1-based to 0-based
     pageSize: 0,
   });
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
-    ...hiddenColumns,
+  // Initialize column visibility once and only update on specific triggers
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(() => {
+    // Start with default visibility (desktop) to match SSR
+    return { mobile: false };
   });
+
+  // Update column visibility when mobile state changes (only on client)
+  useEffect(() => {
+    const visibility: VisibilityState = {};
+    
+    columns.forEach((column) => {
+      // Get column ID from various possible sources
+      const columnId = column.id || 
+                      (column as any).accessorKey || 
+                      (column as any).accessorFn?.name || 
+                      '';
+      
+      if (columnId) {
+        if (isMobile) {
+          // On mobile: show ONLY mobile column, hide all others
+          visibility[columnId] = columnId === 'mobile';
+        } else {
+          // On desktop: hide ONLY mobile column, show all others
+          visibility[columnId] = columnId !== 'mobile';
+        }
+      }
+    });
+    
+    setColumnVisibility(visibility);
+  }, [isMobile, columns]); // Depend on isMobile and columns
+
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
@@ -77,8 +105,8 @@ export default function DataTableCompact<TData, TValue>({
     }
     const selection: Record<string, boolean> = {};
     data.forEach((item, index) => {
-      const isSelected = selectedRows.some(selectedItem => 
-        JSON.stringify(selectedItem) === JSON.stringify(item)
+      const isSelected = selectedRows.some(
+        (selectedItem) => JSON.stringify(selectedItem) === JSON.stringify(item),
       );
       if (isSelected) {
         selection[index.toString()] = true;
@@ -92,9 +120,9 @@ export default function DataTableCompact<TData, TValue>({
 
   // Sync with app store page changes
   useEffect(() => {
-    setPage(prev => ({
+    setPage((prev) => ({
       ...prev,
-      pageIndex: currentPage - 1 // Convert from 1-based to 0-based
+      pageIndex: currentPage - 1, // Convert from 1-based to 0-based
     }));
   }, [currentPage]);
 
@@ -103,20 +131,6 @@ export default function DataTableCompact<TData, TValue>({
       onPaginationChange(page.pageIndex + 1);
     }
   }, [page.pageIndex]);
-
-  useEffect(() => {
-    if (isMobile) {
-      Object.keys(hiddenColumns).map(
-        (key: string) => (hiddenColumns[key] = false),
-      );
-      setColumnVisibility({
-        ...hiddenColumns,
-        id: false,
-        actions: false,
-        mobile: true,
-      });
-    } else setColumnVisibility({ ...hiddenColumns, actions: !!session });
-  }, [hiddenColumns]);
 
   const table = useReactTable({
     data: data,
@@ -134,8 +148,11 @@ export default function DataTableCompact<TData, TValue>({
     enableRowSelection: true,
     onRowSelectionChange: (updater) => {
       // Handle row selection changes and notify parent
-      const newSelection = typeof updater === 'function' ? updater(currentRowSelection) : updater;
-      const selectedItems = data.filter((item, index) => newSelection[index.toString()]);
+      const newSelection =
+        typeof updater === "function" ? updater(currentRowSelection) : updater;
+      const selectedItems = data.filter(
+        (item, index) => newSelection[index.toString()],
+      );
       if (onRowChange) {
         onRowChange(selectedItems);
       }

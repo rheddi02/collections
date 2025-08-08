@@ -6,26 +6,30 @@ import { cn } from "~/lib/utils";
 import useAppStore from "~/store/app.store";
 import { type NavigationType } from "~/utils/types";
 import { useNavigationLists } from "~/hooks/useNavigationLists";
-import { Fragment } from "react";
-import CategoryForm from "./category-form";
-import LogoutBtn from "./logout-btn";
+import { Fragment, useEffect } from "react";
 import UserProfile from "./user-profile";
+import { isMobile } from "react-device-detect";
 
 export default function Navigation() {
   const navLists = useNavigationLists(); // Now reactive to category changes
+  const { openMenu, setOpenMenu } = useAppStore((state) => ({
+    openMenu: state.openMenu,
+    setOpenMenu: state.setOpenMenu,
+  }));
+
+  useEffect( ()=> {
+    setOpenMenu(!isMobile);
+  },[isMobile])
 
   return (
-    <>
-      <div className="flex h-screen w-72 flex-col gap-2 p-2">
+    <nav className={cn(openMenu ? "w-72" : "hidden")}>
+      <div className="flex h-screen w-full flex-col gap-2 p-2">
         <UserProfile />
         <div className="custom-scrollbar h-auto flex-1 overflow-y-auto overscroll-none">
           <Nav navLists={navLists} />
         </div>
-        <div className="mt-auto flex flex-col gap-2">
-          <LogoutBtn />
-        </div>
       </div>
-    </>
+    </nav>
   );
 }
 
@@ -36,9 +40,6 @@ const Nav = ({
   navLists: NavigationType[];
   isChild?: boolean;
 }) => {
-  const { openMenu } = useAppStore((state) => ({
-    openMenu: state.openMenu,
-  }));
   const router = useRouter();
   const segments = useSelectedLayoutSegments();
   const segment = segments.pop();
@@ -55,7 +56,6 @@ const Nav = ({
     <div
       className={cn(
         "relative flex flex-col gap-2",
-        openMenu ? "w-full" : "hidden",
       )}
     >
       {navLists.map((navigation) => (
