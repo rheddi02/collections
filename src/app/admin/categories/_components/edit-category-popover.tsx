@@ -38,6 +38,7 @@ const EditCategoryPopover = () => {
       hideDialog();
       // Invalidate categories to refetch
       await utils.list.categories.invalidate();
+      await utils.list.allCategories.invalidate();
     },
     onError: (error) => {
       // customize error message so users can easily understand
