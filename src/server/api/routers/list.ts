@@ -5,9 +5,8 @@ import { createTRPCRouter, authenticatedProcedure } from "~/server/api/trpc";
 // Schema for pagination
 const paginationInput = z.object({
   page: z.number().min(1).default(1),
-  perPage: z.number().min(1).max(100),
+  perPage: z.number().min(1).optional(),
 });
-
 
 // Generic list function for tips
 export const listRouter = createTRPCRouter({
@@ -15,7 +14,7 @@ export const listRouter = createTRPCRouter({
     .input(
       paginationInput.extend({
         categoryTitle: z.string(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const { page, perPage, categoryTitle } = input;
@@ -26,7 +25,7 @@ export const listRouter = createTRPCRouter({
         where: {
           title: {
             equals: categoryTitle,
-            mode: 'insensitive', // Case-insensitive search
+            mode: "insensitive", // Case-insensitive search
           },
           userId: parseInt(ctx.user.id), // Add user security check
         },
@@ -41,7 +40,7 @@ export const listRouter = createTRPCRouter({
           skip,
           take: perPage,
           orderBy: {
-            id: 'desc',
+            id: "desc",
           },
         }),
         ctx.db.links.count({
@@ -57,20 +56,67 @@ export const listRouter = createTRPCRouter({
         total,
         page,
         perPage,
-        totalPages: Math.ceil(total / perPage),
-        category
+        totalPages: Math.ceil(total / (perPage || 10)),
+        category,
       };
     }),
   categories: authenticatedProcedure
-    .query(async ({ ctx }) => {
+    .input(paginationInput)
+    .query(async ({ ctx, input }) => {
+      const { page, perPage } = input;
+      const skip = (page - 1) * (perPage || 10);
+      if (perPage) {
+        const [data, total] = await Promise.all([
+          ctx.db.categories.findMany({
+            where: {
+              userId: parseInt(ctx.user.id), // Add user security check
+            },
+            include: {
+              _count: {
+                select: { Links: true },
+              },
+            },
+            skip,
+            take: perPage,
+            orderBy: {
+              id: "desc",
+            },
+          }).then(categories => 
+            categories.map(category => ({
+              ...category,
+              categoryLinks: category._count.Links,
+            }))
+          ),
+          ctx.db.categories.count({
+            where: {
+              userId: parseInt(ctx.user.id), // Add user security check
+            },
+          }),
+        ]);
+        return {
+          data,
+          total,
+          page,
+          perPage,
+          totalPages: Math.ceil(total / (perPage || 10)),
+        };
+      }
 
-      const data = await ctx.db.categories.findMany({
+      const categories = await ctx.db.categories.findMany({
         where: { userId: Number(ctx.user.id) },
+        include: {
+          _count: {
+            select: { Links: true },
+          },
+        },
         orderBy: {
-          title: 'asc', // Sort categories alphabetically
+          title: "asc", // Sort categories alphabetically
         },
       });
 
-      return data;
+      return categories.map(category => ({
+        ...category,
+        categoryLinks: category._count.Links,
+      }));
     }),
 });

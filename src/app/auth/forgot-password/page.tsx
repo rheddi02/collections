@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
 import { Form } from "~/components/ui/form"
-import { TextInput } from "~/app/admin/_components/text-input"
+import TextInput from "~/app/admin/_components/text-input"
 import { OTPInput } from "~/app/admin/_components/otp-input"
 import { toast } from "~/components/ui/use-toast"
 import { api } from "~/trpc/react"
@@ -17,7 +17,7 @@ import {
   resetPasswordSchema,
   type ForgotPasswordEmailValues,
   type ResetPasswordValues 
-} from "~/utils/validation-schemas"
+} from "~/utils/schemas"
 
 export default function ForgotPassword() {
   const [step, setStep] = useState<"email" | "reset">("email")

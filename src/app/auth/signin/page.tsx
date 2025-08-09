@@ -6,19 +6,12 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
 import { Form } from "~/components/ui/form"
-import { TextInput } from "~/app/admin/_components/text-input"
+import TextInput from "~/app/admin/_components/text-input"
 import { toast } from "~/components/ui/use-toast"
-
-const signInSchema = z.object({
-  usernameOrEmail: z.string().min(1, "Username or email is required"),
-  password: z.string().min(1, "Password is required"),
-})
-
-type SignInFormValues = z.infer<typeof signInSchema>
+import { signInSchema, type SignInFormValues } from "~/utils/schemas";
 
 export default function SignIn() {
   const [isLoading, setIsLoading] = useState(false)

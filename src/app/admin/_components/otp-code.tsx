@@ -2,24 +2,18 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { z } from "zod"
 import { api } from "~/trpc/react"
 import { useSession } from "next-auth/react"
 
 import { Button } from "~/components/ui/button"
 import { Form } from "~/components/ui/form"
 import { OTPInput } from "./otp-input"
-
-const FormSchema = z.object({
-  pin: z.string().min(6, {
-    message: "Your one-time password must be 6 characters.",
-  }),
-})
+import { otpFormSchema, OtpFormValues } from "~/utils/schemas"
 
 export function InputOTPForm({ onBack }: { onBack?: () => void }) {
   const { update } = useSession();
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const form = useForm<OtpFormValues>({
+    resolver: zodResolver(otpFormSchema),
     defaultValues: {
       pin: "",
     },
@@ -40,7 +34,7 @@ export function InputOTPForm({ onBack }: { onBack?: () => void }) {
     },
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
+  function onSubmit(data: OtpFormValues) {
     verifyOTPMutation.mutate({ otp: data.pin });
   }
 

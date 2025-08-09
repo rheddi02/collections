@@ -18,7 +18,7 @@ export const useNavigationLists = (): NavigationType[] => {
     ...categories.map((category) => ({
       id: category.id,
       title: category.title,
-      route: "/admin/" + category.title.toLowerCase().replaceAll(" ", "-"),
+      route: "/admin/" + category.slug,
       subRoute: [],
     })),
   ], [categories]);

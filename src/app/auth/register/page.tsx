@@ -9,9 +9,9 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
 import { Form } from "~/components/ui/form"
-import { TextInput } from "~/app/admin/_components/text-input"
+import TextInput from "~/app/admin/_components/text-input"
 import { getPasswordStrength, getPasswordStrengthLabel } from "~/utils/password-strength"
-import { registerFormSchema, type RegisterFormValues } from "~/utils/validation-schemas"
+import { registerFormSchema, type RegisterFormValues } from "~/utils/schemas"
 
 export default function Register() {
   const [isLoading, setIsLoading] = useState(false)

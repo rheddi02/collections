@@ -28,6 +28,13 @@ export const otpSchema = z
   .string()
   .length(6, "OTP must be exactly 6 digits")
 
+// For form components that use "pin" instead of "otp"  
+export const otpFormSchema = z.object({
+  pin: z.string().min(6, {
+    message: "Your one-time password must be 6 characters.",
+  }),
+})
+
 // Common password confirmation refinement function
 export const confirmPasswordRefinement = (
   passwordField: string = "password", 
@@ -43,6 +50,13 @@ export const registerFormSchema = z.object({
 }).refine(confirmPasswordRefinement("password", "confirmPassword"), {
   message: "Passwords do not match",
   path: ["confirmPassword"],
+})
+
+// API-specific schema without confirmPassword
+export const registerApiSchema = z.object({
+  username: usernameSchema,
+  email: emailSchema,
+  password: passwordSchema,
 })
 
 export const profileFormSchema = z.object({
@@ -71,6 +85,8 @@ export const resetPasswordSchema = z.object({
 
 // Type exports for convenience
 export type RegisterFormValues = z.infer<typeof registerFormSchema>
+export type RegisterApiValues = z.infer<typeof registerApiSchema>
 export type ProfileFormValues = z.infer<typeof profileFormSchema>
 export type ForgotPasswordEmailValues = z.infer<typeof forgotPasswordEmailSchema>
 export type ResetPasswordValues = z.infer<typeof resetPasswordSchema>
+export type OtpFormValues = z.infer<typeof otpFormSchema>

@@ -19,6 +19,7 @@ enum Role {
 model Categories {
   id          Int     @id @default(autoincrement())
   title       String
+  slug        String @map("slug")
   Links       Links[]
   isPinned    Boolean @default(false)  @map("is_pinned")
   userId    Int
@@ -33,6 +34,7 @@ model Categories {
 model Links {
   id          Int      @id @default(autoincrement())
   title       String
+  slug        String   @map("slug")
   description String
   url         String
   createdAt   DateTime @default(now())

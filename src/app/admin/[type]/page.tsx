@@ -2,16 +2,23 @@
 import useAppStore from "~/store/app.store";
 import type { Row } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
-import CustomDialog, { FormState } from "~/app/admin/[type]/_components/dialog";
+import CustomDialog from "~/app/admin/[type]/_components/create-list-dialog";
 import { api } from "~/trpc/react";
 import { ToastTypes } from "~/utils/types";
 import PageTable from "../_components/table/page-table";
-import { createColumns } from "~/app/admin/[type]/_components/columns";
+import { createListColumns } from "~/app/admin/[type]/_components/create-list-columns";
 import PageHeader from "../_components/page-header";
 import type { linkListOutput } from "~/server/api/client/types";
+import { useApiUtils } from "~/hooks/useApiUtils";
+import { LinkFormValues } from "~/utils/schemas";
+import PageAction from "../_components/page-action";
+import { cn } from "~/lib/utils";
+import { isMobile } from "react-device-detect";
+import { Button } from "~/components/ui/button";
+import { useConfirmDialog } from "~/hooks";
 
 // Type for individual link data from the list
-type LinkData = NonNullable<linkListOutput['data'][number]>;
+type LinkData = NonNullable<linkListOutput["data"][number]>;
 
 interface PageProps {
   params: {
@@ -22,16 +29,29 @@ interface PageProps {
 const DynamicPage = ({ params }: PageProps) => {
   const { type: pageTitle } = params;
 
-  const utils = api.useUtils();
+  const utils = useApiUtils();
+  const { confirm } = useConfirmDialog();
   const [category, setCategory] = useState<
     { id: number; title: string } | undefined
   >();
-  const [initialData, setInitialData] = useState<Partial<FormState> | undefined>();
+  const [initialData, setInitialData] = useState<
+    Partial<LinkFormValues> | undefined
+  >();
+  
+  const [selectedLinks, setSelectedLinks] = useState<LinkData[]>([]);
+  const [editData, setEditData] = useState<LinkData | null>(null);
   const [form, setForm] = useState({
     title: "Create New",
     description: "Add new data",
     label: "Create",
   });
+
+  const [isClient, setIsClient] = useState(false);
+
+  // Set client flag after hydration
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const {
     modal,
@@ -66,38 +86,76 @@ const DynamicPage = ({ params }: PageProps) => {
     perPage,
   });
 
-  const onEdit = (row: Row<LinkData>) => {
+  const handleEdit = (link: LinkData) => {
     setForm({
-      title: "Edit Data",
-      description: "Edit selected data",
+      title: "Update Link",
+      description: "Update the selected link's details.",
       label: "update",
     });
-    
     setInitialData({
-      id: row.original.id,
-      title: row.original.title,
-      description: row.original.description,
-      url: row.original.url,
+      id: link.id,
+      title: link.title,
+      url: link.url,
+      description: link.description,
     });
     setModal(true);
   };
 
-  const onDelete = (row: Row<LinkData>) => {
-    const rowData = row.original;
-    setDeleteId(rowData.id);
-    deleteData(rowData.id);
+  const handleDelete = (link: LinkData) => {
+    // Clear all selected links when deleting any link
+    setSelectedLinks([]);
+    
+    confirm({
+      title: "Delete Link",
+      description: `Are you sure you want to delete the link "${link.title}"? This action cannot be undone.`,
+      warningText:
+        "This will permanently delete the link.",
+      confirmText: "Delete",
+      cancelText: "Cancel",
+      variant: "destructive",
+      onConfirm: async () => {
+        setDeleteId(link.id);
+        try {
+          await deleteLinkMutation([link.id]);
+        } finally {
+          setDeleteId(0);
+        }
+      },
+    });
+  };
+
+  const handleDeleteMultipe = async () => {
+    confirm({
+      title: "Delete Links",
+      description: `Are you sure you want to delete the selected links? This action cannot be undone.`,
+      warningText:
+        "This will permanently delete the links.",
+      confirmText: "Delete",
+      cancelText: "Cancel",
+      variant: "destructive",
+      onConfirm: async () => {
+        const linkIds = selectedLinks.map(link => link.id);
+        try {
+          setDeleteId(linkIds);
+          await deleteLinkMutation(linkIds);
+          setSelectedLinks([]);
+        } catch (error) {
+          console.error("Error deleting links:", error);
+        } finally {
+          setDeleteId(0);
+        }
+      },
+    });
   };
 
   // Create columns with handlers
-  const columns = createColumns({
-    onEdit,
-    onDelete,
-    deleteId,
-    pageTitle,
+  const columns = createListColumns({
+    onEdit: handleEdit,
+    onDelete: handleDelete,
+    deletingIds: deleteId,
   });
 
-
-  const { mutate: createData, isPending: pendingCreate } =
+  const { mutate: createLinkMutation, isPending: pendingCreate } =
     api.create.link.useMutation({
       onSuccess: async () => {
         await utils.list.link.invalidate();
@@ -109,7 +167,7 @@ const DynamicPage = ({ params }: PageProps) => {
       },
     });
 
-  const { mutate: updateData, isPending: pendingUpdate } =
+  const { mutate: updateLinkMutation, isPending: pendingUpdate } =
     api.update.link.useMutation({
       onSuccess: async () => {
         await utils.list.link.invalidate();
@@ -118,7 +176,7 @@ const DynamicPage = ({ params }: PageProps) => {
       },
     });
 
-  const { mutate: deleteData, isPending: pendingDelete } =
+  const { mutateAsync: deleteLinkMutation, isPending: pendingDelete } =
     api.delete.link.useMutation({
       onSuccess: async () => {
         await utils.list.link.invalidate();
@@ -131,7 +189,7 @@ const DynamicPage = ({ params }: PageProps) => {
   useEffect(() => {
     if (!isFetched || !data) return;
     setPageCount(data.totalPages);
-    setCategory(data.category!)
+    setCategory(data.category!);
   }, [data, isFetched, perPage, setPageCount]);
 
   useEffect(() => {
@@ -141,7 +199,7 @@ const DynamicPage = ({ params }: PageProps) => {
   useEffect(() => {
     if (!modal) {
       setForm({
-        title:"Create New",
+        title: "Create New",
         description: "Add new data",
         label: "Create",
       });
@@ -150,11 +208,15 @@ const DynamicPage = ({ params }: PageProps) => {
     }
   }, [modal]);
 
-  const handleSave = (formData: FormState) => {
+  const handleRowSelectionChange = (selectedRows: LinkData[]) => {
+    setSelectedLinks(selectedRows);
+  };
+
+  const handleSave = (formData: LinkFormValues) => {
     setIsLoading(true);
 
     // Type guard and data preparation
-    createData({
+    createLinkMutation({
       title: formData.title,
       url: formData.url,
       categoryId: category?.id || 1, // Use category id or default to 1
@@ -162,10 +224,10 @@ const DynamicPage = ({ params }: PageProps) => {
     });
   };
 
-  const handleUpdate = (formData: FormState) => {
+  const handleUpdate = (formData: LinkFormValues) => {
     setIsLoading(true);
     if (!category || typeof formData.id !== "number") return;
-    updateData({
+    updateLinkMutation({
       id: formData.id,
       title: formData.title,
       url: formData.url,
@@ -175,34 +237,58 @@ const DynamicPage = ({ params }: PageProps) => {
   };
 
   return (
-    <>
+    <div
+      className={cn(isClient && isMobile && "overflow-hidden overscroll-none")}
+    >
       <CustomDialog
         {...{
           initialData: initialData,
-          defaultType: pageTitle,
+          open: modal,
           action: form.label == "update" ? handleUpdate : handleSave,
           title: form.title,
           description: form.description,
           label: form.label,
         }}
       />
-      <div className="flex flex-col gap-2 p-5">
-        <PageHeader
-          title={pageTitle} 
-          label='Add New'
-          action={() => setModal(true)}
-          setOpenMenu={() => setOpenMenu(!openMenu)}
-          isFetching={isFetching}
-          reload={refetch}
-        />
-        <hr />
-        <PageTable 
-          data={data?.data || []} 
-          columns={columns}
-          loading={isFetching}
-        />
+      <div
+        className={cn(
+          "flex flex-col gap-2 p-5",
+          isClient &&
+            isMobile &&
+            "max-h-screen overflow-hidden overscroll-none",
+        )}
+      >
+        <div className="mb-5 flex flex-col gap-2 font-bold sm:flex-row sm:items-center sm:justify-between">
+          <PageHeader
+            title={pageTitle}
+            setOpenMenu={() => setOpenMenu(!openMenu)}
+            isFetching={isFetching}
+            reload={refetch}
+          />
+          <div className="flex gap-2">
+          {!!selectedLinks.length && (
+            <Button variant={"destructive"} onClick={handleDeleteMultipe}>
+              Delete ({selectedLinks.length})
+            </Button>
+          )}
+          <PageAction label="Add New" action={() => setModal(true)} />
+          </div>
+        </div>
+        <div
+          className={cn(
+            isClient && isMobile && "max-h-[calc(100vh-200px)] overflow-auto",
+          )}
+        >
+          <PageTable
+            data={data?.data || []}
+            columns={columns}
+            loading={isFetching}
+            onRowChange={handleRowSelectionChange}
+            selectedRows={selectedLinks}
+          />
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 
