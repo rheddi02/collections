@@ -3,13 +3,15 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { Pencil1Icon, TrashIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
-import type { categoryListOutput } from "~/server/api/client/types";
+// import type { categoryListAllOutput } from "~/server/api/client/types";
 import { Label } from "~/components/ui/label";
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
+import { UpdateCategoryValues } from "~/utils/schemas";
 
+// categoryListAllOutput is the type for a single category row
 interface CategoryColumnsProps {
-  onEdit: (category: categoryListOutput) => void;
-  onDelete: (category: categoryListOutput) => void;
+  onEdit: (category: UpdateCategoryValues) => void;
+  onDelete: (category: UpdateCategoryValues) => void;
   deletingIds: number[];
 }
 
@@ -17,7 +19,7 @@ export const createCategoryColumns = ({
   onEdit,
   onDelete,
   deletingIds,
-}: CategoryColumnsProps): ColumnDef<categoryListOutput>[] => [
+}: CategoryColumnsProps): ColumnDef<UpdateCategoryValues>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -71,7 +73,7 @@ export const createCategoryColumns = ({
     accessorKey: "actions",
     header: "Actions",
     cell: ({ row }) => {
-      const isDeleting = deletingIds.includes(row.original.id);
+      const isDeleting = deletingIds.includes(row.getValue("id"));
 
       return (
         <div className="flex items-center gap-1">
@@ -87,7 +89,7 @@ export const createCategoryColumns = ({
                 size="sm"
                 onClick={(e) => {
                   e.stopPropagation();
-                  onEdit(row.original);
+                onEdit(row.original);
                 }}
                 className="h-8 w-8 p-0"
                 title="Edit category"
@@ -99,7 +101,7 @@ export const createCategoryColumns = ({
                 size="sm"
                 onClick={(e) => {
                   e.stopPropagation();
-                  onDelete(row.original);
+                onDelete(row.original);
                 }}
                 className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-600"
                 title="Delete category"

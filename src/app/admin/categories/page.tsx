@@ -4,7 +4,7 @@ import { api } from "~/trpc/react";
 import { useToast } from "~/components/ui/use-toast";
 import useAppStore from "~/store/app.store";
 import { createCategoryColumns } from "./_components/create-category-columns";
-import type { categoryListOutput } from "~/server/api/client/types";
+// import type { categoryListOutput, categoryOutput, categoryUpdateInput } from "~/server/api/client/types";
 import { useRouter } from "next/navigation";
 import PageTable from "../_components/table/page-table";
 import { useConfirmDialog } from "~/hooks/useConfirmDialog";
@@ -15,13 +15,15 @@ import { useState, useEffect } from "react";
 import { useApiUtils } from "~/hooks/useApiUtils";
 import { Button } from "~/components/ui/button";
 import { ToastTypes } from "~/utils/types";
+import { Row } from "@tanstack/react-table";
+import { CreateCategoryValues, UpdateCategoryValues } from "~/utils/schemas";
 
 const CategoryManagementPage = () => {
   // const { toast } = useToast();
   const router = useRouter();
   const { confirm } = useConfirmDialog();
   const [selectedCategories, setSelectedCategories] = useState<
-    categoryListOutput[]
+    UpdateCategoryValues[]
   >([]);
 
   const {
@@ -36,7 +38,6 @@ const CategoryManagementPage = () => {
   } = useAppStore((state) => ({
     setEditCategory: state.setEditCategory,
     setDeleteId: state.setDeleteId,
-    removeDeleteId: state.removeDeleteId,
     page: state.page,
     perPage: state.perPage,
     setPageCount: state.setPageCount,
@@ -78,7 +79,7 @@ const CategoryManagementPage = () => {
     },
   });
 
-  const handleEdit = (category: categoryListOutput) => {
+  const handleEdit = (category: UpdateCategoryValues) => {
     setEditCategory(category);
   };
 
@@ -103,7 +104,7 @@ const CategoryManagementPage = () => {
     });
   };
 
-  const handleDelete = (category: categoryListOutput) => {
+  const handleDelete = (category: UpdateCategoryValues) => {
     // Clear all selected categories when deleting any category
     setSelectedCategories([]);
     
@@ -126,13 +127,13 @@ const CategoryManagementPage = () => {
     });
   };
 
-  const handleView = (category: categoryListOutput) => {
+  const handleView = (category: UpdateCategoryValues) => {
     // Generate a slug from the title if slug doesn't exist
     const slug = (category as any).slug || category.title.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
     router.push(`/admin/${slug}`);
   };
 
-  const handleRowSelectionChange = (selectedRows: categoryListOutput[]) => {
+  const handleRowSelectionChange = (selectedRows: UpdateCategoryValues[]) => {
     setSelectedCategories(selectedRows);
   };
 

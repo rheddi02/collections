@@ -7,14 +7,13 @@ import CreateCategoryPopover from "../create-category-popover";
 // Create mocks that can be updated per test
 const mockMutate = jest.fn();
 const mockInvalidate = jest.fn();
-const mockToast = jest.fn();
 const mockSetToastType = jest.fn();
 
 // Mock the dependencies
 jest.mock("~/trpc/react", () => ({
   api: {
     create: {
-      category: {
+      categories: {
         useMutation: jest.fn(() => ({
           mutate: mockMutate,
           isPending: false,
@@ -82,7 +81,7 @@ describe("CreateCategoryPopover", () => {
 
     // Setup default API mock
     const { api } = require("~/trpc/react");
-    api.create.category.useMutation.mockReturnValue({
+    api.create.categories.useMutation.mockReturnValue({
       mutate: mockMutate,
       isPending: false,
       isError: false,
@@ -157,7 +156,7 @@ describe("CreateCategoryPopover", () => {
 
     // Mock pending state
     const { api } = require("~/trpc/react");
-    api.create.category.useMutation.mockReturnValue({
+    api.create.categories.useMutation.mockReturnValue({
       mutate: mockMutate,
       isPending: true,
       isError: false,
@@ -286,7 +285,7 @@ describe("CreateCategoryPopover", () => {
 
     // Mock successful mutation with proper callback handling
     const { api } = require("~/trpc/react");
-    api.create.category.useMutation.mockImplementation(
+    api.create.categories.useMutation.mockImplementation(
       ({ onSuccess }: any) => ({
         mutate: (data: any) => {
           // Simulate successful mutation
@@ -328,7 +327,7 @@ describe("CreateCategoryPopover", () => {
     // Mock error mutation with proper callback handling
     const { api } = require("~/trpc/react");
 
-    api.create.category.useMutation.mockImplementation(
+    api.create.categories.useMutation.mockImplementation(
       ({ onError }: any) => ({
         mutate: (data: any) => {
           if (onError) {

@@ -5,7 +5,7 @@ import { useMemo } from "react";
 
 // Hook to get navigation lists that watches for categories changes
 export const useNavigationLists = (): NavigationType[] => {
-  const categories = useAppStore((state) => state.categories);
+  const categories = useAppStore((state) => state.categories)
   
   return useMemo(() => [
     {

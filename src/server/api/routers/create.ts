@@ -6,7 +6,7 @@ import {
 } from "~/server/api/trpc";
 
 export const createRouter = createTRPCRouter({
-  category: authenticatedProcedure
+  categories: authenticatedProcedure
     .input(
       z.object({
         title: z.string().min(1),

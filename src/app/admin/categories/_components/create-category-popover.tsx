@@ -36,7 +36,7 @@ const CreateCategoryPopover = () => {
 
   const utils = useApiUtils();
 
-  const createCategoryMutation = api.create.category.useMutation({
+  const createCategoryMutation = api.create.categories.useMutation({
     onSuccess: async () => {
       setToastType({ type: ToastTypes.ADDED });
       form.reset();

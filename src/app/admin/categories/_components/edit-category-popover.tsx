@@ -31,7 +31,7 @@ const EditCategoryPopover = () => {
 
   const utils = useApiUtils();
 
-  const updateCategoryMutation = api.update.category.useMutation({
+  const updateCategoryMutation = api.update.categories.useMutation({
     onSuccess: async () => {
       setToastType({ type: ToastTypes.UPDATED });
       setEditCategory(null);

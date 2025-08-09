@@ -65,9 +65,9 @@ export const listRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const { page, perPage } = input;
       const skip = (page - 1) * (perPage || 10);
-      if (perPage) {
-        const [data, total] = await Promise.all([
-          ctx.db.categories.findMany({
+      const [data, total] = await Promise.all([
+        ctx.db.categories
+          .findMany({
             where: {
               userId: parseInt(ctx.user.id), // Add user security check
             },
@@ -81,42 +81,43 @@ export const listRouter = createTRPCRouter({
             orderBy: {
               id: "desc",
             },
-          }).then(categories => 
-            categories.map(category => ({
+          })
+          .then((categories) =>
+            categories.map((category) => ({
               ...category,
               categoryLinks: category._count.Links,
-            }))
+            })),
           ),
-          ctx.db.categories.count({
-            where: {
-              userId: parseInt(ctx.user.id), // Add user security check
-            },
-          }),
-        ]);
-        return {
-          data,
-          total,
-          page,
-          perPage,
-          totalPages: Math.ceil(total / (perPage || 10)),
-        };
-      }
-
-      const categories = await ctx.db.categories.findMany({
-        where: { userId: Number(ctx.user.id) },
-        include: {
-          _count: {
-            select: { Links: true },
+        ctx.db.categories.count({
+          where: {
+            userId: parseInt(ctx.user.id), // Add user security check
           },
-        },
-        orderBy: {
-          title: "asc", // Sort categories alphabetically
-        },
-      });
-
-      return categories.map(category => ({
-        ...category,
-        categoryLinks: category._count.Links,
-      }));
+        }),
+      ]);
+      return {
+        data,
+        total,
+        page,
+        perPage,
+        totalPages: Math.ceil(total / (perPage || 10)),
+      };
     }),
+  allCategories: authenticatedProcedure.query(async ({ ctx, input }) => {
+    const categories = await ctx.db.categories.findMany({
+      where: { userId: Number(ctx.user.id) },
+      include: {
+        _count: {
+          select: { Links: true },
+        },
+      },
+      orderBy: {
+        title: "asc", // Sort categories alphabetically
+      },
+    });
+
+    return categories.map((category) => ({
+      ...category,
+      categoryLinks: category._count.Links,
+    }));
+  }),
 });

@@ -7,7 +7,6 @@ import { GlobalConfirmDialog } from "./_components/global-confirm-dialog";
 import { useEffect } from "react";
 import useAppStore from "~/store/app.store";
 import { api } from "~/trpc/react";
-import { categoryOutput } from "~/server/api/client/types";
 
 export default function RootLayout({
   children,
@@ -19,11 +18,11 @@ export default function RootLayout({
   }));
 
   const { data: categories, isFetched: isFetchedCategories } =
-    api.list.categories.useQuery({});
+    api.list.allCategories.useQuery();
 
   useEffect(() => {
     if (!isFetchedCategories || !categories) return;
-    setCategories(categories as categoryOutput[]);
+    setCategories(categories);
   }, [categories, isFetchedCategories]);
 
   return (

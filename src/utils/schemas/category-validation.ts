@@ -31,6 +31,7 @@ export const categoryTitleSchemaWithUniqueness = (
 // Form schemas for different use cases
 export const categoryFormSchema = z.object({
   title: categoryTitleSchema,
+  slug: z.string().optional(), // Slug can be optional if not used
 })
 
 export const createCategorySchema = z.object({

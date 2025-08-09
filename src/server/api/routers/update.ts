@@ -3,7 +3,7 @@ import { z } from "zod";
 import { createTRPCRouter, authenticatedProcedure } from "~/server/api/trpc";
 
 export const updateRouter = createTRPCRouter({
-  category: authenticatedProcedure
+  categories: authenticatedProcedure
     .input(
       z.object({
         id: z.number(),
