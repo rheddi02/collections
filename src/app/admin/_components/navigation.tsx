@@ -22,7 +22,7 @@ export default function Navigation() {
   },[isMobile])
 
   return (
-    <nav className={cn(openMenu ? "w-72" : "hidden")}>
+    <nav className={cn(openMenu ? "w-72" : "hidden", "sm:w-72 sm:block")}>
       <div className="flex h-screen w-full flex-col gap-2 p-2">
         <UserProfile />
         <div className="custom-scrollbar h-auto flex-1 overflow-y-auto overscroll-none">

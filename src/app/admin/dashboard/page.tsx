@@ -1,6 +1,6 @@
 "use client";
 import { useSession } from "next-auth/react";
-import CardTemplate from "~/app/admin/_components/card";
+import CardTemplate from "~/app/admin/_components/card-template";
 import { Button } from "~/components/ui/button";
 import { api } from "~/trpc/react";
 import { useNavigationLists } from "~/hooks/useNavigationLists";
@@ -70,7 +70,6 @@ const Dashboard = () => {
   }
 
   if (status === "authenticated") {
-    console.log("🚀 ~ navList:", navList.length)
     if (navList.length <= 1) 
     return (
       <div className="flex h-screen flex-col items-center justify-center">

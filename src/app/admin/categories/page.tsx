@@ -4,7 +4,7 @@ import { api } from "~/trpc/react";
 import { useToast } from "~/components/ui/use-toast";
 import useAppStore from "~/store/app.store";
 import { createCategoryColumns } from "./_components/create-category-columns";
-import type { categoryOutput } from "~/server/api/client/types";
+import type { categoryListOutput } from "~/server/api/client/types";
 import { useRouter } from "next/navigation";
 import PageTable from "../_components/table/page-table";
 import { useConfirmDialog } from "~/hooks/useConfirmDialog";
@@ -17,17 +17,16 @@ import { Button } from "~/components/ui/button";
 import { ToastTypes } from "~/utils/types";
 
 const CategoryManagementPage = () => {
-  const { toast } = useToast();
+  // const { toast } = useToast();
   const router = useRouter();
   const { confirm } = useConfirmDialog();
   const [selectedCategories, setSelectedCategories] = useState<
-    categoryOutput[]
+    categoryListOutput[]
   >([]);
 
   const {
     setEditCategory,
     setDeleteId,
-    removeDeleteId,
     page,
     perPage,
     setPageCount,
@@ -70,15 +69,16 @@ const CategoryManagementPage = () => {
       await utils.list.categories.invalidate();
     },
     onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      // toast({
+      //   title: "Error",
+      //   description: error.message,
+      //   variant: "destructive",
+      // });
+      setToastType({ type: ToastTypes.ERROR, data: error.message });
     },
   });
 
-  const handleEdit = (category: categoryOutput) => {
+  const handleEdit = (category: categoryListOutput) => {
     setEditCategory(category);
   };
 
@@ -103,7 +103,7 @@ const CategoryManagementPage = () => {
     });
   };
 
-  const handleDelete = (category: categoryOutput) => {
+  const handleDelete = (category: categoryListOutput) => {
     // Clear all selected categories when deleting any category
     setSelectedCategories([]);
     
@@ -120,30 +120,31 @@ const CategoryManagementPage = () => {
         try {
           await deleteCategoryMutation.mutateAsync([category.id]);
         } finally {
-          removeDeleteId(category.id);
+          setDeleteId(0);
         }
       },
     });
   };
 
-  const handleView = (category: categoryOutput) => {
-    router.push(`/admin/${category.title.toLowerCase().replace(/\s+/g, "-")}`);
+  const handleView = (category: categoryListOutput) => {
+    // Generate a slug from the title if slug doesn't exist
+    const slug = (category as any).slug || category.title.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+    router.push(`/admin/${slug}`);
   };
 
-  const handleRowSelectionChange = (selectedRows: categoryOutput[]) => {
+  const handleRowSelectionChange = (selectedRows: categoryListOutput[]) => {
     setSelectedCategories(selectedRows);
   };
 
   // Create columns for the category table (after handlers are defined)
   const columns = createCategoryColumns({
-    onView: handleView,
     onEdit: handleEdit,
     onDelete: handleDelete,
     deletingIds: deleteIdState,
   });
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="mx-auto p-6">
       <div className="mb-5 flex flex-col gap-2 font-bold sm:flex-row sm:items-center sm:justify-between">
         <PageHeader
           title="Category Management"
@@ -168,18 +169,6 @@ const CategoryManagementPage = () => {
         onRowChange={handleRowSelectionChange}
         selectedRows={selectedCategories}
       />
-
-      {selectedCategories.length > 0 && (
-        <div className="mt-4 rounded-lg border bg-blue-50 p-4">
-          <p className="text-sm text-gray-700">
-            Selected {selectedCategories.length} categor
-            {selectedCategories.length === 1 ? "y" : "ies"}:
-            <span className="ml-2 font-medium">
-              {selectedCategories.map((cat) => cat.title).join(", ")}
-            </span>
-          </p>
-        </div>
-      )}
       <EditCategoryPopover />
     </div>
   );

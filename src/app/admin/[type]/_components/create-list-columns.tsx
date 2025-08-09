@@ -9,28 +9,48 @@ import {
 import { linkListOutput } from "~/server/api/client/types";
 import Link from "next/link";
 import { Label } from "~/components/ui/label";
-import { Badge } from "~/components/ui/badge";
 import { ToggleGroup } from "~/components/ui/toggle-group";
 import { ToggleGroupItem } from "@radix-ui/react-toggle-group";
+import { Checkbox } from "~/components/ui/checkbox";
 
 type LinkData = NonNullable<linkListOutput["data"][number]>;
 
 interface ColumnsProps {
-  onEdit: (row: Row<LinkData>) => void;
-  onDelete: (row: Row<LinkData>) => void;
-  deleteId: number[];
-  pageTitle: string;
+  onEdit: (link: LinkData) => void;
+  onDelete: (link: LinkData) => void;
+  deletingIds: number[];
 }
 
-export const createColumns = ({
+export const createListColumns = ({
   onEdit,
   onDelete,
-  deleteId,
-  pageTitle,
+  deletingIds,
 }: ColumnsProps): ColumnDef<LinkData>[] => [
   {
-    accessorKey: "id",
-  },
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+      size: 20,
+      minSize: 20,
+      maxSize: 20,
+    },
   {
     accessorKey: "title",
     header: () => {
@@ -58,7 +78,7 @@ export const createColumns = ({
     cell: ({ row }: { row: Row<LinkData> }) => {
       return (
         <div className="flex items-center justify-center gap-2 p-1">
-          {deleteId.includes(row.getValue("id")) ? (
+          {deletingIds.includes(row.original.id) ? (
             <div className="flex items-center gap-1 rounded-full border px-2 py-1">
               <ReloadIcon className="animate-spin" />
               Deleting ...
@@ -70,7 +90,7 @@ export const createColumns = ({
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  onEdit(row);
+                  onEdit(row.original);
                 }}
               />
               <TrashIcon
@@ -78,7 +98,7 @@ export const createColumns = ({
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  onDelete(row);
+                  onDelete(row.original);
                 }}
               />
               <Link href={row.original.url || "#"} target="_blank">
@@ -103,7 +123,7 @@ export const createColumns = ({
             <div>{row.getValue("description")}</div>
           </div>
           <div className="flex justify-between">
-            {deleteId.includes(row.getValue("id")) ? (
+            {deletingIds.includes(row.getValue("id")) ? (
               <div className="flex items-center gap-1">
                 <ReloadIcon className="animate-spin" />
                 Deleting...
@@ -115,7 +135,7 @@ export const createColumns = ({
                   aria-label="Toggle edit"
                   onClick={(e) => {
                     e.stopPropagation();
-                    onEdit(row);
+                    onEdit(row.original);
                   }}
                 >
                   <Pencil1Icon className="flex size-5 hover:cursor-pointer hover:text-red-600" />
@@ -125,7 +145,7 @@ export const createColumns = ({
                   aria-label="Toggle delete"
                   onClick={(e) => {
                     e.stopPropagation();
-                    onDelete(row);
+                    onDelete(row.original);
                   }}
                 >
                   <TrashIcon className="flex size-5 hover:cursor-pointer hover:text-red-600" />
