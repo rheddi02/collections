@@ -43,6 +43,7 @@ const CreateCategoryPopover = () => {
       setOpen(false);
       // Invalidate categories to refetch
       await utils.list.categories.invalidate();
+      await utils.list.allCategories.invalidate();
     },
     onError: (error) => {
       setToastType({ type: ToastTypes.ERROR, data: error.message });
@@ -78,9 +79,10 @@ const CreateCategoryPopover = () => {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
               <h4 className="font-medium leading-none">Create New Category</h4>
-              <div className="flex flex-col gap-2 bg-gray-900 rounded p-2">
+              <div className="flex flex-col gap-2 rounded bg-gray-900 p-2">
                 <p className="text-xs text-gray-100">
-                  Category name can only contain letters, numbers, hyphens (-), and periods (.)
+                  Category name can only contain letters, numbers, hyphens (-),
+                  and periods (.)
                 </p>
               </div>
             </div>
@@ -109,7 +111,10 @@ const CreateCategoryPopover = () => {
                 variant="secondary"
                 size="sm"
                 className="flex-grow"
-                disabled={createCategoryMutation.isPending || !form.watch("title")?.trim()}
+                disabled={
+                  createCategoryMutation.isPending ||
+                  !form.watch("title")?.trim()
+                }
               >
                 {createCategoryMutation.isPending ? "Creating..." : "Create"}
               </Button>

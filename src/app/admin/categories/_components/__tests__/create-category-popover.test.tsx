@@ -31,6 +31,9 @@ jest.mock("~/hooks", () => ({
       categories: {
         invalidate: mockInvalidate,
       },
+      allCategories: {
+        invalidate: mockInvalidate,
+      },
     },
   })),
 }));
@@ -92,6 +95,9 @@ describe("CreateCategoryPopover", () => {
     useApiUtils.mockReturnValue({
       list: {
         categories: {
+          invalidate: mockInvalidate,
+        },
+        allCategories: {
           invalidate: mockInvalidate,
         },
       },

@@ -41,6 +41,7 @@ export const createCategorySchema = z.object({
 export const updateCategorySchema = z.object({
   id: z.number().positive("Category ID is required"),
   title: categoryTitleSchema,
+  slug: z.string().optional(), // Slug can be optional if not used
 })
 
 // Type exports for convenience

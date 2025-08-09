@@ -68,6 +68,7 @@ const CategoryManagementPage = () => {
       setToastType({ type: ToastTypes.DELETED });
       // Refetch categories
       await utils.list.categories.invalidate();
+      await utils.list.allCategories.invalidate();
     },
     onError: (error) => {
       // toast({
@@ -94,9 +95,11 @@ const CategoryManagementPage = () => {
       variant: "destructive",
       onConfirm: async () => {
         try {
-            setDeleteId(selectedCategories.map(cat => cat.id));
-            await deleteCategoryMutation.mutateAsync(selectedCategories.map(cat => cat.id));
-            setSelectedCategories([]);
+          setDeleteId(selectedCategories.map((cat) => cat.id));
+          await deleteCategoryMutation.mutateAsync(
+            selectedCategories.map((cat) => cat.id),
+          );
+          setSelectedCategories([]);
         } catch (error) {
           console.error("Error deleting categories:", error);
         }
@@ -107,7 +110,7 @@ const CategoryManagementPage = () => {
   const handleDelete = (category: UpdateCategoryValues) => {
     // Clear all selected categories when deleting any category
     setSelectedCategories([]);
-    
+
     confirm({
       title: "Delete Category",
       description: `Are you sure you want to delete the category "${category.title}"? This action cannot be undone and will also delete all links associated with this category.`,
@@ -129,7 +132,12 @@ const CategoryManagementPage = () => {
 
   const handleView = (category: UpdateCategoryValues) => {
     // Generate a slug from the title if slug doesn't exist
-    const slug = (category as any).slug || category.title.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+    const slug =
+      category.slug ||
+      category.title
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "-")
+        .replace(/-+/g, "-");
     router.push(`/admin/${slug}`);
   };
 
