@@ -97,8 +97,8 @@ const Profile = () => {
           <CameraIcon className="h-10 w-10" />
         )}
       </div>
-      <div className="flex flex-col lg:flex-row gap-5 items-center lg:items-start justify-center lg:justify-start">
-        <div className="-mt-28 mx-auto md:ml-auto md:w-1/4 w-full">
+      <div className="flex flex-col lg:flex-row gap-5 items-center md:items-start justify-center md:justify-start">
+        <div className="-mt-28 md:ml-auto md:w-1/3 w-full flex lg:justify-end">
           <div className="relative flex h-60 w-60 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-gray-300 mx-auto lg:mx-0">
             {data?.profile ? (
               <Image
