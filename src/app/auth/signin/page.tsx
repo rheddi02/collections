@@ -38,7 +38,7 @@ export default function SignIn() {
 
     try {
       const result = await signIn("credentials", {
-        usernameOrEmail: data.usernameOrEmail,
+        usernameOrEmail: data.usernameOrEmail.trim(),
         password: data.password,
         redirect: false,
       })
