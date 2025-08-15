@@ -6,6 +6,7 @@ import { TRPCReactProvider } from "~/trpc/react";
 import { SessionDebug } from "~/components/SessionDebug";
 import { SessionProvider } from "next-auth/react";
 import { GlobalDialogProvider } from "~/hooks/useGlobalDialog";
+import { Toaster } from "~/components/ui/toaster";
 
 export default function RootLayout({
   children,
@@ -19,6 +20,7 @@ export default function RootLayout({
           <TRPCReactProvider>
             <GlobalDialogProvider>
               {children}
+              <Toaster />
               {/* <SessionDebug /> */}
             </GlobalDialogProvider>
           </TRPCReactProvider>

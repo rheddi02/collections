@@ -81,8 +81,8 @@ export default function ForgotPassword() {
   })
 
   const onEmailSubmit = async (data: ForgotPasswordEmailValues) => {
-    setEmail(data.email)
-    sendOtpMutation.mutate({ email: data.email })
+    setEmail(data.email.trim())
+    sendOtpMutation.mutate({ email: data.email.trim() })
   }
 
   const onResetSubmit = async (data: ResetPasswordValues) => {
