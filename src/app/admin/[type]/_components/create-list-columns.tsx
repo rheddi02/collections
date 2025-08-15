@@ -12,6 +12,7 @@ import { Label } from "~/components/ui/label";
 import { ToggleGroup } from "~/components/ui/toggle-group";
 import { ToggleGroupItem } from "@radix-ui/react-toggle-group";
 import { Checkbox } from "~/components/ui/checkbox";
+import { getSource } from "~/utils/helpers";
 
 type LinkData = NonNullable<linkListOutput["data"][number]>;
 
@@ -68,6 +69,16 @@ export const createListColumns = ({
     cell: ({ row }) => {
       const descriptions: string = row.getValue("description");
       return <>{<div className="">{descriptions}</div>}</>;
+    },
+  },
+  {
+    accessorKey: "url",
+    header: () => {
+      return <div className="font-bold">Source</div>;
+    },
+    cell: ({ row }) => {
+      const siteUrl: string = row.getValue("url");
+      return <>{<div className="">{getSource(siteUrl)}</div>}</>;
     },
   },
   {

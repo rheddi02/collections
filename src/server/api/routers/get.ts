@@ -3,7 +3,7 @@ import { z } from "zod";
 import { createTRPCRouter, authenticatedProcedure } from "~/server/api/trpc";
 
 // Generic get function for tips
-const createTipGetProcedure = (tableName: string) =>
+const getProcedure = (tableName: string) =>
   authenticatedProcedure
     .input(z.number())
     .query(async ({ ctx, input }) => {
@@ -16,8 +16,16 @@ const createTipGetProcedure = (tableName: string) =>
     });
 
 export const getRouter = createTRPCRouter({
-  link: createTipGetProcedure("links"),
-  category: createTipGetProcedure("categories"),
+  link: getProcedure("links"),
+  category: getProcedure("categories"),
+  categoryByName: authenticatedProcedure.input(z.string()).query(async ({ ctx, input }) => {
+    return await ctx.db.categories.findFirst({
+      where: {
+        title: input,
+        userId: parseInt(ctx.user.id),
+      },
+    });
+  }),
   user: authenticatedProcedure
     .query(async ({ ctx }) => {
       const userId = parseInt(ctx.user.id);

@@ -9,19 +9,19 @@ import TextInput from "~/app/admin/_components/text-input";
 import useAppStore from "~/store/app.store";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import React, { useEffect } from "react";
-import { linkFormSchema, LinkFormValues } from "~/utils/schemas";
+import { linkFormSchema, LinkFormValues, UpdateLinkValues } from "~/utils/schemas";
 import { useGlobalDialog } from "~/hooks/useGlobalDialog";
 
-type Props = {
-  action: (formData: LinkFormValues) => void;
+type Props<T> = {
+  action: (formData: T) => void;
   title: string;
   description: string;
   open: boolean;
   label: string;
-  initialData?: Partial<LinkFormValues>;
+  initialData?: Partial<T>;
 };
 
-const CreateFormDialog = ({ action, title, description, open, label, initialData }: Props) => {
+const CreateFormDialog = ({ action, title, description, open, label, initialData }: Props<LinkFormValues | UpdateLinkValues>) => {
   const { showDialog, hideDialog } = useGlobalDialog();
   
   const form = useForm<LinkFormValues>({
