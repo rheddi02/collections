@@ -11,7 +11,8 @@ const Dashboard = () => {
   const { data: session, status } = useSession();
   const [isSent, setIsSent] = useState(false);
   const navList = useNavigationLists(); // Now reactive to category changes
-  
+  const { isLoading: isCategoriesLoading } = api.list.allCategories.useQuery();
+
   const {
     data: counts,
     isFetching,
@@ -70,6 +71,15 @@ const Dashboard = () => {
   }
 
   if (status === "authenticated") {
+    if (isCategoriesLoading) {
+      return (
+        <div className="flex h-screen flex-col items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+          <p className="mt-4 text-gray-600">Loading navigation...</p>
+        </div>
+      );
+    }
+    
     if (navList.length <= 1) 
     return (
       <div className="flex h-screen flex-col items-center justify-center">
