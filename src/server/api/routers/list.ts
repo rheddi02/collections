@@ -105,7 +105,10 @@ export const listRouter = createTRPCRouter({
   allCategories: authenticatedProcedure.query(async ({ ctx, input }) => {
     const categories = await ctx.db.categories.findMany({
       where: { userId: Number(ctx.user.id) },
-      include: {
+      select: {
+        id: true,
+        title: true,
+        slug: true,
         _count: {
           select: { Links: true },
         },

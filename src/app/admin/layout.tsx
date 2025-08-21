@@ -18,7 +18,10 @@ export default function RootLayout({
   }));
 
   const { data: categories, isFetched: isFetchedCategories } =
-    api.list.allCategories.useQuery();
+    api.list.allCategories.useQuery(undefined, {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      refetchOnWindowFocus: false,
+    });
 
   useEffect(() => {
     if (!isFetchedCategories || !categories) return;

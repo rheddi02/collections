@@ -74,11 +74,17 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
   }));
 
   // Dynamic API calls based on tip type with server-side auth
-  const { data, isFetched, isFetching, refetch } = api.list.link.useQuery({
-    categoryTitle: pageTitle,
-    page,
-    perPage,
-  });
+  const { data, isFetched, isFetching, refetch } = api.list.link.useQuery(
+    {
+      categoryTitle: pageTitle,
+      page,
+      perPage,
+    },
+    {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      refetchOnWindowFocus: false,
+    }
+  );
 
   const handleEdit = (link: LinkData) => {
     setForm({

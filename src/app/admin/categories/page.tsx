@@ -51,7 +51,10 @@ const CategoryManagementPage = () => {
     isLoading,
     isFetching,
     refetch,
-  } = api.list.categories.useQuery({ page, perPage });
+  } = api.list.categories.useQuery({ page, perPage },{
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
+  });
   const utils = useApiUtils();
 
   const deleteIdState = useAppStore((state) => state.deleteId);

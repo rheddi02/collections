@@ -6,9 +6,11 @@ import { cn } from "~/lib/utils";
 import useAppStore from "~/store/app.store";
 import { type NavigationType } from "~/utils/types";
 import { useNavigationLists } from "~/hooks/useNavigationLists";
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useState } from "react";
 import UserProfile from "./user-profile";
 import { isMobile } from "react-device-detect";
+// import { Loader2 } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Navigation() {
   const navLists = useNavigationLists(); // Now reactive to category changes
@@ -43,11 +45,17 @@ const Nav = ({
   const router = useRouter();
   const segments = useSelectedLayoutSegments();
   const segment = segments.pop();
+  // const [isFetching, setIsFetching] = useState('')
+  const queryClient = useQueryClient();
 
-  const handleRoute = (route: NavigationType) => {
+  const handleRoute = async (route: NavigationType) => {
     if (route.subRoute.length) {
+      await queryClient.cancelQueries();
       router.push(route.subRoute[0]!.route);
     } else {
+      // setIsFetching(route.route)
+      // Cancel any in-flight queries to abort fetches on navigation
+      await queryClient.cancelQueries();
       router.push(route.route);
       if (isMobile) {
         // Close the menu on mobile after navigation
@@ -75,6 +83,9 @@ const Nav = ({
             onClick={() => handleRoute(navigation)}
           >
             <Label className="select-none">{navigation.title}</Label>
+            {/* {isFetching === navigation.route && navigation.route !== "/admin/dashboard" && (
+              <Loader2 className="animate-spin" />
+            )} */}
           </div>
           {!!navigation.subRoute.length && (
             <Nav navLists={navigation.subRoute} isChild={true} />
