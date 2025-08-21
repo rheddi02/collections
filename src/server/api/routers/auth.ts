@@ -253,6 +253,14 @@ export const authRouter = createTRPCRouter({
           });
         }
 
+        // Disallow change if user has no password (e.g., OAuth-only)
+        if (!user.password) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "This account has no password set. Please set a password first.",
+          });
+        }
+
         // Verify current password
         const isCurrentPasswordValid = await bcrypt.compare(
           input.currentPassword,
