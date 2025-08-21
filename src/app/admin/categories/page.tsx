@@ -153,6 +153,7 @@ const CategoryManagementPage = () => {
     onEdit: handleEdit,
     onDelete: handleDelete,
     deletingIds: deleteIdState,
+    onView: handleView,
   });
 
   return (

@@ -1,6 +1,6 @@
 "use client";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Pencil1Icon, TrashIcon, ReloadIcon } from "@radix-ui/react-icons";
+import { Pencil1Icon, TrashIcon, ReloadIcon, Link1Icon } from "@radix-ui/react-icons";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 // import type { categoryListAllOutput } from "~/server/api/client/types";
@@ -13,12 +13,14 @@ interface CategoryColumnsProps {
   onEdit: (category: UpdateCategoryValues) => void;
   onDelete: (category: UpdateCategoryValues) => void;
   deletingIds: number[];
+  onView?: (category: UpdateCategoryValues) => void;
 }
 
 export const createCategoryColumns = ({
   onEdit,
   onDelete,
   deletingIds,
+  onView,
 }: CategoryColumnsProps): ColumnDef<UpdateCategoryValues>[] => [
   {
     id: "select",
@@ -91,7 +93,7 @@ export const createCategoryColumns = ({
                   e.stopPropagation();
                 onEdit(row.original);
                 }}
-                className="h-8 w-8 p-0"
+                className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground hover:bg-muted"
                 title="Edit category"
               >
                 <Pencil1Icon className="h-4 w-4" />
@@ -103,10 +105,22 @@ export const createCategoryColumns = ({
                   e.stopPropagation();
                 onDelete(row.original);
                 }}
-                className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-600"
+                className="h-8 w-8 p-0 text-destructive hover:bg-destructive/10 hover:text-destructive"
                 title="Delete category"
               >
                 <TrashIcon className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onView?.(row.original);
+                }}
+                className="h-8 w-8 p-0 text-primary hover:bg-primary/10 hover:text-primary"
+                title="Open links"
+              >
+                <Link1Icon className="h-4 w-4" />
               </Button>
             </>
           )}

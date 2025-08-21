@@ -29,10 +29,10 @@ export default function RootLayout({
   }, [categories, isFetchedCategories]);
 
   return (
-    <div className="flex h-screen bg-gray-800 text-gray-300">
+    <div className="flex h-screen bg-background text-foreground">
       <Navigation />
-      <div className="h-full w-full overflow-auto bg-transparent p-2 text-gray-800">
-        <div className="h-full rounded-md bg-gray-100">{children}</div>
+      <div className="h-full w-full overflow-auto p-2">
+        <div className="h-full rounded-md border bg-card">{children}</div>
       </div>
       <GlobalConfirmDialog />
       <Toaster />

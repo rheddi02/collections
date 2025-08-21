@@ -50,11 +50,11 @@ const UserProfile = () => {
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
-        <div className="relative mb-2 flex items-center gap-2 p-2 cursor-pointer group hover:bg-slate-300 hover:text-foreground rounded-md">
-          <PersonIcon className="size-10 rounded-full border p-2 text-gray-500" />
+        <div className="relative mb-2 flex items-center gap-2 p-2 cursor-pointer group rounded-md hover:bg-muted">
+          <PersonIcon className="size-10 rounded-full border p-2 text-muted-foreground group-hover:text-foreground" />
           <div className="flex flex-col">
-            <Label className="select-none text-lg">{session?.user?.name}</Label>
-            <Label className="select-none text-xs">
+            <Label className="select-none text-sm font-medium leading-none">{session?.user?.name}</Label>
+            <Label className="select-none text-xs text-muted-foreground">
               {session?.user?.email
                 ? session.user.email.length > 25
                   ? session.user.email.slice(0, 25) + "..."
@@ -65,24 +65,24 @@ const UserProfile = () => {
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="start">
-        <DropdownMenuItem 
+        <DropdownMenuItem
           onClick={handleProfileClick}
           className="cursor-pointer flex items-center gap-2"
         >
-          <PersonIcon className="size-4" />
+          <PersonIcon className="size-4 text-muted-foreground" />
           Profile Settings
         </DropdownMenuItem>
-        <DropdownMenuItem 
+        <DropdownMenuItem
           onClick={handleCategoriesClick}
           className="cursor-pointer flex items-center gap-2"
         >
-          <TableIcon className="size-4" />
+          <TableIcon className="size-4 text-muted-foreground" />
           Manage Categories
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem 
+        <DropdownMenuItem
           onClick={handleLogoutClick}
-          className="cursor-pointer flex items-center gap-2"
+          className="cursor-pointer flex items-center gap-2 text-destructive focus:text-destructive"
         >
           <ExitIcon className="size-4" />
           Logout

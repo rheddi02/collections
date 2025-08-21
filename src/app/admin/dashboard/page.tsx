@@ -8,6 +8,7 @@ import { InputOTPForm } from "../_components/otp-code";
 import { useState } from "react";
 import PageHeader from "../_components/page-header";
 import useAppStore from "~/store/app.store";
+import { isMobile } from "react-device-detect";
 
 const Dashboard = () => {
   const { data: session, status } = useSession();
@@ -123,10 +124,14 @@ const Dashboard = () => {
 
   return (
     <div className="custom-scrollbar h-full overflow-auto">
-      <PageHeader setOpenMenu={() => setOpenMenu(!openMenu)} />
+      <div className="pl-5 pt-5 sm:hidden">
+        <PageHeader setOpenMenu={() => setOpenMenu(!openMenu)} title="Dashboard" />
+      </div>
       <div className="grid grid-cols-1 gap-4 p-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {navList
-          .filter(({ title }) => title !== "dashboard" && title !== "Categories")
+          .filter(
+            ({ title }) => title !== "dashboard" && title !== "Categories",
+          )
           .map(({ title, route }) => (
             <CardTemplate
               key={title}
@@ -135,6 +140,7 @@ const Dashboard = () => {
                 counts?.find((count) => count.categoryName === title)?.count ??
                 0
               }
+              size={!isMobile ? "default" : "compact"}
               label={title}
               url={route}
             />
