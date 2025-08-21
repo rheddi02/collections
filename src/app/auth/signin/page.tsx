@@ -15,6 +15,7 @@ import { signInSchema, type SignInFormValues } from "~/utils/schemas";
 
 export default function SignIn() {
   const [isLoading, setIsLoading] = useState(false)
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false)
   const router = useRouter()
   const { data: session, status } = useSession()
 
@@ -32,6 +33,11 @@ export default function SignIn() {
       router.push("/admin/dashboard")
     }
   }, [status, session, router])
+
+  const handleGoogleSignIn = async () => {
+    setIsGoogleLoading(true)
+    await signIn("google", { callbackUrl: "/admin/dashboard" })
+  }
 
   const onSubmit = async (data: SignInFormValues) => {
     setIsLoading(true)
@@ -125,7 +131,7 @@ export default function SignIn() {
               <Button
                 type="submit"
                 className="w-full"
-                disabled={isLoading}
+                disabled={isLoading || isGoogleLoading}
               >
                 {isLoading ? "Signing in..." : "Sign In"}
               </Button>
@@ -136,9 +142,10 @@ export default function SignIn() {
                 type="button"
                 variant="outline"
                 className="w-full"
-                onClick={() => signIn("google", { callbackUrl: "/admin/dashboard" })}
+                onClick={handleGoogleSignIn}
+                disabled={isGoogleLoading || isLoading}
               >
-                Continue with Google
+                {isGoogleLoading ? "Signing in with Google..." : "Continue with Google"}
               </Button>
             </form>
           </Form>
