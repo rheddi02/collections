@@ -123,7 +123,7 @@ const Profile = () => {
           </div>
         </div>
         <div className="mt-5 flex flex-col items-center lg:items-start lg:ml-5 text-center lg:text-left w-full">
-          <p className="text-2xl font-semibold tracking-tight text-foreground">{data?.username}</p>
+          <p className="text-2xl font-semibold tracking-tight text-foreground uppercase">{data?.username}</p>
           <p className="text-sm text-muted-foreground">{data?.email}</p>
           <div className="mt-3 flex gap-2 justify-center lg:justify-start">
             <span className="flex items-center gap-2 rounded-md border bg-muted/40 px-2 py-1 text-sm">
