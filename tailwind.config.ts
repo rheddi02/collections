@@ -63,27 +63,6 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Pokemon type colors for badges
-				type: {
-					normal: '#A8A878',
-					fighting: '#C03028',
-					flying: '#A890F0',
-					poison: '#A040A0',
-					ground: '#E0C068',
-					rock: '#B8A038',
-					bug: '#A8B820',
-					ghost: '#705898',
-					steel: '#B8B8D0',
-					fire: '#F08030',
-					water: '#6890F0',
-					grass: '#78C850',
-					electric: '#F8D030',
-					psychic: '#F85888',
-					ice: '#98D8D8',
-					dragon: '#7038F8',
-					dark: '#705848',
-					fairy: '#EE99AC'
-				}
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -107,20 +86,6 @@ export default {
 						height: '0'
 					}
 				},
-				'pokemon-bounce': {
-					'0%, 20%, 53%, 80%, 100%': {
-						transform: 'translate3d(0,0,0)'
-					},
-					'40%, 43%': {
-						transform: 'translate3d(0, -15px, 0)'
-					},
-					'70%': {
-						transform: 'translate3d(0, -7px, 0)'
-					},
-					'90%': {
-						transform: 'translate3d(0, -2px, 0)'
-					}
-				},
 				'shimmer': {
 					'0%': { transform: 'translateX(-100%)' },
 					'100%': { transform: 'translateX(100%)' }
@@ -139,7 +104,6 @@ export default {
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
-				'pokemon-bounce': 'pokemon-bounce 2s ease-in-out infinite',
 				'shimmer': 'shimmer 2s infinite',
 				'fade-in-up': 'fade-in-up 0.5s ease-out'
 			}
