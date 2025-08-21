@@ -61,6 +61,16 @@ const Profile = () => {
   });
 
   const onSubmit = (values: ProfileFormValues) => {
+    // If user has no password (OAuth-only), instruct to set via reset flow
+    if (data && !(data as any).hasPassword) {
+      toast({
+        title: "No password set",
+        description:
+          "This account uses Google sign-in only. Use 'Forgot password' to set a password.",
+        variant: "destructive",
+      });
+      return;
+    }
     changePasswordMutation.mutate({
       currentPassword: values.currentPassword,
       newPassword: values.newPassword,
@@ -78,13 +88,13 @@ const Profile = () => {
 
   return (
     <div className="h-full overflow-auto">
-      <div className="relative flex h-80 items-center justify-center bg-gray-200">
+      <div className="relative flex h-80 items-center justify-center bg-muted">
         <Button
-          className="absolute left-5 top-5 z-50 p-2"
-          variant={"default"}
+          className="absolute left-5 top-5 z-50 h-8 px-2 sm:hidden block"
+          variant="outline"
           onClick={() => setOpenMenu(!openMenu)}
         >
-          <HamburgerMenuIcon className="block h-5 w-5 sm:hidden" />
+          <HamburgerMenuIcon className="h-5 w-5 text-muted-foreground" />
         </Button>
         {data?.cover ? (
           <Image
@@ -94,12 +104,12 @@ const Profile = () => {
             className="object-cover"
           />
         ) : (
-          <CameraIcon className="h-10 w-10" />
+          <CameraIcon className="h-10 w-10 text-muted-foreground" />
         )}
       </div>
       <div className="flex flex-col lg:flex-row gap-5 items-center md:items-start justify-center md:justify-start">
-        <div className="-mt-28 md:ml-auto md:w-1/3 w-full flex lg:justify-end">
-          <div className="relative flex h-60 w-60 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-gray-300 mx-auto lg:mx-0">
+        <div className="-mt-24 md:ml-auto md:w-1/3 w-full flex lg:justify-end">
+          <div className="relative flex h-60 w-60 items-center justify-center overflow-hidden rounded-full border-2 border-background bg-muted mx-auto lg:mx-0">
             {data?.profile ? (
               <Image
                 src={data.profile || ""}
@@ -108,22 +118,22 @@ const Profile = () => {
                 className="object-cover"
               />
             ) : (
-              <CameraIcon className="h-10 w-10" />
+              <CameraIcon className="h-10 w-10 text-muted-foreground" />
             )}
           </div>
         </div>
         <div className="mt-5 flex flex-col items-center lg:items-start lg:ml-5 text-center lg:text-left w-full">
-          <p className="text-2xl font-bold uppercase">{data?.username}</p>
-          <p>{data?.email}</p>
-          <div className="mt-2 flex gap-5 justify-center lg:justify-start">
-            <span className="flex items-center gap-2">
+          <p className="text-2xl font-semibold tracking-tight text-foreground">{data?.username}</p>
+          <p className="text-sm text-muted-foreground">{data?.email}</p>
+          <div className="mt-3 flex gap-2 justify-center lg:justify-start">
+            <span className="flex items-center gap-2 rounded-md border bg-muted/40 px-2 py-1 text-sm">
               {isFetchingUser ? (
                 <UpdateIcon className="animate-spin" />
               ) : (
                 <strong>{data?.linkCount}</strong>
               )} Links
             </span>
-            <span className="flex items-center gap-2">
+            <span className="flex items-center gap-2 rounded-md border bg-muted/40 px-2 py-1 text-sm">
               {isFetchingUser ? (
                 <UpdateIcon className="animate-spin" />
               ) : (
@@ -133,11 +143,11 @@ const Profile = () => {
           </div>
         </div>
       </div>
-      <div className="mx-auto mt-10 w-3/4">
+      <div className="mx-auto mt-10 w-full max-w-2xl rounded-md border bg-card p-4 md:p-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="flex flex-col md:flex-row md:justify-between">
-              <p className="text-lg font-semibold">Profile Settings</p>
+              <p className="text-lg font-semibold text-foreground">Profile Settings</p>
               <div className="flex gap-2 flex-col-reverse md:flex-row">
                 <Button
                   type="button"
@@ -149,6 +159,7 @@ const Profile = () => {
                 </Button>
                 <Button
                   type="submit"
+                  variant={'outline'}
                   disabled={changePasswordMutation.isPending}
                 >
                   {changePasswordMutation.isPending
@@ -162,19 +173,25 @@ const Profile = () => {
               label="Name"
               disabled={changePasswordMutation.isPending}
               placeholder={session?.user.name || "Update your name"}
-              description="This will be your display name."
+              description="This will be your display name. (Profile updates coming soon)"
             />
 
-            <TextInput
-              name="currentPassword"
-              label="Current Password"
-              type="password"
-              placeholder="Enter your current password"
-              description="Enter your current password to confirm identity."
-              disabled={changePasswordMutation.isPending}
-              required
-              showPasswordToggle
-            />
+            {(data as any)?.hasPassword ? (
+              <TextInput
+                name="currentPassword"
+                label="Current Password"
+                type="password"
+                placeholder="Enter your current password"
+                description="Enter your current password to confirm identity."
+                disabled={changePasswordMutation.isPending}
+                required
+                showPasswordToggle
+              />
+            ) : (
+              <div className="rounded-md border bg-muted/30 p-3 text-sm text-muted-foreground">
+                This account has no password set. Use the "Forgot password" flow on the sign-in page to set one.
+              </div>
+            )}
 
             <TextInput
               name="newPassword"
@@ -216,7 +233,7 @@ const Profile = () => {
             />
           </form>
         </Form>
-        <p className="my-5 text-center text-sm text-gray-600">
+        <p className="my-5 text-center text-sm text-muted-foreground">
           Manage your profile settings and preferences here.
         </p>
       </div>

@@ -37,6 +37,7 @@ export const getRouter = createTRPCRouter({
           email: true,
           profile: true,
           cover: true,
+          password: true,
         },
       });
 
@@ -47,7 +48,12 @@ export const getRouter = createTRPCRouter({
       ]);
 
       return {
-        ...user,
+        id: user?.id,
+        username: user?.username,
+        email: user?.email,
+        profile: user?.profile,
+        cover: user?.cover,
+        hasPassword: Boolean(user?.password),
         linkCount,
         categoryCount,
       };
