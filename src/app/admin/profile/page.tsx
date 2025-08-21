@@ -143,7 +143,7 @@ const Profile = () => {
           </div>
         </div>
       </div>
-      <div className="mx-auto mt-10 w-full max-w-2xl rounded-md border bg-card p-4 md:p-6">
+      <div className="mx-auto mt-10 w-full max-w-3xl rounded-md border bg-card p-4 md:p-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="flex flex-col md:flex-row md:justify-between">
