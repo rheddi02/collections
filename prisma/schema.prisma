@@ -53,7 +53,7 @@ model Users {
   id          Int      @id @default(autoincrement())
   username    String   @unique
   email       String   @unique
-  password    String
+  password    String?
   role        Role     @default(USER)
   isVerified  Boolean  @default(false) @map("is_verified")
   verificationCode String? @map("verification_code")

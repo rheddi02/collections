@@ -33,6 +33,10 @@ export const authOptions: NextAuthOptions = {
             return null;
           }
 
+          // Reject if user has no password (OAuth-only account)
+          if (!user.password) {
+            return null;
+          }
           // Verify password hash
           const isPasswordValid = await bcrypt.compare(
             credentials.password,
@@ -87,17 +91,19 @@ export const authOptions: NextAuthOptions = {
               candidate = `${baseUsername}${suffix}`;
             }
 
-            // Generate a secure random password to satisfy schema (unused for OAuth)
-            const randomPassword = crypto.randomBytes(32).toString("hex");
-            const hashedPassword = await bcrypt.hash(randomPassword, 12);
-
             existingUser = await db.users.create({
               data: {
                 username: candidate,
                 email,
-                password: hashedPassword,
+                password: null,
                 isVerified: true,
               },
+            });
+          } else if (existingUser && existingUser.isVerified === false) {
+            // Upgrade existing unverified users to verified on OAuth sign-in
+            existingUser = await db.users.update({
+              where: { id: existingUser.id },
+              data: { isVerified: true },
             });
           }
 
