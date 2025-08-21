@@ -11,7 +11,7 @@ import { categoryFormSchema, CategoryFormValues } from "~/utils/schemas";
 import { useApiUtils } from "~/hooks";
 import useAppStore from "~/store/app.store";
 import { ToastTypes } from "~/utils/types";
-import { useGlobalDialog } from "~/hooks/useGlobalDialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "~/components/ui/dialog";
 
 const EditCategoryPopover = () => {
   const { editCategory, setEditCategory, setToastType } = useAppStore((state) => ({
@@ -19,8 +19,6 @@ const EditCategoryPopover = () => {
     setEditCategory: state.setEditCategory,
     setToastType: state.setToastType,
   }));
-
-  const { showDialog, hideDialog } = useGlobalDialog();
 
   const form = useForm<CategoryFormValues>({
     resolver: zodResolver(categoryFormSchema),
@@ -35,7 +33,6 @@ const EditCategoryPopover = () => {
     onSuccess: async () => {
       setToastType({ type: ToastTypes.UPDATED });
       setEditCategory(null);
-      hideDialog();
       // Invalidate categories to refetch
       await utils.list.categories.invalidate();
       await utils.list.allCategories.invalidate();
@@ -66,7 +63,6 @@ const EditCategoryPopover = () => {
   const handleCancel = () => {
     form.reset();
     setEditCategory(null);
-    hideDialog();
   };
 
   // Reset form when editCategory changes
@@ -78,62 +74,12 @@ const EditCategoryPopover = () => {
     }
   }, [editCategory, form]);
 
-  // Show global dialog when editCategory is set
+  // Reset form when dialog opens to an editCategory
   useEffect(() => {
     if (editCategory) {
-      showDialog({
-        title: "Edit Category",
-        hideFooter: true,
-        onCancel: () => {
-          form.reset();
-          setEditCategory(null);
-        },
-        children: (
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex flex-col gap-2 bg-gray-900 rounded p-2">
-                  <p className="text-xs text-gray-100">
-                    Category name can only contain letters, numbers, spaces, hyphens (-), and periods (.)
-                  </p>
-                </div>
-              </div>
-              <div className="w-full">
-                <TextInput
-                  name="title"
-                  placeholder="Enter category name"
-                  disabled={updateCategoryMutation.isPending}
-                  className="border-muted-500 focus:border-muted-700 w-full border focus:ring-2 focus:ring-green-200"
-                  autoFocus
-                  required
-                />
-              </div>
-              <div className="flex justify-end gap-2">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={handleCancel}
-                  disabled={updateCategoryMutation.isPending}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  variant="default"
-                  disabled={updateCategoryMutation.isPending || !form.watch("title")?.trim()}
-                >
-                  {updateCategoryMutation.isPending ? "Updating..." : "Update"}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        ),
-        onConfirm: () => {
-          // This won't be used since we're using hideFooter: true
-        },
-      });
+      form.reset({ title: editCategory.title });
     }
-  }, [editCategory]); // Removed problematic dependencies
+  }, [editCategory, form]);
 
   const handleOpenChange = (open: boolean) => {
     // Prevent closing dialog while mutation is in progress
@@ -146,7 +92,53 @@ const EditCategoryPopover = () => {
     }
   };
 
-  return null; // No direct JSX since we're using global dialog
+  return (
+    <Dialog open={!!editCategory} onOpenChange={handleOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Edit Category</DialogTitle>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <div className="space-y-2">
+              <div className="flex flex-col gap-2 bg-gray-900 rounded p-2">
+                <p className="text-xs text-gray-100">
+                  Category name can only contain letters, numbers, spaces, hyphens (-), and periods (.)
+                </p>
+              </div>
+            </div>
+            <div className="w-full">
+              <TextInput
+                name="title"
+                placeholder="Enter category name"
+                disabled={updateCategoryMutation.isPending}
+                className="border-muted-500 focus:border-muted-700 w-full border focus:ring-2 focus:ring-green-200"
+                autoFocus
+                required
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={handleCancel}
+                disabled={updateCategoryMutation.isPending}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                variant="default"
+                disabled={updateCategoryMutation.isPending || !form.watch("title")?.trim()}
+              >
+                {updateCategoryMutation.isPending ? "Updating..." : "Update"}
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
 };
 
 export default EditCategoryPopover;

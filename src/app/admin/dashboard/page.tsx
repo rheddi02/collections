@@ -14,7 +14,7 @@ const Dashboard = () => {
   const [isSent, setIsSent] = useState(false);
   const navList = useNavigationLists(); // Now reactive to category changes
   const { isLoading: isCategoriesLoading } = api.list.allCategories.useQuery();
-  const { setOpenMenu,openMenu } = useAppStore((state) => ({
+  const { setOpenMenu, openMenu } = useAppStore((state) => ({
     setOpenMenu: state.setOpenMenu,
     openMenu: state.openMenu,
   }));
@@ -48,7 +48,7 @@ const Dashboard = () => {
   if (status === "loading") {
     return (
       <div className="flex h-screen flex-col items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-gray-900"></div>
         <p className="mt-4 text-gray-600">Loading...</p>
       </div>
     );
@@ -62,8 +62,8 @@ const Dashboard = () => {
         ) : (
           <>
             <p className="my-5">Please verify your email to access features.</p>
-            <Button 
-              variant={"default"} 
+            <Button
+              variant={"default"}
               onClick={handleVerify}
               disabled={sendOTPMutation.isPending}
             >
@@ -79,33 +79,37 @@ const Dashboard = () => {
     if (isCategoriesLoading) {
       return (
         <div className="flex h-screen flex-col items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-gray-900"></div>
           <p className="mt-4 text-gray-600">Loading navigation...</p>
         </div>
       );
     }
-    
-    if (navList.length <= 1) 
-    return (
-  <>
-  <PageHeader setOpenMenu={()=>setOpenMenu(!openMenu)} />
-      <div className="flex h-screen flex-col items-center justify-center">
-        <h1 className="text-2xl font-bold mb-4">Welcome to the Dashboard</h1>
-        <p className="text-gray-600 mb-6">You are logged in as {session.user.name}</p>
-        <p>Create your first category</p>
-        <Button
-          variant="default"
-          className="mt-4"
-          onClick={() => window.location.href = "/admin/categories"}
-        >
-          Create Category
-        </Button>
-        <p className="mt-4 text-sm text-gray-500">
-          Note: You can manage categories and links from the admin panel.
-        </p>
-      </div>
-  </>
-    );
+
+    if (navList.length <= 1)
+      return (
+        <>
+          <PageHeader setOpenMenu={() => setOpenMenu(!openMenu)} />
+          <div className="flex h-screen flex-col items-center justify-center">
+            <h1 className="mb-4 text-2xl font-bold">
+              Welcome to the Dashboard
+            </h1>
+            <p className="mb-6 text-gray-600">
+              You are logged in as {session.user.name}
+            </p>
+            <p>Create your first category</p>
+            <Button
+              variant="default"
+              className="mt-4"
+              onClick={() => (window.location.href = "/admin/categories")}
+            >
+              Create Category
+            </Button>
+            <p className="mt-4 text-sm text-gray-500">
+              Note: You can manage categories and links from the admin panel.
+            </p>
+          </div>
+        </>
+      );
   }
 
   if (error) {
@@ -118,28 +122,23 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="h-full overflow-auto custom-scrollbar">
-    <div className="grid grid-cols-1 gap-4 p-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-  <PageHeader setOpenMenu={()=>setOpenMenu(!openMenu)} />
-        {navList.map(({ title }) =>
-          // exclude 'Categories' and Dashboard from the list
-          title === "Categories" || title === "dashboard" ? null : (
-            // Render card for each navigation item
+    <div className="custom-scrollbar h-full overflow-auto">
+      <PageHeader setOpenMenu={() => setOpenMenu(!openMenu)} />
+      <div className="grid grid-cols-1 gap-4 p-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {navList
+          .filter(({ title }) => title !== "dashboard" && title !== "Categories")
+          .map(({ title, route }) => (
             <CardTemplate
               key={title}
               fetching={isFetching}
               count={
-                counts?.find((count) => count.categoryName === title)?.count ?? 0
+                counts?.find((count) => count.categoryName === title)?.count ??
+                0
               }
               label={title}
-              url={
-                title === "Categories"
-                  ? "/admin/categories"
-                  : `/admin/${title.toLowerCase()}`
-              }
+              url={route}
             />
-          ),
-        )}
+          ))}
       </div>
     </div>
   );

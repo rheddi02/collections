@@ -10,34 +10,41 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { useGlobalDialog } from "~/hooks/useGlobalDialog";
+import useAppStore from "~/store/app.store";
 
 const UserProfile = () => {
   const { data: session } = useSession();
   const router = useRouter();
-  const { showDialog } = useGlobalDialog();
+  const { setConfirmDialog } = useAppStore((state) => ({
+    setConfirmDialog: state.setConfirmDialog,
+  }));
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleProfileClick = () => {
+  const handleProfileClick = (): void => {
     router.push("/admin/profile");
   };
 
-  const handleCategoriesClick = () => {
+  const handleCategoriesClick = (): void => {
     router.push("/admin/categories");
   };
 
-  const handleLogoutClick = () => {
-    setIsOpen(false); // Close the dropdown first
-    showDialog({
-      title: "Confirm Logout",
-      description: "Are you sure you want to log out? You will need to sign in again to access your account.",
-      confirmText: "Logout",
-      cancelText: "Cancel",
-      variant: "destructive",
-      onConfirm: () => {
-        signOut({ callbackUrl: '/' });
-      },
-    });
+  const handleLogoutClick = (): void => {
+    setIsOpen(false);
+    setTimeout(() => {
+      setConfirmDialog({
+        isOpen: true,
+        title: "Confirm Logout",
+        description:
+          "Are you sure you want to log out? You will need to sign in again to access your account.",
+        confirmText: "Logout",
+        cancelText: "Cancel",
+        variant: "destructive",
+        isLoading: false,
+        onConfirm: async () => {
+          await signOut({ callbackUrl: "/" });
+        },
+      });
+    }, 0);
   };
 
   return (

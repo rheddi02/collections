@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
+import { signIn, useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { useForm } from "react-hook-form"
@@ -172,6 +172,17 @@ export default function Register() {
                 disabled={isLoading}
               >
                 {isLoading ? "Creating Account..." : "Create Account"}
+              </Button>
+              <div className="relative py-2 text-center">
+                <span className="text-xs text-gray-500">or</span>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={() => signIn("google", { callbackUrl: "/admin/dashboard" })}
+              >
+                Continue with Google
               </Button>
             </form>
           </Form>

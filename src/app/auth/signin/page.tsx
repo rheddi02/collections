@@ -129,6 +129,17 @@ export default function SignIn() {
               >
                 {isLoading ? "Signing in..." : "Sign In"}
               </Button>
+              <div className="relative py-2 text-center">
+                <span className="text-xs text-gray-500">or</span>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={() => signIn("google", { callbackUrl: "/admin/dashboard" })}
+              >
+                Continue with Google
+              </Button>
             </form>
           </Form>
           <div className="mt-4 text-center space-y-2">
