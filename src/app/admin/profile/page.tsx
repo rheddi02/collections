@@ -108,7 +108,7 @@ const Profile = () => {
         )}
       </div>
       <div className="flex flex-col lg:flex-row gap-5 items-center md:items-start justify-center md:justify-start">
-        <div className="-mt-24 md:ml-auto md:w-1/3 w-full flex lg:justify-end">
+        <div className="-mt-28 md:ml-auto md:w-1/3 w-full flex lg:justify-end">
           <div className="relative flex h-60 w-60 items-center justify-center overflow-hidden rounded-full border-2 border-background bg-muted mx-auto lg:mx-0">
             {data?.profile ? (
               <Image
