@@ -17,7 +17,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
       <body className="overscroll-none">
-        <ThemeProvider defaultTheme="light" storageKey="pokemon-explorer-theme">
+        <ThemeProvider defaultTheme="dark" storageKey="pokemon-explorer-theme">
         <SessionProvider>
           <TRPCReactProvider>
             <GlobalDialogProvider>
