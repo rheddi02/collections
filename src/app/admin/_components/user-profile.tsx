@@ -82,7 +82,7 @@ const UserProfile = () => {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={handleLogoutClick}
-          className="cursor-pointer flex items-center gap-2 text-destructive focus:text-destructive"
+          className="cursor-pointer flex items-center gap-2 text-destructive focus:bg-destructive"
         >
           <ExitIcon className="size-4" />
           Logout
