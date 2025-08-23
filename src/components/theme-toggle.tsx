@@ -14,17 +14,25 @@ export function ThemeToggle() {
   if (!mounted) return null;
 
   return (
-    <div className="flex items-center gap-2">
-      <span className="text-sm">
-        <SunIcon size={16}/>
-      </span>
+    <div className="flex items-center justify-between gap-2">
+      {theme === "dark" ? (
+        <div className="flex items-center justify-between gap-2">
+          <MoonIcon size={16} />
+          <div>Dark Mode</div>
+        </div>
+      ) : (
+        <div className="flex items-center gap-2">
+          {" "}
+          <SunIcon size={16} />
+          Light Mode
+        </div>
+      )}
+    
       <Switch
         checked={theme === "dark"}
         onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
       />
-      <span className="text-sm">
-        <MoonIcon size={16}/>
-      </span>
+    
     </div>
   );
 }

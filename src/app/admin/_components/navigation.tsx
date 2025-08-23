@@ -30,9 +30,7 @@ export default function Navigation() {
         <div className="custom-scrollbar h-auto flex-1 overflow-y-auto overscroll-none">
           <Nav navLists={navLists} />
         </div>
-        <div className="flex justify-end items-center">
           <ThemeToggle />
-        </div>
       </div>
     </nav>
   );
