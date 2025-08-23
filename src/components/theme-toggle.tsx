@@ -14,7 +14,7 @@ export function ThemeToggle() {
   if (!mounted) return null;
 
   return (
-    <div className="flex items-center justify-between gap-2">
+    <div className="flex items-center justify-between gap-2 text-sm pb-2">
       {theme === "dark" ? (
         <div className="flex items-center justify-between gap-2">
           <MoonIcon size={16} />
