@@ -14,10 +14,13 @@ export const listRouter = createTRPCRouter({
     .input(
       paginationInput.extend({
         categoryTitle: z.string(),
+        filters: z.object({
+          keyword: z.string().optional(),
+        }),
       }),
     )
     .query(async ({ ctx, input }) => {
-      const { page, perPage, categoryTitle } = input;
+      const { page, perPage, categoryTitle, filters } = input;
       const skip = (page - 1) * (perPage || 10);
 
       // First find the category by title
@@ -36,6 +39,12 @@ export const listRouter = createTRPCRouter({
           where: {
             categoryId: category.id,
             userId: parseInt(ctx.user.id), // Add user security check
+            ...(filters.keyword && {
+              title: {
+                contains: filters.keyword,
+                mode: "insensitive", // Case-insensitive search
+              },
+            }),
           },
           skip,
           take: perPage,
@@ -61,15 +70,25 @@ export const listRouter = createTRPCRouter({
       };
     }),
   categories: authenticatedProcedure
-    .input(paginationInput)
+    .input(paginationInput.extend({
+      filters: z.object({
+        keyword: z.string().optional(),
+      }),
+    }))
     .query(async ({ ctx, input }) => {
-      const { page, perPage } = input;
+      const { page, perPage, filters } = input;
       const skip = (page - 1) * (perPage || 10);
       const [data, total] = await Promise.all([
         ctx.db.categories
           .findMany({
             where: {
               userId: parseInt(ctx.user.id), // Add user security check
+              ...(filters.keyword && {
+                title: {
+                  contains: filters.keyword,
+                  mode: "insensitive", // Case-insensitive search
+                },
+              }),
             },
             include: {
               _count: {

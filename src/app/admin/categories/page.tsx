@@ -17,6 +17,7 @@ import { Button } from "~/components/ui/button";
 import { ToastTypes } from "~/utils/types";
 import { Row } from "@tanstack/react-table";
 import { CreateCategoryValues, UpdateCategoryValues } from "~/utils/schemas";
+import PageFilters from "../_components/page-filters";
 
 const CategoryManagementPage = () => {
   // const { toast } = useToast();
@@ -35,6 +36,7 @@ const CategoryManagementPage = () => {
     setToastType,
     setOpenMenu,
     openMenu,
+    filters
   } = useAppStore((state) => ({
     setEditCategory: state.setEditCategory,
     setDeleteId: state.setDeleteId,
@@ -44,6 +46,7 @@ const CategoryManagementPage = () => {
     setToastType: state.setToastType,
     setOpenMenu: state.setOpenMenu,
     openMenu: state.openMenu,
+    filters: state.filters,
   }));
 
   const {
@@ -51,7 +54,7 @@ const CategoryManagementPage = () => {
     isLoading,
     isFetching,
     refetch,
-  } = api.list.categories.useQuery({ page, perPage },{
+  } = api.list.categories.useQuery({ page, perPage, filters },{
     staleTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: false,
   });
@@ -74,11 +77,6 @@ const CategoryManagementPage = () => {
       await utils.list.allCategories.invalidate();
     },
     onError: (error) => {
-      // toast({
-      //   title: "Error",
-      //   description: error.message,
-      //   variant: "destructive",
-      // });
       setToastType({ type: ToastTypes.ERROR, data: error.message });
     },
   });
@@ -175,6 +173,7 @@ const CategoryManagementPage = () => {
           <CreateCategoryPopover />
         </div>
       </div>
+      <PageFilters className="mb-5" placeholder="Search by name" />
       <PageTable
         data={Array.isArray(categories) ? categories : categories?.data || []}
         columns={columns}

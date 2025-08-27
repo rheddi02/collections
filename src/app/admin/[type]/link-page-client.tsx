@@ -16,6 +16,7 @@ import { cn } from "~/lib/utils";
 import { isMobile } from "react-device-detect";
 import { Button } from "~/components/ui/button";
 import { useConfirmDialog } from "~/hooks";
+import PageFilters from "../_components/page-filters";
 
 // Type for individual link data from the list
 type LinkData = NonNullable<linkListOutput["data"][number]>;
@@ -59,6 +60,7 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
     page,
     perPage,
     setPageCount,
+    filters,
   } = useAppStore((state) => ({
     modal: state.modal,
     setModal: state.setModal,
@@ -71,6 +73,7 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
     page: state.page,
     perPage: state.perPage,
     setPageCount: state.setPageCount,
+    filters: state.filters,
   }));
 
   // Dynamic API calls based on tip type with server-side auth
@@ -79,6 +82,7 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
       categoryTitle: pageTitle,
       page,
       perPage,
+      filters,
     },
     {
       staleTime: 5 * 60 * 1000, // 5 minutes
@@ -268,7 +272,7 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
             isFetching={isFetching}
             reload={refetch}
           />
-          <div className="flex gap-2">
+      <div className="flex gap-2">
           {!!selectedLinks.length && (
             <Button variant={"destructive"} onClick={handleDeleteMultipe}>
               Delete ({selectedLinks.length})
@@ -277,7 +281,8 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
           <PageAction label="Add New" action={() => setModal(true)} />
           </div>
         </div>
-        <div
+      <PageFilters className="mb-5" placeholder="Search by title" />
+      <div
           className={cn(
             isClient && isMobile && "max-h-[calc(100vh-200px)] overflow-auto",
           )}
