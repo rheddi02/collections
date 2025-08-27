@@ -52,7 +52,7 @@ const CreateCategoryPopover = () => {
 
   const onSubmit = (data: CategoryFormValues) => {
     createCategoryMutation.mutate({
-      title: data.title.trim(),
+      title: data.title.trim().toLowerCase(),
     });
   };
 
