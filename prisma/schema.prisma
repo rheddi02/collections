@@ -14,6 +14,8 @@ datasource db {
 
 enum Role {
   USER
+  COLLABORATOR
+  GUEST
   ADMIN
 }
 
@@ -32,6 +34,7 @@ model Categories {
   collaborators Collaborators[]
 
   createdAt DateTime @default(now())
+  deletedAt DateTime?
   updatedAt DateTime @updatedAt
 
   @@unique([title, userId])
@@ -44,8 +47,6 @@ model Links {
   slug        String     @map("slug")
   description String
   url         String
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
   userId      Int
   user        Users      @relation(fields: [userId], references: [id])
   categoryId  Int
@@ -53,6 +54,10 @@ model Links {
 
   tags      LinkTags[]
   favorites Favorites[]
+
+  createdAt   DateTime   @default(now())
+  deletedAt DateTime?
+  updatedAt   DateTime   @updatedAt
 
   @@unique([url, userId])
   @@index([id])
