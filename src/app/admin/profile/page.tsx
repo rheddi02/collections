@@ -40,7 +40,7 @@ const Profile = () => {
     openMenu: state.openMenu,
   }));
 
-  const { data, isFetching: isFetchingUser } = api.get.user.useQuery();
+  const { data, isFetching: isFetchingUser } = api.users.me.useQuery();
 
   // Update password mutation
   const changePasswordMutation = api.auth.changePassword.useMutation({
