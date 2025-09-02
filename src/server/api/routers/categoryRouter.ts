@@ -61,7 +61,7 @@ export const categoryRouter = createTRPCRouter({
             },
             include: {
               _count: {
-                select: { Links: true },
+                select: { links: true },
               },
             },
             skip,
@@ -73,7 +73,7 @@ export const categoryRouter = createTRPCRouter({
           .then((categories) =>
             categories.map((category) => ({
               ...category,
-              categoryLinks: category._count.Links,
+              categoryLinks: category._count.links,
             })),
           ),
         ctx.db.categories.count({
@@ -99,7 +99,7 @@ export const categoryRouter = createTRPCRouter({
         title: true,
         slug: true,
         _count: {
-          select: { Links: true },
+          select: { links: true },
         },
       },
       orderBy: {
@@ -109,7 +109,7 @@ export const categoryRouter = createTRPCRouter({
 
     return categories.map((category) => ({
       ...category,
-      categoryLinks: category._count.Links,
+      categoryLinks: category._count.links,
     }));
   }),
 

@@ -17,7 +17,7 @@ import { isMobile } from "react-device-detect";
 import { Button } from "~/components/ui/button";
 import { useConfirmDialog } from "~/hooks";
 import PageFilters from "../_components/page-filters";
-import PageLoader from "../_components/page-loader";
+
 
 // Type for individual link data from the list
 type LinkData = NonNullable<linkListOutput["data"][number]>;
@@ -272,15 +272,23 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
     }
   };
 
-  // Don't render until client-side hydration is complete and confirm function is available
-  if (!isClient || !isConfirmReady) {
-    return <PageLoader />;
-  }
 
+
+  const isReady = isClient && isConfirmReady;
+  
   return (
     <div
-      className={cn(isClient && isMobile && "overflow-hidden overscroll-none")}
+      className={cn(
+        "relative transition-opacity duration-200",
+        isClient && isMobile && "overflow-hidden overscroll-none",
+        !isReady && "opacity-50 pointer-events-none"
+      )}
     >
+      {!isReady && (
+        <div className="absolute top-4 right-4 z-50 transition-opacity duration-200">
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-blue-600"></div>
+        </div>
+      )}
       <CustomDialog
         {...{
           initialData: initialFormValues,
@@ -308,11 +316,19 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
           />
       <div className="flex gap-2">
           {!!selectedLinks.length && (
-            <Button variant={"destructive"} onClick={handleDeleteMultipe}>
+            <Button 
+              variant={"destructive"} 
+              onClick={handleDeleteMultipe}
+              disabled={!isReady}
+            >
               Delete ({selectedLinks.length})
             </Button>
           )}
-          <PageAction label="Add New" action={() => setModal(true)} />
+          <PageAction 
+            label="Add New" 
+            action={() => setModal(true)} 
+            disabled={!isReady}
+          />
           </div>
         </div>
       <PageFilters className="mb-5" placeholder="Search by title" />
