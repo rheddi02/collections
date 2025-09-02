@@ -92,7 +92,13 @@ const createStore: StateCreator<State, [], [], State> = (set, get) => ({
   setModal: (modal) => set({ modal }),
   setOpenMenu: (openMenu) => set({ openMenu }),
   setIsLoading: (isLoading) => set({ isLoading }),
-  setConfirmDialog: (confirmDialog) => set({ confirmDialog }),
+  setConfirmDialog: (confirmDialog) => {
+    if (confirmDialog && typeof confirmDialog.onConfirm === 'function') {
+      set({ confirmDialog });
+    } else {
+      console.warn('Invalid confirmDialog configuration');
+    }
+  },
   closeConfirmDialog: () => set({ confirmDialog: null }),
   // Data Actions
   setCategories: (categories) => set({ categories }),

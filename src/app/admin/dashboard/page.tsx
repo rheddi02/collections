@@ -14,7 +14,7 @@ const Dashboard = () => {
   const { data: session, status } = useSession();
   const [isSent, setIsSent] = useState(false);
   const navList = useNavigationLists(); // Now reactive to category changes
-  const { isLoading: isCategoriesLoading } = api.list.allCategories.useQuery();
+  const { isLoading: isCategoriesLoading } = api.categories.listAll.useQuery();
   const { setOpenMenu, openMenu } = useAppStore((state) => ({
     setOpenMenu: state.setOpenMenu,
     openMenu: state.openMenu,
@@ -23,7 +23,7 @@ const Dashboard = () => {
     data: counts,
     isFetching,
     error,
-  } = api.count.links.useQuery(
+  } = api.links.count.useQuery(
     undefined, // No input needed - user context comes from NextAuth session
     {
       staleTime: 5 * 60 * 1000, // Cache for 5 minutes

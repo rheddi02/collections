@@ -14,59 +14,127 @@ datasource db {
 
 enum Role {
   USER
+  COLLABORATOR
+  GUEST
   ADMIN
 }
 
 model Categories {
-  id          Int     @id @default(autoincrement())
-  title       String
-  slug        String @map("slug")
-  Links       Links[]
-  isPinned    Boolean @default(false)  @map("is_pinned")
-  userId    Int
-  user      Users    @relation(fields: [userId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id       Int     @id @default(autoincrement())
+  title    String
+  slug     String  @map("slug")
+  icon     String? // emoji or custom icon
+  isPinned Boolean @default(false) @map("is_pinned")
 
-  @@index([id])
+  // Relations
+  userId        Int
+  user          Users           @relation(fields: [userId], references: [id])
+  links         Links[]
+  shareId       String?         @unique // for public sharing
+  collaborators Collaborators[]
+
+  createdAt DateTime @default(now())
+  deletedAt DateTime?
+  updatedAt DateTime @updatedAt
+
   @@unique([title, userId])
+  @@index([id])
 }
 
 model Links {
-  id          Int      @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   title       String
-  slug        String   @map("slug")
+  slug        String     @map("slug")
   description String
   url         String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
   userId      Int
-  user        Users    @relation(fields: [userId], references: [id])
+  user        Users      @relation(fields: [userId], references: [id])
   categoryId  Int
   category    Categories @relation(fields: [categoryId], references: [id])
 
-  @@index([id])
+  tags      LinkTags[]
+  favorites Favorites[]
+
+  createdAt   DateTime   @default(now())
+  deletedAt DateTime?
+  updatedAt   DateTime   @updatedAt
+
   @@unique([url, userId])
+  @@index([id])
 }
 
 model Users {
-  id          Int      @id @default(autoincrement())
-  username    String   @unique
-  email       String   @unique
-  password    String?
-  role        Role     @default(USER)
-  isVerified  Boolean  @default(false) @map("is_verified")
-  verificationCode String? @map("verification_code")
+  id                      Int       @id @default(autoincrement())
+  username                String    @unique
+  email                   String    @unique
+  password                String?
+  role                    Role      @default(USER)
+  isVerified              Boolean   @default(false) @map("is_verified")
+  verificationCode        String?   @map("verification_code")
   verificationCodeExpires DateTime? @map("verification_code_expires")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-  profile     String?  @map("profile") // Optional profile field for user profile information
-  cover       String?  @map("cover") // Optional cover field for user profile information
-  links       Links[]
-  categories  Categories[]
+  createdAt               DateTime  @default(now()) @map("created_at")
+  updatedAt               DateTime  @updatedAt @map("updated_at")
+  profile                 String?   @map("profile") // Optional profile field for user profile information
+  cover                   String?   @map("cover") // Optional cover field for user profile information
+
+  // Relations
+  favorites     Favorites[]
+  collaborators Collaborators[]
+  sessions      Session[]
+  links         Links[]
+  categories    Categories[]
 
   @@index([id])
   @@index([username])
   @@index([email])
   @@map("users")
+}
+
+model Tags {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  links LinkTags[]
+}
+
+model LinkTags {
+  linkId Int
+  tagId  Int
+
+  link Links @relation(fields: [linkId], references: [id])
+  tag  Tags  @relation(fields: [tagId], references: [id])
+
+  @@id([linkId, tagId])
+}
+
+model Favorites {
+  userId Int
+  linkId Int
+
+  user Users @relation(fields: [userId], references: [id])
+  link Links @relation(fields: [linkId], references: [id])
+
+  @@id([userId, linkId])
+}
+
+model Collaborators {
+  id   Int    @id @default(autoincrement())
+  role String // "viewer" | "editor"
+
+  userId     Int
+  categoryId Int
+
+  user     Users      @relation(fields: [userId], references: [id])
+  category Categories @relation(fields: [categoryId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model Session {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  token     String   @unique
+  expiresAt DateTime
+
+  user Users @relation(fields: [userId], references: [id])
 }
