@@ -1,17 +1,16 @@
 "use client";
 import DataTableCompact from "~/app/admin/_components/table/table-compact";
 import type { ColumnDef, Row } from "@tanstack/react-table";
-import type { linkListOutput } from "~/server/api/client/types";
 import useAppStore from "~/store/app.store";
 import DataTable from "./data-table";
 import { isMobile } from "react-device-detect";
 import { useEffect, useState } from "react";
+import { UpdateLinkValues } from "~/utils/schemas";
 
 // Type for individual link data from the list
-type LinkData = NonNullable<linkListOutput["data"][number]>;
 
 // Generic PageTable component that accepts any data type
-function PageTable<T = LinkData>({
+function PageTable<T = UpdateLinkValues>({
   data,
   loading,
   onRowClick,

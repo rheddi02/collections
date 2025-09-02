@@ -8,9 +8,8 @@ import { ToastTypes } from "~/utils/types";
 import PageTable from "../_components/table/page-table";
 import { createListColumns } from "~/app/admin/[type]/_components/create-list-columns";
 import PageHeader from "../_components/page-header";
-import type { categoryOutput, linkListOutput } from "~/server/api/client/types";
 import { useApiUtils } from "~/hooks/useApiUtils";
-import { LinkFormValues, UpdateLinkValues } from "~/utils/schemas";
+import { LinkFormValues, UpdateCategoryValues, UpdateLinkValues } from "~/utils/schemas";
 import PageAction from "../_components/page-action";
 import { cn } from "~/lib/utils";
 import { isMobile } from "react-device-detect";
@@ -20,10 +19,9 @@ import PageFilters from "../_components/page-filters";
 
 
 // Type for individual link data from the list
-type LinkData = NonNullable<linkListOutput["data"][number]>;
 
 interface LinkPageClientProps {
-  initialData: categoryOutput;
+  initialData: UpdateCategoryValues;
   pageTitle: string;
 }
 
@@ -48,7 +46,7 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
     Partial<LinkFormValues> | undefined
   >();
   
-  const [selectedLinks, setSelectedLinks] = useState<LinkData[]>([]);
+  const [selectedLinks, setSelectedLinks] = useState<UpdateLinkValues[]>([]);
   const [form, setForm] = useState({
     title: "Create New",
     description: "Add new data",
@@ -107,7 +105,7 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
     }
   );
 
-  const handleEdit = (link: LinkData) => {
+  const handleEdit = (link: UpdateLinkValues) => {
     setForm({
       title: "Update Link",
       description: "Update the selected link's details.",
@@ -122,7 +120,7 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
     setModal(true);
   };
 
-  const handleDelete = (link: LinkData) => {
+  const handleDelete = (link: UpdateLinkValues) => {
     // Clear all selected links when deleting any link
     setSelectedLinks([]);
     
@@ -241,7 +239,7 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
     }
   }, [modal]);
 
-  const handleRowSelectionChange = (selectedRows: LinkData[]) => {
+  const handleRowSelectionChange = (selectedRows: UpdateLinkValues[]) => {
     setSelectedLinks(selectedRows);
   };
 

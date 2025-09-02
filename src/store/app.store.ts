@@ -2,7 +2,6 @@ import { type PaginationState, createPaginationStore } from './pagination.store'
 import type { StateCreator } from "zustand";
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
-import { categoryAllOutput } from '~/server/api/client/types';
 import { FilterFormValues, UpdateCategoryValues } from '~/utils/schemas';
 import { ToastTypes } from '~/utils/types';
 
@@ -34,14 +33,14 @@ interface UIActions {
 
 // Data State interfaces
 interface DataState {
-  categories: categoryAllOutput;
+  categories: UpdateCategoryValues[];
   editCategory: UpdateCategoryValues | null;
   deleteId: number[];
   filters: FilterFormValues
 }
 
 interface DataActions {
-  setCategories: (categories: categoryAllOutput) => void;
+  setCategories: (categories: UpdateCategoryValues[]) => void;
   setEditCategory: (editCategory: UpdateCategoryValues | null) => void;
   setDeleteId: (deleteId: number | number[]) => void;
   // Utility methods

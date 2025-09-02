@@ -2,6 +2,7 @@
 import type { NavigationType } from "../utils/types";
 import useAppStore from "~/store/app.store";
 import { useMemo } from "react";
+import { UpdateCategoryValues } from "~/utils/schemas";
 
 // Hook to get navigation lists that watches for categories changes
 export const useNavigationLists = (): NavigationType[] => {
@@ -15,7 +16,7 @@ export const useNavigationLists = (): NavigationType[] => {
       subRoute: [],
       image: "",
     },
-    ...categories.map((category) => ({
+    ...categories.map((category: UpdateCategoryValues) => ({
       id: category.id,
       title: category.title,
       route: "/admin/" + category.slug,
