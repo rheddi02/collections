@@ -29,13 +29,13 @@ const EditCategoryPopover = () => {
 
   const utils = useApiUtils();
 
-  const updateCategoryMutation = api.update.categories.useMutation({
+  const updateCategoryMutation = api.categories.update.useMutation({
     onSuccess: async () => {
       setToastType({ type: ToastTypes.UPDATED });
       setEditCategory(null);
       // Invalidate categories to refetch
-      await utils.list.categories.invalidate();
-      await utils.list.allCategories.invalidate();
+      await utils.categories.invalidate();
+      await utils.categories.listAll.invalidate();
     },
     onError: (error) => {
       // customize error message so users can easily understand

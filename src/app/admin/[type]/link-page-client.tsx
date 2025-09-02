@@ -17,6 +17,7 @@ import { isMobile } from "react-device-detect";
 import { Button } from "~/components/ui/button";
 import { useConfirmDialog } from "~/hooks";
 import PageFilters from "../_components/page-filters";
+import PageLoader from "../_components/page-loader";
 
 // Type for individual link data from the list
 type LinkData = NonNullable<linkListOutput["data"][number]>;
@@ -28,7 +29,20 @@ interface LinkPageClientProps {
 
 const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
   const utils = useApiUtils();
-  const { confirm } = useConfirmDialog();
+  const confirmDialog = useConfirmDialog();
+  const confirm = confirmDialog?.confirm;
+  
+  // Fallback confirm function in case the hook fails
+  const fallbackConfirm = (options: any) => {
+    if (typeof window !== 'undefined' && window.confirm) {
+      if (window.confirm(options.description)) {
+        options.onConfirm?.();
+      }
+    }
+  };
+  
+  // Use fallback if main confirm is not available
+  const safeConfirm = confirm || fallbackConfirm;
   const [category, setCategory] = useState(initialData);
   const [initialFormValues, setInitialFormValues] = useState<
     Partial<LinkFormValues> | undefined
@@ -76,8 +90,11 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
     filters: state.filters,
   }));
 
+  // Ensure confirm function is available
+  const isConfirmReady = Boolean(safeConfirm);
+
   // Dynamic API calls based on tip type with server-side auth
-  const { data, isFetched, isFetching, refetch } = api.list.link.useQuery(
+  const { data, isFetched, isFetching, refetch } = api.links.list.useQuery(
     {
       categoryTitle: pageTitle,
       page,
@@ -109,47 +126,59 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
     // Clear all selected links when deleting any link
     setSelectedLinks([]);
     
-    confirm({
-      title: "Delete Link",
-      description: `Are you sure you want to delete the link "${link.title}"? This action cannot be undone.`,
-      warningText:
-        "This will permanently delete the link.",
-      confirmText: "Delete",
-      cancelText: "Cancel",
-      variant: "destructive",
-      onConfirm: async () => {
-        setDeleteId(link.id);
-        try {
-          await deleteLinkMutation([link.id]);
-        } finally {
-          setDeleteId(0);
-        }
-      },
-    });
+    if (!isClient || !isConfirmReady) return;
+    
+    try {
+      safeConfirm({
+        title: "Delete Link",
+        description: `Are you sure you want to delete the link "${link.title}"? This action cannot be undone.`,
+        warningText:
+          "This will permanently delete the link.",
+        confirmText: "Delete",
+        cancelText: "Cancel",
+        variant: "destructive",
+        onConfirm: async () => {
+          setDeleteId(link.id);
+          try {
+            await deleteLinkMutation([link.id]);
+          } finally {
+            setDeleteId(0);
+          }
+        },
+      });
+    } catch (error) {
+      console.error('Error opening confirm dialog:', error);
+    }
   };
 
   const handleDeleteMultipe = async () => {
-    confirm({
-      title: "Delete Links",
-      description: `Are you sure you want to delete the selected links? This action cannot be undone.`,
-      warningText:
-        "This will permanently delete the links.",
-      confirmText: "Delete",
-      cancelText: "Cancel",
-      variant: "destructive",
-      onConfirm: async () => {
-        const linkIds = selectedLinks.map(link => link.id);
-        try {
-          setDeleteId(linkIds);
-          await deleteLinkMutation(linkIds);
-          setSelectedLinks([]);
-        } catch (error) {
-          console.error("Error deleting links:", error);
-        } finally {
-          setDeleteId(0);
-        }
-      },
-    });
+    if (!isClient || !isConfirmReady) return;
+    
+    try {
+      safeConfirm({
+        title: "Delete Links",
+        description: `Are you sure you want to delete the selected links? This action cannot be undone.`,
+        warningText:
+          "This will permanently delete the links.",
+        confirmText: "Delete",
+        cancelText: "Cancel",
+        variant: "destructive",
+        onConfirm: async () => {
+          const linkIds = selectedLinks.map(link => link.id);
+          try {
+            setDeleteId(linkIds);
+            await deleteLinkMutation(linkIds);
+            setSelectedLinks([]);
+          } catch (error) {
+            console.error("Error deleting links:", error);
+          } finally {
+            setDeleteId(0);
+          }
+        },
+      });
+    } catch (error) {
+      console.error('Error opening confirm dialog:', error);
+    }
   };
 
   // Create columns with handlers
@@ -160,9 +189,9 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
   });
 
   const { mutate: createLinkMutation, isPending: pendingCreate } =
-    api.create.link.useMutation({
+    api.links.create.useMutation({
       onSuccess: async () => {
-        await utils.list.link.invalidate();
+        await utils.links.list.invalidate();
         setToastType({ type: ToastTypes.ADDED });
         setModal(false);
       },
@@ -172,18 +201,18 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
     });
 
   const { mutate: updateLinkMutation, isPending: pendingUpdate } =
-    api.update.link.useMutation({
+    api.links.update.useMutation({
       onSuccess: async () => {
-        await utils.list.link.invalidate();
+        await utils.links.list.invalidate();
         setToastType({ type: ToastTypes.UPDATED });
         setModal(false);
       },
     });
 
   const { mutateAsync: deleteLinkMutation, isPending: pendingDelete } =
-    api.delete.link.useMutation({
+    api.links.delete.useMutation({
       onSuccess: async () => {
-        await utils.list.link.invalidate();
+        await utils.links.list.invalidate();
         setToastType({ type: ToastTypes.DELETED });
         setModal(false);
         setDeleteId(0);
@@ -242,6 +271,11 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
       handleSave(formData as LinkFormValues);
     }
   };
+
+  // Don't render until client-side hydration is complete and confirm function is available
+  if (!isClient || !isConfirmReady) {
+    return <PageLoader />;
+  }
 
   return (
     <div

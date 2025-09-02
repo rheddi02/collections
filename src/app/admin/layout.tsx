@@ -18,7 +18,7 @@ export default function RootLayout({
   }));
 
   const { data: categories, isFetched: isFetchedCategories } =
-    api.list.allCategories.useQuery(undefined, {
+    api.categories.listAll.useQuery(undefined, {
       staleTime: 5 * 60 * 1000, // 5 minutes
       refetchOnWindowFocus: false,
     });

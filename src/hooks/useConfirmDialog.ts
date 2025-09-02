@@ -14,17 +14,26 @@ export function useConfirmDialog() {
   const setConfirmDialog = useAppStore((state) => state.setConfirmDialog);
 
   const confirm = (options: ConfirmOptions) => {
-    setConfirmDialog({
-      isOpen: true,
-      title: options.title,
-      description: options.description,
-      confirmText: options.confirmText || "Confirm",
-      cancelText: options.cancelText || "Cancel",
-      variant: options.variant || "default",
-      warningText: options.warningText,
-      isLoading: false,
-      onConfirm: options.onConfirm,
-    });
+    if (typeof setConfirmDialog !== 'function') {
+      console.warn('setConfirmDialog is not available');
+      return;
+    }
+    
+    try {
+      setConfirmDialog({
+        isOpen: true,
+        title: options.title,
+        description: options.description,
+        confirmText: options.confirmText || "Confirm",
+        cancelText: options.cancelText || "Cancel",
+        variant: options.variant || "default",
+        warningText: options.warningText,
+        isLoading: false,
+        onConfirm: options.onConfirm,
+      });
+    } catch (error) {
+      console.error('Error setting confirm dialog:', error);
+    }
   };
 
   return { confirm };

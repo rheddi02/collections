@@ -54,7 +54,7 @@ const CategoryManagementPage = () => {
     isLoading,
     isFetching,
     refetch,
-  } = api.list.categories.useQuery({ page, perPage, filters },{
+  } = api.categories.list.useQuery({ page, perPage, filters },{
     staleTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: false,
   });
@@ -69,12 +69,12 @@ const CategoryManagementPage = () => {
     }
   }, [categories, setPageCount]);
 
-  const deleteCategoryMutation = api.delete.category.useMutation({
+  const deleteCategoryMutation = api.categories.delete.useMutation({
     onSuccess: async () => {
       setToastType({ type: ToastTypes.DELETED });
       // Refetch categories
-      await utils.list.categories.invalidate();
-      await utils.list.allCategories.invalidate();
+      await utils.categories.invalidate();
+      await utils.categories.listAll.invalidate();
     },
     onError: (error) => {
       setToastType({ type: ToastTypes.ERROR, data: error.message });
