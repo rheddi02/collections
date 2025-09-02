@@ -15,6 +15,7 @@ import { signInSchema, type SignInFormValues } from "~/utils/schemas";
 
 export default function SignIn() {
   const [isLoading, setIsLoading] = useState(false)
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false)
   const router = useRouter()
   const { data: session, status } = useSession()
 
@@ -32,6 +33,11 @@ export default function SignIn() {
       router.push("/admin/dashboard")
     }
   }, [status, session, router])
+
+  const handleGoogleSignIn = async () => {
+    setIsGoogleLoading(true)
+    await signIn("google", { callbackUrl: "/admin/dashboard" })
+  }
 
   const onSubmit = async (data: SignInFormValues) => {
     setIsLoading(true)
@@ -71,10 +77,10 @@ export default function SignIn() {
   // Show loading if checking session
   if (status === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-2 text-gray-600">Loading...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-muted-foreground mx-auto"></div>
+          <p className="mt-2 text-muted-foreground">Loading...</p>
         </div>
       </div>
     )
@@ -83,21 +89,21 @@ export default function SignIn() {
   // If authenticated, show redirecting message
   if (status === "authenticated") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-2 text-gray-600">Redirecting to dashboard...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-muted-foreground mx-auto"></div>
+          <p className="mt-2 text-muted-foreground">Redirecting to dashboard...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <Card className="w-full max-w-md border bg-card">
         <CardHeader>
           <CardTitle>Sign In</CardTitle>
-          <CardDescription>
+          <CardDescription className="text-muted-foreground">
             Enter your username/email and password to access your account
           </CardDescription>
         </CardHeader>
@@ -125,21 +131,33 @@ export default function SignIn() {
               <Button
                 type="submit"
                 className="w-full"
-                disabled={isLoading}
+                disabled={isLoading || isGoogleLoading}
               >
                 {isLoading ? "Signing in..." : "Sign In"}
+              </Button>
+              <div className="relative py-2 text-center">
+                <span className="text-xs text-muted-foreground">or</span>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={handleGoogleSignIn}
+                disabled={isGoogleLoading || isLoading}
+              >
+                {isGoogleLoading ? "Signing in with Google..." : "Continue with Google"}
               </Button>
             </form>
           </Form>
           <div className="mt-4 text-center space-y-2">
-            <p className="text-sm text-gray-600">
-              <Link href="/auth/forgot-password" className="text-blue-600 hover:underline">
+            <p className="text-sm text-muted-foreground">
+              <Link href="/auth/forgot-password" className="text-primary hover:underline">
                 Forgot your password?
               </Link>
             </p>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted-foreground">
               Don't have an account?{" "}
-              <Link href="/auth/register" className="text-blue-600 hover:underline">
+              <Link href="/auth/register" className="text-primary hover:underline">
                 Create one
               </Link>
             </p>

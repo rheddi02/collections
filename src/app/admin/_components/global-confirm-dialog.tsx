@@ -2,14 +2,13 @@
 
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
 } from "~/components/ui/alert-dialog";
+import { Button } from "~/components/ui/button";
 import useAppStore from "~/store/app.store";
 
 // Global confirmation dialog that's managed through the app store
@@ -57,7 +56,10 @@ export function GlobalConfirmDialog() {
   return (
     <AlertDialog 
       open={confirmDialog.isOpen} 
-      onOpenChange={(open) => !open && closeConfirmDialog()}
+      onOpenChange={(open) => {
+        // Prevent closing while an operation is in progress
+        if (!open && !confirmDialog.isLoading) closeConfirmDialog();
+      }}
     >
       <AlertDialogContent>
         <AlertDialogHeader>
@@ -72,20 +74,26 @@ export function GlobalConfirmDialog() {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={handleCancel} disabled={confirmDialog.isLoading}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleCancel}
+            disabled={confirmDialog.isLoading}
+          >
             {confirmDialog.cancelText}
-          </AlertDialogCancel>
-          <AlertDialogAction
+          </Button>
+          <Button
+            type="button"
             onClick={handleConfirm}
             disabled={confirmDialog.isLoading}
             className={
-              confirmDialog.variant === 'destructive' 
-                ? "bg-red-600 hover:bg-red-700" 
+              confirmDialog.variant === 'destructive'
+                ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
                 : ""
             }
           >
             {confirmDialog.isLoading ? "Processing..." : confirmDialog.confirmText}
-          </AlertDialogAction>
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

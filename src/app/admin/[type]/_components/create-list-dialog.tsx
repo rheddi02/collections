@@ -9,21 +9,19 @@ import TextInput from "~/app/admin/_components/text-input";
 import useAppStore from "~/store/app.store";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import React, { useEffect } from "react";
-import { linkFormSchema, LinkFormValues } from "~/utils/schemas";
-import { useGlobalDialog } from "~/hooks/useGlobalDialog";
+import { linkFormSchema, LinkFormValues, UpdateLinkValues } from "~/utils/schemas";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "~/components/ui/dialog";
 
-type Props = {
-  action: (formData: LinkFormValues) => void;
+type Props<T> = {
+  action: (formData: T) => void;
   title: string;
   description: string;
   open: boolean;
   label: string;
-  initialData?: Partial<LinkFormValues>;
+  initialData?: Partial<T>;
 };
 
-const CreateFormDialog = ({ action, title, description, open, label, initialData }: Props) => {
-  const { showDialog, hideDialog } = useGlobalDialog();
-  
+const CreateFormDialog = ({ action, title, description, open, label, initialData }: Props<LinkFormValues | UpdateLinkValues>) => {
   const form = useForm<LinkFormValues>({
     resolver: zodResolver(linkFormSchema),
     defaultValues: {
@@ -55,10 +53,9 @@ const CreateFormDialog = ({ action, title, description, open, label, initialData
     }
   }, [modal, initialData, form]);
 
-  // Hide global dialog when modal becomes false
+  // Reset when modal becomes false
   useEffect(() => {
     if (!modal) {
-      hideDialog();
       form.reset({
         id: undefined,
         title: "",
@@ -66,7 +63,7 @@ const CreateFormDialog = ({ action, title, description, open, label, initialData
         description: "",
       });
     }
-  }, [modal, hideDialog, form]);
+  }, [modal, form]);
 
   const handleSubmit = (values: LinkFormValues) => {
     action(values);
@@ -82,87 +79,49 @@ const CreateFormDialog = ({ action, title, description, open, label, initialData
       description: "",
     });
     setModal(false);
-    hideDialog();
   };
 
-  // Show global dialog when modal state is true
-  useEffect(() => {
-    if (modal) {
-      showDialog({
-        title: title,
-        description: description,
-        hideFooter: true,
-        onCancel: () => {
-          form.reset({
-            id: undefined,
-            title: "",
-            url: "",
-            description: "",
-          });
-          setModal(false);
-        },
-        children: (
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <TextInput
-                    name="title"
-                    placeholder="Title"
-                    required
-                    autoFocus
-                  />
-                  <TextInput
-                    name="url"
-                    placeholder="URL (e.g., https://example.com)"
-                    required
-                  />
-                  <Controller
-                    name="description"
-                    control={form.control}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Description"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+  return (
+    <Dialog open={modal} onOpenChange={setModal}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <TextInput name="title" placeholder="Title" required autoFocus />
+                <TextInput name="url" placeholder="URL (e.g., https://example.com)" required />
+                <Controller
+                  name="description"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Textarea placeholder="Description" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
-              <div className="flex justify-end gap-2">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={handleCancel}
-                  disabled={isLoading}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  disabled={isLoading}
-                  type="submit"
-                  className="flex items-center gap-2 capitalize"
-                >
-                  {isLoading && <ReloadIcon className="animate-spin" />}
-                  {label}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        ),
-        onConfirm: () => {
-          // This won't be used since we're using hideFooter: true
-        },
-      });
-    }
-  }, [modal]); // Only depend on modal state
-
-  return null; // No direct JSX since we're using global dialog
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button type="button" variant="ghost" onClick={handleCancel} disabled={isLoading}>
+                Cancel
+              </Button>
+              <Button disabled={isLoading} type="submit" className="flex items-center gap-2 capitalize">
+                {isLoading && <ReloadIcon className="animate-spin" />}
+                {label}
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
 };
 
 export default CreateFormDialog;

@@ -3,11 +3,11 @@ import React from "react";
 import { cn } from "~/lib/utils";
 
 type Props = {
-  title: string;
+  title?: string;
   subtitle?: string;
   setOpenMenu: () => void;
-  isFetching: boolean;
-  reload: () => void;
+  isFetching?: boolean;
+  reload?: () => void;
 };
 
 const PageHeader = ({
@@ -20,21 +20,25 @@ const PageHeader = ({
   return (
     <div className="flex items-center gap-2">
       <span onClick={setOpenMenu}>
-        <HamburgerMenuIcon className="block h-5 w-5 sm:hidden" />
+        <HamburgerMenuIcon className="block h-5 w-5 sm:hidden text-muted-foreground hover:text-foreground transition-colors" />
       </span>
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl capitalize">{title}</span>
-          <ReloadIcon
-            onClick={reload}
-            className={cn(
-              isFetching && "animate-spin",
-              "cursor-pointer rounded-full hover:bg-gray-900 hover:text-white",
-            )}
-          />
+      {title && (
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl font-semibold tracking-tight text-foreground capitalize">{title}</span>
+            <ReloadIcon
+              onClick={reload}
+              className={cn(
+                isFetching && "animate-spin",
+                "cursor-pointer rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors",
+              )}
+            />
+          </div>
+          {subtitle && (
+            <span className="text-sm text-muted-foreground">{subtitle}</span>
+          )}
         </div>
-        {subtitle && <span className="text-sm text-gray-500">{subtitle}</span>}
-      </div>
+      )}
     </div>
   );
 };

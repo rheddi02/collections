@@ -1,6 +1,8 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import { db } from "~/server/db";
 
 export const authOptions: NextAuthOptions = {
@@ -31,6 +33,10 @@ export const authOptions: NextAuthOptions = {
             return null;
           }
 
+          // Reject if user has no password (OAuth-only account)
+          if (!user.password) {
+            return null;
+          }
           // Verify password hash
           const isPasswordValid = await bcrypt.compare(
             credentials.password,
@@ -53,8 +59,66 @@ export const authOptions: NextAuthOptions = {
         }
       },
     }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+    }),
   ],
   callbacks: {
+    async signIn({ user, account, profile }) {
+      try {
+        if (account?.provider === "google") {
+          const email = (profile as { email?: string } | null)?.email || user.email;
+          if (!email) return false;
+
+          // Find existing user by email
+          let existingUser = await db.users.findUnique({ where: { email } });
+
+          if (!existingUser) {
+            // Generate a unique username from name or email
+            const baseFromName = (user.name || "").toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 20);
+            const baseFromEmail = email.split("@")[0]?.toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 20) || "user";
+            const baseUsername = baseFromName || baseFromEmail || "user";
+
+            let candidate = baseUsername;
+            let suffix = 0;
+            // Ensure username uniqueness
+            // eslint-disable-next-line no-constant-condition
+            while (true) {
+              const found = await db.users.findUnique({ where: { username: candidate } });
+              if (!found) break;
+              suffix += 1;
+              candidate = `${baseUsername}${suffix}`;
+            }
+
+            existingUser = await db.users.create({
+              data: {
+                username: candidate,
+                email,
+                password: null,
+                isVerified: true,
+              },
+            });
+          } else if (existingUser && existingUser.isVerified === false) {
+            // Upgrade existing unverified users to verified on OAuth sign-in
+            existingUser = await db.users.update({
+              where: { id: existingUser.id },
+              data: { isVerified: true },
+            });
+          }
+
+          // Pass our DB user id and verification to JWT via user object
+          (user as any).id = existingUser.id.toString();
+          (user as any).isVerified = existingUser.isVerified;
+          (user as any).name = existingUser.username || user.name;
+        }
+
+        return true;
+      } catch (err) {
+        console.error("OAuth signIn error:", err);
+        return false;
+      }
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;

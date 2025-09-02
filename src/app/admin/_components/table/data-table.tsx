@@ -199,7 +199,7 @@ export default function DataTable<TData, TValue>({
   return (
     <>
       <div className="max-h-[80vh] overflow-auto">
-        <Table className="border">
+        <Table className="border rounded-md">
           {(!isMobile || !isClient) && (
             <TableHeader className="">
               {table.getHeaderGroups().map((headerGroup) => (
@@ -248,10 +248,10 @@ export default function DataTable<TData, TValue>({
                   }}
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className="group"
+                  className="group hover:bg-muted/50"
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className="align-middle">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),

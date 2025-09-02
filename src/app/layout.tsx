@@ -7,6 +7,7 @@ import { SessionDebug } from "~/components/SessionDebug";
 import { SessionProvider } from "next-auth/react";
 import { GlobalDialogProvider } from "~/hooks/useGlobalDialog";
 import { Toaster } from "~/components/ui/toaster";
+import { ThemeProvider } from "~/components/theme-provider";
 
 export default function RootLayout({
   children,
@@ -16,6 +17,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
       <body className="overscroll-none">
+        <ThemeProvider defaultTheme="dark" storageKey="pokemon-explorer-theme">
         <SessionProvider>
           <TRPCReactProvider>
             <GlobalDialogProvider>
@@ -25,6 +27,7 @@ export default function RootLayout({
             </GlobalDialogProvider>
           </TRPCReactProvider>
         </SessionProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

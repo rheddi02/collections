@@ -3,7 +3,7 @@ import type { StateCreator } from "zustand";
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 import { categoryAllOutput } from '~/server/api/client/types';
-import { UpdateCategoryValues } from '~/utils/schemas';
+import { FilterFormValues, UpdateCategoryValues } from '~/utils/schemas';
 import { ToastTypes } from '~/utils/types';
 
 // UI State interfaces
@@ -37,6 +37,7 @@ interface DataState {
   categories: categoryAllOutput;
   editCategory: UpdateCategoryValues | null;
   deleteId: number[];
+  filters: FilterFormValues
 }
 
 interface DataActions {
@@ -45,6 +46,7 @@ interface DataActions {
   setDeleteId: (deleteId: number | number[]) => void;
   // Utility methods
   resetDeleteIds: () => void;
+  setFilters: (filters: FilterFormValues) => void;
 }
 
 // UI Actions interfaces  
@@ -83,16 +85,26 @@ const createStore: StateCreator<State, [], [], State> = (set, get) => ({
     type: ToastTypes.DEFAULT,
     data: ''
   },
+  filters: {
+    keyword: ''
+  },
   // UI Actions
   setModal: (modal) => set({ modal }),
   setOpenMenu: (openMenu) => set({ openMenu }),
   setIsLoading: (isLoading) => set({ isLoading }),
-  setConfirmDialog: (confirmDialog) => set({ confirmDialog }),
+  setConfirmDialog: (confirmDialog) => {
+    if (confirmDialog && typeof confirmDialog.onConfirm === 'function') {
+      set({ confirmDialog });
+    } else {
+      console.warn('Invalid confirmDialog configuration');
+    }
+  },
   closeConfirmDialog: () => set({ confirmDialog: null }),
   // Data Actions
   setCategories: (categories) => set({ categories }),
   setEditCategory: (editCategory) => set({ editCategory }),
   setDeleteId: (deleteId) => set({ deleteId: deleteId instanceof Array ? deleteId : [deleteId] }),
+  setFilters: (filters) => set({ filters }),
   // Toast Actions
   setToastType: (toastType) => set({ toastType }),
   // Utility methods for common operations
