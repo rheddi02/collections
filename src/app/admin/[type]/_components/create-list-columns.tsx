@@ -6,19 +6,17 @@ import {
   ReloadIcon,
   TrashIcon,
 } from "@radix-ui/react-icons";
-import { linkListOutput } from "~/server/api/client/types";
 import Link from "next/link";
 import { Label } from "~/components/ui/label";
 import { ToggleGroup } from "~/components/ui/toggle-group";
 import { ToggleGroupItem } from "@radix-ui/react-toggle-group";
 import { Checkbox } from "~/components/ui/checkbox";
 import { getSource } from "~/utils/helpers";
-
-type LinkData = NonNullable<linkListOutput["data"][number]>;
+import { UpdateLinkValues } from "~/utils/schemas";
 
 interface ColumnsProps {
-  onEdit: (link: LinkData) => void;
-  onDelete: (link: LinkData) => void;
+  onEdit: (link: UpdateLinkValues) => void;
+  onDelete: (link: UpdateLinkValues) => void;
   deletingIds: number[];
 }
 
@@ -26,7 +24,7 @@ export const createListColumns = ({
   onEdit,
   onDelete,
   deletingIds,
-}: ColumnsProps): ColumnDef<LinkData>[] => [
+}: ColumnsProps): ColumnDef<UpdateLinkValues>[] => [
   {
       id: "select",
       header: ({ table }) => (
@@ -86,7 +84,7 @@ export const createListColumns = ({
     header: () => {
       return <div className="font-bold"></div>;
     },
-    cell: ({ row }: { row: Row<LinkData> }) => {
+    cell: ({ row }: { row: Row<UpdateLinkValues> }) => {
       return (
         <div className="flex items-center justify-center gap-2 p-1">
           {deletingIds.includes(row.original.id) ? (
