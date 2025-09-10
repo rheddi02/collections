@@ -12,7 +12,7 @@ const DynamicPage = async ({ params }: PageProps) => {
   const { type: pageTitle } = params;
 
   try {
-    const initialData = await api.categories.getByName(
+    const initialData = await api.categories.getBySlug(
       pageTitle,
     );
 

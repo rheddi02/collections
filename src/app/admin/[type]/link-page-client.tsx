@@ -94,7 +94,7 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
   // Dynamic API calls based on tip type with server-side auth
   const { data, isFetched, isFetching, refetch } = api.links.list.useQuery(
     {
-      categoryTitle: pageTitle,
+      categoryTitle: initialData.title,
       page,
       perPage,
       filters,
