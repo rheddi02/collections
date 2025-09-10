@@ -132,6 +132,17 @@ export const categoryRouter = createTRPCRouter({
       });
     }),
 
+  getBySlug: authenticatedProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      return ctx.db.categories.findFirst({
+        where: {
+          slug: input,
+          userId: parseInt(ctx.user.id),
+        },
+      });
+    }),
+
   update: authenticatedProcedure
     .input(
       z.object({
