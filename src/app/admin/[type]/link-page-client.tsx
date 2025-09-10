@@ -307,7 +307,7 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
       >
         <div className="mb-5 flex flex-col gap-2 font-bold sm:flex-row sm:items-center sm:justify-between">
           <PageHeader
-            title={pageTitle}
+            title={initialData.title}
             setOpenMenu={() => setOpenMenu(!openMenu)}
             isFetching={isFetching}
             reload={refetch}
