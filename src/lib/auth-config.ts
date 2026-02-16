@@ -3,7 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import { db } from "~/server/db";
+import { db } from "~/lib/db";
 
 export const authOptions: NextAuthOptions = {
   providers: [
