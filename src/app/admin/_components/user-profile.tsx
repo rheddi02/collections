@@ -14,6 +14,7 @@ import useAppStore from "~/store/app.store";
 
 const UserProfile = () => {
   const { data: session } = useSession();
+  console.log("🚀 ~ UserProfile ~ session:", session)
   const router = useRouter();
   const { setConfirmDialog } = useAppStore((state) => ({
     setConfirmDialog: state.setConfirmDialog,
@@ -72,13 +73,18 @@ const UserProfile = () => {
           <PersonIcon className="size-4 text-muted-foreground" />
           Profile Settings
         </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={handleCategoriesClick}
-          className="cursor-pointer flex items-center gap-2"
-        >
+        {
+          session?.user?.isVerified && (
+
+            <DropdownMenuItem
+            onClick={handleCategoriesClick}
+            className="cursor-pointer flex items-center gap-2"
+            >
           <TableIcon className="size-4 text-muted-foreground" />
           Manage Categories
         </DropdownMenuItem>
+        )
+      }
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={handleLogoutClick}

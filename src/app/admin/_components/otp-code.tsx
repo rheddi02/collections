@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { api } from "~/trpc/react"
-import { useSession } from "next-auth/react"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { api } from "~/trpc/react";
+import { useSession } from "next-auth/react";
 
-import { Button } from "~/components/ui/button"
-import { Form } from "~/components/ui/form"
-import { OTPInput } from "./otp-input"
-import { otpFormSchema, OtpFormValues } from "~/utils/schemas"
+import { Button } from "~/components/ui/button";
+import { Form } from "~/components/ui/form";
+import { OTPInput } from "./otp-input";
+import { otpFormSchema, OtpFormValues } from "~/utils/schemas";
 
 export function InputOTPForm({ onBack }: { onBack?: () => void }) {
   const { update } = useSession();
@@ -17,7 +17,7 @@ export function InputOTPForm({ onBack }: { onBack?: () => void }) {
     defaultValues: {
       pin: "",
     },
-  })
+  });
 
   const verifyOTPMutation = api.auth.verifyOTP.useMutation({
     onSuccess: async () => {
@@ -50,24 +50,27 @@ export function InputOTPForm({ onBack }: { onBack?: () => void }) {
           maxLength={6}
         />
 
-        <Button 
-          type="submit" 
-          disabled={form.watch("pin").length < 6 || verifyOTPMutation.isPending}
-        >
-          {verifyOTPMutation.isPending ? "Verifying..." : "Submit"}
-        </Button>
-        
-        {onBack && (
-          <Button 
-            type="button" 
-            variant="outline" 
-            onClick={onBack}
-            disabled={verifyOTPMutation.isPending}
+        <div className="flex gap-2">
+          <Button
+            type="submit"
+            disabled={
+              form.watch("pin").length < 6 || verifyOTPMutation.isPending
+            }
           >
-            Request New Code
+            {verifyOTPMutation.isPending ? "Verifying..." : "Submit"}
           </Button>
-        )}
+          {onBack && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onBack}
+              disabled={verifyOTPMutation.isPending}
+            >
+              Request New Code
+            </Button>
+          )}
+        </div>
       </form>
     </Form>
-  )
+  );
 }
