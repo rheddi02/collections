@@ -12,6 +12,6 @@ export default defineConfig({
     seed: 'tsx prisma/seed.ts',
   },
   datasource: { 
-    url: process.env.POSTGRES_PRISMA_URL ?? 'postgres://default:2r3gipyfFlVC@ep-damp-water-a166pxww-pooler.ap-southeast-1.aws.neon.tech/verceldb?pgbouncer=true&connect_timeout=15&sslmode=require'
+    url: 'postgres://default:2r3gipyfFlVC@ep-damp-water-a166pxww-pooler.ap-southeast-1.aws.neon.tech/verceldb?pgbouncer=true&connect_timeout=15&sslmode=require'
   }
 });
