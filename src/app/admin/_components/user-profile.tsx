@@ -14,7 +14,6 @@ import useAppStore from "~/store/app.store";
 
 const UserProfile = () => {
   const { data: session } = useSession();
-  console.log("🚀 ~ UserProfile ~ session:", session)
   const router = useRouter();
   const { setConfirmDialog } = useAppStore((state) => ({
     setConfirmDialog: state.setConfirmDialog,
