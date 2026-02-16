@@ -33,7 +33,7 @@ jobs:
       - name: Run Prisma Migrate
         run: npx prisma migrate deploy
         env:
-          POSTGRES_PRISMA_URL: $POSTGRES_URL_NON_POOLING
+          POSTGRES_PRISMA_URL: $POSTGRES_PRISMA_URL
 
       - name: Build project artifacts
         run: vercel build --prod --token $VERCEL_TOKEN
