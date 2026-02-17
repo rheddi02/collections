@@ -75,7 +75,7 @@ export const createCategoryColumns = ({
     accessorKey: "actions",
     header: "Actions",
     cell: ({ row }) => {
-      const isDeleting = deletingIds.includes(row.getValue("id"));
+      const isDeleting = deletingIds.includes(row.original.id);
 
       return (
         <div className="flex items-center gap-1">
@@ -143,7 +143,7 @@ export const createCategoryColumns = ({
             </div>
           </div>
           <div className="flex justify-between">
-            {deletingIds.includes(row.getValue("id")) ? (
+            {deletingIds.includes(row.original.id) ? (
               <div className="flex items-center gap-1">
                 <ReloadIcon className="animate-spin" />
                 Deleting...
