@@ -9,14 +9,19 @@ import PageTable from "../_components/table/page-table";
 import { createListColumns } from "~/app/admin/[type]/_components/create-list-columns";
 import PageHeader from "../_components/page-header";
 import { useApiUtils } from "~/hooks/useApiUtils";
-import { LinkFormValues, UpdateCategoryValues, UpdateLinkValues } from "~/utils/schemas";
+import {
+  LinkFormValues,
+  UpdateCategoryValues,
+  UpdateLinkValues,
+} from "~/utils/schemas";
 import PageAction from "../_components/page-action";
 import { cn } from "~/lib/utils";
 import { isMobile } from "react-device-detect";
 import { Button } from "~/components/ui/button";
 import { useConfirmDialog } from "~/hooks";
 import PageFilters from "../_components/page-filters";
-
+import FacebookReel from "~/components/facebook-reel";
+import PlaybackDialog from "../_components/playback-dialog";
 
 // Type for individual link data from the list
 
@@ -29,23 +34,23 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
   const utils = useApiUtils();
   const confirmDialog = useConfirmDialog();
   const confirm = confirmDialog?.confirm;
-  
+
   // Fallback confirm function in case the hook fails
   const fallbackConfirm = (options: any) => {
-    if (typeof window !== 'undefined' && window.confirm) {
+    if (typeof window !== "undefined" && window.confirm) {
       if (window.confirm(options.description)) {
         options.onConfirm?.();
       }
     }
   };
-  
+
   // Use fallback if main confirm is not available
   const safeConfirm = confirm || fallbackConfirm;
   const [category, setCategory] = useState(initialData);
   const [initialFormValues, setInitialFormValues] = useState<
     Partial<LinkFormValues> | undefined
   >();
-  
+
   const [selectedLinks, setSelectedLinks] = useState<UpdateLinkValues[]>([]);
   const [form, setForm] = useState({
     title: "Create New",
@@ -54,6 +59,7 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
   });
 
   const [isClient, setIsClient] = useState(false);
+  const [playUrl, setPlayUrl] = useState<UpdateLinkValues | null>(null);
 
   // Set client flag after hydration
   useEffect(() => {
@@ -102,7 +108,7 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
     {
       staleTime: 5 * 60 * 1000, // 5 minutes
       refetchOnWindowFocus: false,
-    }
+    },
   );
 
   const handleEdit = (link: UpdateLinkValues) => {
@@ -123,15 +129,14 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
   const handleDelete = (link: UpdateLinkValues) => {
     // Clear all selected links when deleting any link
     setSelectedLinks([]);
-    
+
     if (!isClient || !isConfirmReady) return;
-    
+
     try {
       safeConfirm({
         title: "Delete Link",
         description: `Are you sure you want to delete the link "${link.title}"? This action cannot be undone.`,
-        warningText:
-          "This will permanently delete the link.",
+        warningText: "This will permanently delete the link.",
         confirmText: "Delete",
         cancelText: "Cancel",
         variant: "destructive",
@@ -145,24 +150,23 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
         },
       });
     } catch (error) {
-      console.error('Error opening confirm dialog:', error);
+      console.error("Error opening confirm dialog:", error);
     }
   };
 
   const handleDeleteMultipe = async () => {
     if (!isClient || !isConfirmReady) return;
-    
+
     try {
       safeConfirm({
         title: "Delete Links",
         description: `Are you sure you want to delete the selected links? This action cannot be undone.`,
-        warningText:
-          "This will permanently delete the links.",
+        warningText: "This will permanently delete the links.",
         confirmText: "Delete",
         cancelText: "Cancel",
         variant: "destructive",
         onConfirm: async () => {
-          const linkIds = selectedLinks.map(link => link.id);
+          const linkIds = selectedLinks.map((link) => link.id);
           try {
             setDeleteId(linkIds);
             await deleteLinkMutation(linkIds);
@@ -175,8 +179,17 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
         },
       });
     } catch (error) {
-      console.error('Error opening confirm dialog:', error);
+      console.error("Error opening confirm dialog:", error);
     }
+  };
+
+  const handlePlayVideo = (link: UpdateLinkValues) => {
+    // const url = link.url;
+    setPlayUrl(link);
+    // if (url.includes("facebook.com")) {
+    //   // Open Facebook Reel in a new tab
+    //   window.open(url, "_blank");
+    // }
   };
 
   // Create columns with handlers
@@ -184,6 +197,7 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
     onEdit: handleEdit,
     onDelete: handleDelete,
     deletingIds: deleteId,
+    onPlay: handlePlayVideo
   });
 
   const { mutate: createLinkMutation, isPending: pendingCreate } =
@@ -270,23 +284,22 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
     }
   };
 
-
-
   const isReady = isClient && isConfirmReady;
-  
+
   return (
     <div
       className={cn(
         "relative transition-opacity duration-200",
         isClient && isMobile && "overflow-hidden overscroll-none",
-        !isReady && "opacity-50 pointer-events-none"
+        !isReady && "pointer-events-none opacity-50",
       )}
     >
       {!isReady && (
-        <div className="absolute top-4 right-4 z-50 transition-opacity duration-200">
+        <div className="absolute right-4 top-4 z-50 transition-opacity duration-200">
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-blue-600"></div>
         </div>
       )}
+      <PlaybackDialog link={playUrl} />
       <CustomDialog
         {...{
           initialData: initialFormValues,
@@ -312,25 +325,25 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
             isFetching={isFetching}
             reload={refetch}
           />
-      <div className="flex gap-2">
-          {!!selectedLinks.length && (
-            <Button 
-              variant={"destructive"} 
+          <div className="flex gap-2">
+            {!!selectedLinks.length && (
+              <Button
+              variant={"destructive"}
               onClick={handleDeleteMultipe}
               disabled={!isReady}
-            >
-              Delete ({selectedLinks.length})
-            </Button>
-          )}
-          <PageAction 
-            label="Add New" 
-            action={() => setModal(true)} 
-            disabled={!isReady}
-          />
+              >
+                Delete ({selectedLinks.length})
+              </Button>
+            )}
+            <PageAction
+              label="Add New"
+              action={() => setModal(true)}
+              disabled={!isReady}
+              />
           </div>
         </div>
-      <PageFilters className="mb-5" placeholder="Search by title" />
-      <div
+        <PageFilters className="mb-5" placeholder="Search by title" />
+        <div
           className={cn(
             isClient && isMobile && "max-h-[calc(100vh-200px)] overflow-auto",
           )}
