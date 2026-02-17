@@ -132,7 +132,14 @@ export const createListColumns = ({
                 />
               </Tooltip>
               <Tooltip label="Open in new tab">
-                <Link href={row.original.url || "#"} target="_blank">
+                <Link
+                  href={row.original.url || "#"}
+                  target="_blank"
+                  onClick={(e) => {
+                    // prevent triggering the row click handler
+                    e.stopPropagation();
+                  }}
+                >
                   <ExternalLinkIcon className=" size-5 hover:cursor-pointer hover:text-red-600 group-hover:flex " />
                 </Link>
               </Tooltip>

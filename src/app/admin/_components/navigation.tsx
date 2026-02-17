@@ -45,7 +45,7 @@ const Nav = ({
 }) => {
   const router = useRouter();
   const segments = useSelectedLayoutSegments();
-  const segment = segments.pop();
+  const segment = segments[segments.length - 1];
   const queryClient = useQueryClient();
 
   const handleRoute = async (route: NavigationType) => {
@@ -69,7 +69,8 @@ const Nav = ({
           <div
             className={twMerge(
               "group flex items-center justify-between rounded-md p-2 capitalize hover:cursor-pointer text-muted-foreground hover:text-foreground hover:bg-muted",
-              segment === navigation.title.toLowerCase().replaceAll(" ", "-") &&
+              (segments.includes(navigation.title.toLowerCase().replaceAll(" ", "-")) ||
+                segment === navigation.title.toLowerCase().replaceAll(" ", "-")) &&
                 !navigation.subRoute.length &&
                 "bg-muted font-medium text-foreground",
               isChild && "pl-6",

@@ -21,6 +21,7 @@ import { Button } from "~/components/ui/button";
 import { useConfirmDialog } from "~/hooks";
 import PageFilters from "../_components/page-filters";
 import FacebookReel from "~/components/facebook-reel";
+import { useRouter, usePathname } from "next/navigation";
 import PlaybackDialog from "../_components/playback-dialog";
 
 // Type for individual link data from the list
@@ -285,6 +286,8 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
   };
 
   const isReady = isClient && isConfirmReady;
+  const router = useRouter();
+  const pathname = usePathname();
 
   return (
     <div
@@ -353,6 +356,12 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
             columns={columns}
             loading={isFetching}
             onRowChange={handleRowSelectionChange}
+            onRowClick={(row) => {
+              const id = (row.original as any).id;
+              if (!id) return;
+              const base = pathname?.replace(/\/$/, "") || "/admin";
+              router.push(`${base}/${id}`);
+            }}
             selectedRows={selectedLinks}
           />
         </div>
