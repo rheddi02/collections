@@ -15,6 +15,11 @@ import { Checkbox } from "~/components/ui/checkbox";
 import { getSource } from "~/utils/helpers";
 import { UpdateLinkValues } from "~/utils/schemas";
 import { PlaySquareIcon } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "~/components/ui/tooltip";
 
 interface ColumnsProps {
   onEdit: (link: UpdateLinkValues) => void;
@@ -98,33 +103,41 @@ export const createListColumns = ({
             </div>
           ) : (
             <>
-              <Pencil1Icon
-                className=" size-5 hover:cursor-pointer hover:text-blue-600 group-hover:flex "
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onEdit(row.original);
-                }}
-              />
-              <PlaySquareIcon
-                className="size-5 hover:cursor-pointer hover:text-green-600 group-hover:flex"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onPlay && onPlay(row.original);
-                }}
-              />
-              <TrashIcon
-                className=" size-5 hover:cursor-pointer hover:text-red-600 group-hover:flex "
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onDelete(row.original);
-                }}
-              />
-              <Link href={row.original.url || "#"} target="_blank">
-                <ExternalLinkIcon className=" size-5 hover:cursor-pointer hover:text-red-600 group-hover:flex " />
-              </Link>
+              <Tooltip label="Edit record">
+                <Pencil1Icon
+                  className=" size-5 hover:cursor-pointer hover:text-blue-600 group-hover:flex "
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onEdit(row.original);
+                  }}
+                />
+              </Tooltip>
+              <Tooltip label="Play link">
+                <PlaySquareIcon
+                  className="size-5 hover:cursor-pointer hover:text-green-600 group-hover:flex"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onPlay && onPlay(row.original);
+                  }}
+                />
+              </Tooltip>
+              <Tooltip label="Delete record">
+                <TrashIcon
+                  className=" size-5 hover:cursor-pointer hover:text-red-600 group-hover:flex "
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onDelete(row.original);
+                  }}
+                />
+              </Tooltip>
+              <Tooltip label="Open in new tab">
+                <Link href={row.original.url || "#"} target="_blank">
+                  <ExternalLinkIcon className=" size-5 hover:cursor-pointer hover:text-red-600 group-hover:flex " />
+                </Link>
+              </Tooltip>
             </>
           )}
         </div>
