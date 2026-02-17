@@ -79,6 +79,12 @@ export const categoryRouter = createTRPCRouter({
         ctx.db.categories.count({
           where: {
             userId: parseInt(ctx.user.id), // Add user security check
+            ...(filters.keyword && {
+                title: {
+                  contains: filters.keyword,
+                  mode: "insensitive", // Case-insensitive search
+                },
+              }),
           },
         }),
       ]);

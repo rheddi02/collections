@@ -9,8 +9,9 @@ import useAppStore from "~/store/app.store";
 import { Button } from "~/components/ui/button";
 
 const PageFilters = ({ className, placeholder }: { className?: string, placeholder?: string }) => {
-  const { setFilters } = useAppStore((state) => ({
+  const { setFilters, setPage } = useAppStore((state) => ({
     setFilters: state.setFilters,
+    setPage: state.setPage,
   }));
 
   const form = useForm<FilterFormValues>({
@@ -25,6 +26,7 @@ const PageFilters = ({ className, placeholder }: { className?: string, placehold
   useEffect(() => {
     const handle = setTimeout(() => {
       setFilters({ keyword });
+      setPage(1);
     }, 500);
     return () => clearTimeout(handle);
   }, [keyword, setFilters]);
