@@ -80,6 +80,12 @@ export const linkRouter = createTRPCRouter({
           where: {
             categoryId: category.id,
             userId: parseInt(ctx.user.id), // Add user security check
+            ...(filters.keyword && {
+              title: {
+                contains: filters.keyword,
+                mode: "insensitive", // Case-insensitive search
+              },
+            }),
           },
         }),
       ]);
