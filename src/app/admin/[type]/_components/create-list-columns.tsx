@@ -17,8 +17,6 @@ import { UpdateLinkValues } from "~/utils/schemas";
 import { PlaySquareIcon } from "lucide-react";
 import {
   Tooltip,
-  TooltipContent,
-  TooltipTrigger,
 } from "~/components/ui/tooltip";
 
 interface ColumnsProps {
