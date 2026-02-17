@@ -1,6 +1,7 @@
 "use client";
 import type { ColumnDef, Row } from "@tanstack/react-table";
 import {
+  ExternalLinkIcon,
   EyeOpenIcon,
   Pencil1Icon,
   ReloadIcon,
@@ -13,43 +14,46 @@ import { ToggleGroupItem } from "@radix-ui/react-toggle-group";
 import { Checkbox } from "~/components/ui/checkbox";
 import { getSource } from "~/utils/helpers";
 import { UpdateLinkValues } from "~/utils/schemas";
+import { PlaySquareIcon } from "lucide-react";
 
 interface ColumnsProps {
   onEdit: (link: UpdateLinkValues) => void;
   onDelete: (link: UpdateLinkValues) => void;
+  onPlay?: (link: UpdateLinkValues) => void;
   deletingIds: number[];
 }
 
 export const createListColumns = ({
   onEdit,
   onDelete,
+  onPlay,
   deletingIds,
 }: ColumnsProps): ColumnDef<UpdateLinkValues>[] => [
   {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-      size: 20,
-      minSize: 20,
-      maxSize: 20,
-    },
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+    size: 20,
+    minSize: 20,
+    maxSize: 20,
+  },
   {
     accessorKey: "title",
     header: () => {
@@ -95,11 +99,19 @@ export const createListColumns = ({
           ) : (
             <>
               <Pencil1Icon
-                className=" size-5 hover:cursor-pointer hover:text-red-600 group-hover:flex "
+                className=" size-5 hover:cursor-pointer hover:text-blue-600 group-hover:flex "
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                   onEdit(row.original);
+                }}
+              />
+              <PlaySquareIcon
+                className="size-5 hover:cursor-pointer hover:text-green-600 group-hover:flex"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onPlay && onPlay(row.original);
                 }}
               />
               <TrashIcon
@@ -111,7 +123,7 @@ export const createListColumns = ({
                 }}
               />
               <Link href={row.original.url || "#"} target="_blank">
-                <EyeOpenIcon className=" size-5 hover:cursor-pointer hover:text-red-600 group-hover:flex " />
+                <ExternalLinkIcon className=" size-5 hover:cursor-pointer hover:text-red-600 group-hover:flex " />
               </Link>
             </>
           )}
