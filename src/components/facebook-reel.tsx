@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 declare global {
   interface Window {
     FB: any;
@@ -11,6 +13,8 @@ interface Props {
 }
 
 export default function FacebookReel({ url }: Props) {
+  const [isLoading, setIsLoading] = useState(true);
+
   if (!url) return null;
 
   // Convert Facebook URL to embed format
@@ -30,16 +34,51 @@ export default function FacebookReel({ url }: Props) {
 
   return (
     <div style={{ maxWidth: "500px", width: "100%" }}>
-      <iframe
-        src={embedUrl}
-        width="100%"
-        height="600"
-        style={{ border: "none", overflow: "hidden" }}
-        scrolling="no"
-        frameBorder="0"
-        allowFullScreen={true}
-        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-      ></iframe>
+      <div style={{ position: "relative" }}>
+        {isLoading && (
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "600px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "#f0f0f0",
+              zIndex: 1,
+            }}
+          >
+            <div
+              style={{
+                width: "40px",
+                height: "40px",
+                border: "3px solid #e0e0e0",
+                borderTop: "3px solid #3b82f6",
+                borderRadius: "50%",
+                animation: "spin 1s linear infinite",
+              }}
+            />
+            <style>{`
+              @keyframes spin {
+                to { transform: rotate(360deg); }
+              }
+            `}</style>
+          </div>
+        )}
+        <iframe
+          src={embedUrl}
+          width="100%"
+          height="600"
+          style={{ border: "none", overflow: "hidden", display: "block", zIndex: 2, position: "relative" }}
+          scrolling="no"
+          frameBorder="0"
+          allowFullScreen={true}
+          allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+          onLoad={() => setIsLoading(false)}
+        ></iframe>
+      </div>
     </div>
   );
 }
