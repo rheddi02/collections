@@ -42,7 +42,7 @@ export const getYouTubeId = (url: string): string | null => {
 
     // Handle youtu.be short links
     if (hostname.includes('youtu.be')) {
-      return parsedUrl.pathname.slice(1); // Remove leading slash
+      return parsedUrl.pathname.slice(1) || null; // Remove leading slash
     }
 
     // Handle youtube.com and www.youtube.com
@@ -52,7 +52,7 @@ export const getYouTubeId = (url: string): string | null => {
 
       // Handle embed URLs like youtube.com/embed/VIDEO_ID
       const match = parsedUrl.pathname.match(/\/embed\/([^/?]+)/);
-      if (match) return match[1];
+      if (match && match[1]) return match[1];
     }
 
     return null;
