@@ -14,6 +14,19 @@ export const linkRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       try {
+        const userId = parseInt(ctx.user.id);
+
+        // Check if user has reached the link limit (30 links max)
+        const linkCount = await ctx.db.links.count({
+          where: {
+            userId: userId,
+          },
+        });
+
+        if (linkCount >= 30) {
+          throw new Error("You have reached the maximum limit of 30 links");
+        }
+
         await ctx.db.links.create({
           data: {
             ...input,

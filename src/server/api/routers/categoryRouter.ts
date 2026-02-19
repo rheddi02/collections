@@ -12,6 +12,17 @@ export const categoryRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const userId = parseInt(ctx.user.id);
 
+      // Check if user has reached the category limit (3 categories max)
+      const categoryCount = await ctx.db.categories.count({
+        where: {
+          userId: userId,
+        },
+      });
+
+      if (categoryCount >= 3) {
+        throw new Error("You have reached the maximum limit of 3 categories");
+      }
+
       // Check if category with this title already exists for this user
       const existingCategory = await ctx.db.categories.findFirst({
         where: {
