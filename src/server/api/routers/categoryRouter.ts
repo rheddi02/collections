@@ -1,3 +1,4 @@
+import { Role } from "@/prisma/generated/client";
 import { z } from "zod";
 import { createTRPCRouter, authenticatedProcedure } from "~/server/api/trpc";
 import { paginationSchema } from "~/utils/schemas";
@@ -12,15 +13,25 @@ export const categoryRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const userId = parseInt(ctx.user.id);
 
-      // Check if user has reached the category limit (3 categories max)
-      const categoryCount = await ctx.db.categories.count({
-        where: {
-          userId: userId,
-        },
+      const user = await ctx.db.users.findUnique({
+        where: { id: userId },
       });
 
-      if (categoryCount >= 3) {
-        throw new Error("You have reached the maximum limit of 3 categories");
+      if (!user) {
+        throw new Error("User not found");
+      }
+      // check if user is admin else count links if max limit reached
+      if (user.role !== Role.ADMIN) {
+        // Check if user has reached the category limit (3 categories max)
+        const categoryCount = await ctx.db.categories.count({
+          where: {
+            userId: userId,
+          },
+        });
+
+        if (categoryCount >= 3) {
+          throw new Error("You have reached the maximum limit of 3 categories");
+        }
       }
 
       // Check if category with this title already exists for this user
@@ -91,11 +102,11 @@ export const categoryRouter = createTRPCRouter({
           where: {
             userId: parseInt(ctx.user.id), // Add user security check
             ...(filters.keyword && {
-                title: {
-                  contains: filters.keyword,
-                  mode: "insensitive", // Case-insensitive search
-                },
-              }),
+              title: {
+                contains: filters.keyword,
+                mode: "insensitive", // Case-insensitive search
+              },
+            }),
           },
         }),
       ]);

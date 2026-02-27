@@ -12,12 +12,13 @@ import { Label } from "~/components/ui/label";
 import { ToggleGroup } from "~/components/ui/toggle-group";
 import { ToggleGroupItem } from "@radix-ui/react-toggle-group";
 import { Checkbox } from "~/components/ui/checkbox";
-import { getSource } from "~/utils/helpers";
+import { getSource, isPlayableVideo, truncateText } from "~/utils/helpers";
 import { UpdateLinkValues } from "~/utils/schemas";
 import { PlaySquareIcon } from "lucide-react";
 import {
   Tooltip,
 } from "~/components/ui/tooltip";
+import { cn } from "~/lib/utils";
 
 interface ColumnsProps {
   onEdit: (link: UpdateLinkValues) => void;
@@ -73,7 +74,7 @@ export const createListColumns = ({
     },
     cell: ({ row }) => {
       const descriptions: string = row.getValue("description");
-      return <>{<div className="">{descriptions}</div>}</>;
+      return <>{<div className="truncate">{truncateText(descriptions, 30)}</div>}</>;
     },
   },
   {
@@ -113,8 +114,9 @@ export const createListColumns = ({
               </Tooltip>
               <Tooltip label="Play link">
                 <PlaySquareIcon
-                  className="size-5 hover:cursor-pointer hover:text-green-600 group-hover:flex"
+                  className={cn('size-5 hover:cursor-pointer hover:text-green-600 group-hover:flex', !isPlayableVideo(row.original.url) && 'opacity-50 cursor-not-allowed')}
                   onClick={(e) => {
+                    if (!isPlayableVideo(row.original.url)) return
                     e.preventDefault();
                     e.stopPropagation();
                     onPlay && onPlay(row.original);

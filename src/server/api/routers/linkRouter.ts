@@ -1,3 +1,4 @@
+import { Role } from "@/prisma/generated/enums";
 import { z } from "zod";
 import { createTRPCRouter, authenticatedProcedure } from "~/server/api/trpc";
 import { paginationSchema } from "~/utils/schemas";
@@ -15,16 +16,25 @@ export const linkRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       try {
         const userId = parseInt(ctx.user.id);
-
-        // Check if user has reached the link limit (30 links max)
-        const linkCount = await ctx.db.links.count({
-          where: {
-            userId: userId,
-          },
+        const user = await ctx.db.users.findUnique({
+          where: { id: userId },
         });
 
-        if (linkCount >= 30) {
-          throw new Error("You have reached the maximum limit of 30 links");
+        if (!user) {
+          throw new Error("User not found");
+        }
+        // check if user is admin else count links if max limit reached
+        if (user.role !== Role.ADMIN) {
+          // Check if user has reached the link limit (30 links max)
+          const linkCount = await ctx.db.links.count({
+            where: {
+              userId: userId,
+            },
+          });
+
+          if (linkCount >= 30) {
+            throw new Error("You have reached the maximum limit of 30 links");
+          }
         }
 
         await ctx.db.links.create({
@@ -115,7 +125,7 @@ export const linkRouter = createTRPCRouter({
 
   count: authenticatedProcedure.query(async ({ ctx }) => {
     const userId = parseInt(ctx.user?.id || "0");
-    
+
     // Get counts with category information
     const linkCounts = await ctx.db.links.groupBy({
       by: ["categoryId"],
@@ -129,20 +139,22 @@ export const linkRouter = createTRPCRouter({
     const categoryIds = linkCounts.map((item) => item.categoryId);
     const categories = await ctx.db.categories.findMany({
       where: {
-        id: { in: categoryIds }
+        id: { in: categoryIds },
       },
       select: {
         id: true,
         title: true,
-      }
+      },
     });
 
     // Combine the data
     const result = linkCounts.map((linkCount) => {
-      const category = categories.find((cat) => cat.id === linkCount.categoryId);
+      const category = categories.find(
+        (cat) => cat.id === linkCount.categoryId,
+      );
       return {
         categoryId: linkCount.categoryId,
-        categoryName: category?.title || 'Unknown',
+        categoryName: category?.title || "Unknown",
         count: linkCount._count.id,
       };
     });
@@ -191,14 +203,13 @@ export const linkRouter = createTRPCRouter({
     }),
 
   delete: authenticatedProcedure
-  .input(z.array(z.number()))
-  .mutation(async ({ ctx, input }) => {
-
-    return ctx.db.links.deleteMany({
-      where: { 
-        id: { in: input },
-        userId: parseInt(ctx.user.id) // Additional security check
-      },
-    });
-  }),
+    .input(z.array(z.number()))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.links.deleteMany({
+        where: {
+          id: { in: input },
+          userId: parseInt(ctx.user.id), // Additional security check
+        },
+      });
+    }),
 });
