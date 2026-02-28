@@ -198,8 +198,8 @@ export default function DataTable<TData, TValue>({
 
   return (
     <>
-      <div className="max-h-[80vh] overflow-auto">
-        <Table className="border rounded-md">
+      <div className="max-h-[75vh] overflow-auto">
+        <Table className="rounded-md">
           {(!isMobile || !isClient) && (
             <TableHeader className="">
               {table.getHeaderGroups().map((headerGroup) => (
@@ -235,7 +235,7 @@ export default function DataTable<TData, TValue>({
               ))}
             </TableHeader>
           )}
-          <TableBody className="max-h-[80vh] overflow-y-auto">
+          <TableBody className="overflow-y-auto">
             {loading ? (
               <TableRowActions type={"loading"} />
             ) : table.getRowModel().rows?.length ? (

@@ -32,7 +32,7 @@ export default function RootLayout({
     <div className="flex h-screen bg-background text-foreground">
       <Navigation />
       <div className="h-full w-full overflow-auto p-2">
-        <div className="h-full rounded-md border bg-card">{children}</div>
+        <div className="h-full rounded-md border bg-card overflow-hidden">{children}</div>
       </div>
       <GlobalConfirmDialog />
       <Toaster />
