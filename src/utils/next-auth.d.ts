@@ -12,6 +12,7 @@ declare module "next-auth" {
     profile?: string
     cover?: string
     isVerified: boolean
+    role: string
   }
 }
 
@@ -19,5 +20,6 @@ declare module "next-auth/jwt" {
   interface JWT {
     id: string
     isVerified: boolean
+    role: string
   }
 }

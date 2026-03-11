@@ -4,6 +4,7 @@ import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { db } from "~/lib/db";
+import { Role } from "@/prisma/generated/enums";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -52,6 +53,7 @@ export const authOptions: NextAuthOptions = {
             email: user.email,
             name: user.username || user.email,
             isVerified: user.isVerified,
+            isAdmin: user.role === Role.ADMIN
           };
         } catch (error) {
           console.error("Auth error:", error);
@@ -111,6 +113,7 @@ export const authOptions: NextAuthOptions = {
           (user as any).id = existingUser.id.toString();
           (user as any).isVerified = existingUser.isVerified;
           (user as any).name = existingUser.username || user.name;
+          (user as any).role = existingUser.role || user.role;
         }
 
         return true;
@@ -123,6 +126,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.isVerified = user.isVerified;
+        token.role = user.role
       } else if (token.id && token.isVerified === false) {
         // Only fetch from database if user is currently unverified
         // This way we can detect when they become verified
@@ -144,6 +148,7 @@ export const authOptions: NextAuthOptions = {
       if (token && session.user) {
         session.user.id = token.id as string;
         session.user.isVerified = token.isVerified as boolean;
+        session.user.role = token.role
       }
       return session;
     },

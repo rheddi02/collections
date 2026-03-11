@@ -15,9 +15,7 @@ import { Checkbox } from "~/components/ui/checkbox";
 import { getSource, isPlayableVideo, truncateText } from "~/utils/helpers";
 import { UpdateLinkValues } from "~/utils/schemas";
 import { PlaySquareIcon } from "lucide-react";
-import {
-  Tooltip,
-} from "~/components/ui/tooltip";
+import { Tooltip } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
 
 interface ColumnsProps {
@@ -25,6 +23,7 @@ interface ColumnsProps {
   onDelete: (link: UpdateLinkValues) => void;
   onPlay?: (link: UpdateLinkValues) => void;
   deletingIds: number[];
+  isAdmin?: boolean;
 }
 
 export const createListColumns = ({
@@ -32,6 +31,7 @@ export const createListColumns = ({
   onDelete,
   onPlay,
   deletingIds,
+  isAdmin,
 }: ColumnsProps): ColumnDef<UpdateLinkValues>[] => [
   {
     id: "select",
@@ -74,7 +74,9 @@ export const createListColumns = ({
     },
     cell: ({ row }) => {
       const descriptions: string = row.getValue("description");
-      return <>{<div className="truncate">{truncateText(descriptions, 30)}</div>}</>;
+      return (
+        <>{<div className="truncate">{truncateText(descriptions, 30)}</div>}</>
+      );
     },
   },
   {
@@ -112,17 +114,23 @@ export const createListColumns = ({
                   }}
                 />
               </Tooltip>
-              <Tooltip label="Play link">
-                <PlaySquareIcon
-                  className={cn('size-5 hover:cursor-pointer hover:text-green-600 group-hover:flex', !isPlayableVideo(row.original.url) && 'opacity-50 cursor-not-allowed')}
-                  onClick={(e) => {
-                    if (!isPlayableVideo(row.original.url)) return
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onPlay && onPlay(row.original);
-                  }}
-                />
-              </Tooltip>
+              {isAdmin && (
+                <Tooltip label="Play link">
+                  <PlaySquareIcon
+                    className={cn(
+                      "size-5 hover:cursor-pointer hover:text-green-600 group-hover:flex",
+                      !isPlayableVideo(row.original.url) &&
+                        "cursor-not-allowed opacity-50",
+                    )}
+                    onClick={(e) => {
+                      if (!isPlayableVideo(row.original.url)) return;
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onPlay && onPlay(row.original);
+                    }}
+                  />
+                </Tooltip>
+              )}
               <Tooltip label="Delete record">
                 <TrashIcon
                   className=" size-5 hover:cursor-pointer hover:text-red-600 group-hover:flex "
