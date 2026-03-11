@@ -1,3 +1,4 @@
+import { Role } from "@/prisma/generated/enums"
 import NextAuth from "next-auth"
 
 declare module "next-auth" {
@@ -12,7 +13,7 @@ declare module "next-auth" {
     profile?: string
     cover?: string
     isVerified: boolean
-    role: string
+    role: Role
   }
 }
 

@@ -53,7 +53,7 @@ export const authOptions: NextAuthOptions = {
             email: user.email,
             name: user.username || user.email,
             isVerified: user.isVerified,
-            isAdmin: user.role === Role.ADMIN
+            role: user.role
           };
         } catch (error) {
           console.error("Auth error:", error);
@@ -126,7 +126,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.isVerified = user.isVerified;
-        token.role = user.role
+        token.role = user.role as unknown as Role
       } else if (token.id && token.isVerified === false) {
         // Only fetch from database if user is currently unverified
         // This way we can detect when they become verified
@@ -148,7 +148,7 @@ export const authOptions: NextAuthOptions = {
       if (token && session.user) {
         session.user.id = token.id as string;
         session.user.isVerified = token.isVerified as boolean;
-        session.user.role = token.role
+        session.user.role = token.role as unknown as Role
       }
       return session;
     },

@@ -2,6 +2,7 @@ import React from 'react'
 import { render, RenderOptions } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { SessionProvider } from 'next-auth/react'
+import { Role } from '@/prisma/generated/enums'
 
 // Create a mock session for testing
 const mockSession = {
@@ -11,6 +12,7 @@ const mockSession = {
     email: 'test@example.com',
     username: 'testuser',
     isVerified: true,
+    role: Role.USER
   },
   expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
 }
