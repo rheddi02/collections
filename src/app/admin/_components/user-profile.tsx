@@ -49,7 +49,7 @@ const UserProfile = () => {
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
-      <DropdownMenuTrigger asChild>
+      <DropdownMenuTrigger asChild className="submenu-button">
         <div className="relative mb-2 flex items-center gap-2 p-2 cursor-pointer group rounded-md hover:bg-muted">
           <PersonIcon className="size-10 rounded-full border p-2 text-muted-foreground group-hover:text-foreground" />
           <div className="flex flex-col">
