@@ -7,7 +7,7 @@ import { SessionProvider } from "next-auth/react";
 import { GlobalDialogProvider } from "~/hooks/useGlobalDialog";
 import { Toaster } from "~/components/ui/toaster";
 import { ThemeProvider } from "~/components/theme-provider";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { steps } from "~/utils/tour-steps";
 
@@ -18,9 +18,13 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [runTour, setRunTour] = useState(
-    !localStorage.getItem("tourCompleted"),
-  );
+  const [runTour, setRunTour] = useState(false);
+
+  useEffect(() => {
+  const completed = localStorage.getItem("tourCompleted");
+  setRunTour(!completed);
+}, []);
+
   const handleTourEnd = () => {
     localStorage.setItem("tourCompleted", "true");
     setRunTour(false);
