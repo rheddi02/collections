@@ -22,6 +22,8 @@ import { useConfirmDialog } from "~/hooks";
 import PageFilters from "../_components/page-filters";
 import FacebookReel from "~/components/facebook-reel";
 import PlaybackDialog from "../_components/playback-dialog";
+import { useSession } from "next-auth/react";
+import { Role } from "@/prisma/generated/enums";
 
 // Type for individual link data from the list
 
@@ -34,6 +36,7 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
   const utils = useApiUtils();
   const confirmDialog = useConfirmDialog();
   const confirm = confirmDialog?.confirm;
+  const { data: session } = useSession();
 
   // Fallback confirm function in case the hook fails
   const fallbackConfirm = (options: any) => {
@@ -197,7 +200,8 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
     onEdit: handleEdit,
     onDelete: handleDelete,
     deletingIds: deleteId,
-    onPlay: handlePlayVideo
+    onPlay: handlePlayVideo,
+    isAdmin: session?.user.role === Role.ADMIN
   });
 
   const { mutate: createLinkMutation, isPending: pendingCreate } =
