@@ -2,7 +2,7 @@
 type JoyrideStep = {
   target: string;            // CSS selector of the element to highlight (required)
   content: React.ReactNode;  // Tooltip content (required)
-  placement?: 'top' | 'bottom' | 'left' | 'right' | 'center'; // optional, default 'bottom'
+  placement?: 'top' | 'bottom' | 'left' | 'right'; // optional, default 'bottom'
   title?: React.ReactNode;   // Optional title for tooltip
   disableBeacon?: boolean;   // true to prevent beacon (highlight pulse) from showing
   hideBackButton?: boolean;  // hides "Back" button for this step
@@ -11,7 +11,7 @@ type JoyrideStep = {
     [key: string]: any;
   };
   isFixed?: boolean;         // if tooltip should be fixed in viewport
-  placementBeacon?: string;  // position for the beacon
+  placementBeacon?: JoyrideStep['placement'];  // position for the beacon
   floaterProps?: {           // advanced: props for Popper.js floating tooltip
     [key: string]: any;
   };
