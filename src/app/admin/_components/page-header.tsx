@@ -19,9 +19,9 @@ const PageHeader = ({
 }: Props) => {
   return (
     <div className="flex items-center gap-2">
-      <span onClick={setOpenMenu}>
-        <HamburgerMenuIcon className="block h-5 w-5 sm:hidden text-muted-foreground hover:text-foreground transition-colors" />
-      </span>
+      <button type="button" onClick={setOpenMenu} aria-label="Toggle menu" className="block sm:hidden">
+        <HamburgerMenuIcon className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors" />
+      </button>
       {title && (
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">

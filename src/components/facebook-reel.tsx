@@ -14,14 +14,12 @@ interface Props {
 
 export default function FacebookReel({ url }: Props) {
   const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
 
   if (!url) return null;
 
-  // Convert Facebook URL to embed format
   const getEmbedUrl = (facebookUrl: string) => {
     try {
-      // If it's already a share URL or regular URL, use it directly with the embed API
-      // Facebook's embed API can handle various URL formats
       const encodedUrl = encodeURIComponent(facebookUrl);
       return `https://www.facebook.com/plugins/video.php?href=${encodedUrl}&width=500&show_text=false&allowfullscreen=true`;
     } catch {
@@ -35,7 +33,7 @@ export default function FacebookReel({ url }: Props) {
   return (
     <div style={{ maxWidth: "500px", width: "100%" }}>
       <div style={{ position: "relative" }}>
-        {isLoading && (
+        {isLoading && !hasError && (
           <div
             style={{
               position: "absolute",
@@ -67,17 +65,34 @@ export default function FacebookReel({ url }: Props) {
             `}</style>
           </div>
         )}
-        <iframe
-          src={embedUrl}
-          width="100%"
-          height="600"
-          style={{ border: "none", overflow: "hidden", display: "block", zIndex: 2, position: "relative" }}
-          scrolling="no"
-          frameBorder="0"
-          allowFullScreen={true}
-          allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-          onLoad={() => setIsLoading(false)}
-        ></iframe>
+        {hasError ? (
+          <div
+            style={{
+              width: "100%",
+              height: "600px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "#f0f0f0",
+            }}
+          >
+            <p style={{ color: "#666" }}>Video unavailable</p>
+          </div>
+        ) : (
+          <iframe
+            src={embedUrl}
+            width="100%"
+            height="600"
+            aria-label="Facebook video player"
+            style={{ border: "none", overflow: "hidden", display: "block", zIndex: 2, position: "relative" }}
+            scrolling="no"
+            frameBorder="0"
+            allowFullScreen={true}
+            allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+            onLoad={() => setIsLoading(false)}
+            onError={() => { setIsLoading(false); setHasError(true); }}
+          />
+        )}
       </div>
     </div>
   );

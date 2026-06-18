@@ -52,6 +52,7 @@ interface DataActions {
 interface UtilityActions {
   toggleModal: () => void;
   toggleMenu: () => void;
+  reset: () => void;
 }
 
 // Toast State interfaces
@@ -110,6 +111,16 @@ const createStore: StateCreator<State, [], [], State> = (set, get) => ({
   resetDeleteIds: () => set({ deleteId: [] }),
   toggleModal: () => set({ modal: !get().modal }),
   toggleMenu: () => set({ openMenu: !get().openMenu }),
+  reset: () => set({
+    modal: false,
+    isLoading: false,
+    confirmDialog: null,
+    categories: [],
+    editCategory: null,
+    deleteId: [],
+    filters: { keyword: '' },
+    toastType: { type: ToastTypes.DEFAULT, data: '' },
+  }),
 });
 
 const useAppStore = create<State & PaginationState>()(

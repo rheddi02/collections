@@ -40,6 +40,8 @@ model Categories {
 
   @@unique([title, userId])
   @@index([id])
+  @@index([userId])
+  @@index([slug])
 }
 
 model Links {
@@ -62,6 +64,8 @@ model Links {
 
   @@unique([url, userId])
   @@index([id])
+  @@index([userId])
+  @@index([categoryId])
 }
 
 model Users {

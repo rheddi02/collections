@@ -1,6 +1,6 @@
 import { Role } from "@/prisma/generated/client";
 import { z } from "zod";
-import { createTRPCRouter, authenticatedProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, authenticatedProcedure, parseUserId } from "~/server/api/trpc";
 import { paginationSchema } from "~/utils/schemas";
 
 export const categoryRouter = createTRPCRouter({
@@ -11,7 +11,7 @@ export const categoryRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const userId = parseInt(ctx.user.id);
+      const userId = parseUserId(ctx.user.id);
 
       const user = await ctx.db.users.findUnique({
         where: { id: userId },
@@ -73,7 +73,7 @@ export const categoryRouter = createTRPCRouter({
         ctx.db.categories
           .findMany({
             where: {
-              userId: parseInt(ctx.user.id), // Add user security check
+              userId: parseUserId(ctx.user.id), // Add user security check
               ...(filters.keyword && {
                 title: {
                   contains: filters.keyword,
@@ -100,7 +100,7 @@ export const categoryRouter = createTRPCRouter({
           ),
         ctx.db.categories.count({
           where: {
-            userId: parseInt(ctx.user.id), // Add user security check
+            userId: parseUserId(ctx.user.id), // Add user security check
             ...(filters.keyword && {
               title: {
                 contains: filters.keyword,
@@ -121,7 +121,7 @@ export const categoryRouter = createTRPCRouter({
 
   listAll: authenticatedProcedure.query(async ({ ctx, input }) => {
     const categories = await ctx.db.categories.findMany({
-      where: { userId: Number(ctx.user.id) },
+      where: { userId: parseUserId(ctx.user.id) },
       select: {
         id: true,
         title: true,
@@ -145,7 +145,7 @@ export const categoryRouter = createTRPCRouter({
     .input(z.number())
     .query(async ({ ctx, input }) => {
       return ctx.db.categories.findUnique({
-        where: { id: input, userId: parseInt(ctx.user.id) },
+        where: { id: input, userId: parseUserId(ctx.user.id) },
       });
     }),
 
@@ -155,7 +155,7 @@ export const categoryRouter = createTRPCRouter({
       return ctx.db.categories.findFirst({
         where: {
           title: input,
-          userId: parseInt(ctx.user.id),
+          userId: parseUserId(ctx.user.id),
         },
       });
     }),
@@ -166,7 +166,7 @@ export const categoryRouter = createTRPCRouter({
       return ctx.db.categories.findFirst({
         where: {
           slug: input,
-          userId: parseInt(ctx.user.id),
+          userId: parseUserId(ctx.user.id),
         },
       });
     }),
@@ -181,7 +181,7 @@ export const categoryRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const { id, ...updateData } = input;
-      const userId = parseInt(ctx.user.id);
+      const userId = parseUserId(ctx.user.id);
 
       // Check if category exists
       const existingCategory = await ctx.db.categories.findUnique({
@@ -224,7 +224,7 @@ export const categoryRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       // SECURITY: Check if category exists AND belongs to authenticated user
       const existingCategories = await ctx.db.categories.findMany({
-        where: { id: { in: input }, userId: parseInt(ctx.user.id) },
+        where: { id: { in: input }, userId: parseUserId(ctx.user.id) },
       });
 
       if (existingCategories.length === 0) {
@@ -234,7 +234,7 @@ export const categoryRouter = createTRPCRouter({
       // CRITICAL SECURITY CHECK: Only allow users to delete their own data
       if (
         existingCategories.some(
-          (category) => category.userId !== parseInt(ctx.user.id),
+          (category) => category.userId !== parseUserId(ctx.user.id),
         )
       ) {
         throw new Error("Unauthorized: You can only delete your own category");
@@ -244,7 +244,7 @@ export const categoryRouter = createTRPCRouter({
       await ctx.db.links.deleteMany({
         where: {
           categoryId: { in: input },
-          userId: parseInt(ctx.user.id), // Additional security check
+          userId: parseUserId(ctx.user.id), // Additional security check
         },
       });
 

@@ -1,16 +1,25 @@
 "use client";
 import React, { useEffect, type ReactNode } from "react";
+import { useSession } from "next-auth/react";
 import { useToast } from "~/components/ui/use-toast";
 import useAppStore from "~/store/app.store";
 import { ToastTypes } from "~/utils/types";
 
 const Template = ({ children }: { children: ReactNode }) => {
   const { toast } = useToast();
-  const { toastType } = useAppStore(
+  const { status } = useSession();
+  const { toastType, reset } = useAppStore(
     (state) => ({
       toastType: state.toastType,
+      reset: state.reset,
     }),
   );
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      reset();
+    }
+  }, [status, reset]);
 
   useEffect(() => {
     if (toastType.type == ToastTypes.DEFAULT) return;

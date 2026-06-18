@@ -55,7 +55,8 @@ const CardTemplate = ({
               {label}
             </span>
           </span>
-          <div
+          <button
+            type="button"
             className="rounded-full p-2 text-muted-foreground transition-colors group-hover:text-foreground hover:bg-muted"
             aria-label="Open category"
             onClick={(e) => {
@@ -64,7 +65,7 @@ const CardTemplate = ({
             }}
           >
             <LinkIcon className="h-4 w-4" />
-          </div>
+          </button>
         </CardTitle>
         {description && !isCompact && (
           <CardDescription className="text-sm text-muted-foreground">

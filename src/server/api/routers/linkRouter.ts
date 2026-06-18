@@ -1,7 +1,7 @@
 import { Role } from "@/prisma/generated/enums";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { createTRPCRouter, authenticatedProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, authenticatedProcedure, parseUserId } from "~/server/api/trpc";
 import { paginationSchema } from "~/utils/schemas";
 
 export const linkRouter = createTRPCRouter({
@@ -16,7 +16,7 @@ export const linkRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        const userId = parseInt(ctx.user.id);
+        const userId = parseUserId(ctx.user.id);
         const user = await ctx.db.users.findUnique({
           where: { id: userId },
         });
@@ -82,7 +82,7 @@ export const linkRouter = createTRPCRouter({
             equals: categoryTitle,
             mode: "insensitive", // Case-insensitive search
           },
-          userId: parseInt(ctx.user.id), // Add user security check
+          userId: parseUserId(ctx.user.id), // Add user security check
         },
       });
 
@@ -90,7 +90,7 @@ export const linkRouter = createTRPCRouter({
         ctx.db.links.findMany({
           where: {
             categoryId: category.id,
-            userId: parseInt(ctx.user.id), // Add user security check
+            userId: parseUserId(ctx.user.id), // Add user security check
             ...(filters.keyword && {
               title: {
                 contains: filters.keyword,
@@ -107,7 +107,7 @@ export const linkRouter = createTRPCRouter({
         ctx.db.links.count({
           where: {
             categoryId: category.id,
-            userId: parseInt(ctx.user.id), // Add user security check
+            userId: parseUserId(ctx.user.id), // Add user security check
             ...(filters.keyword && {
               title: {
                 contains: filters.keyword,
@@ -129,49 +129,29 @@ export const linkRouter = createTRPCRouter({
     }),
 
   count: authenticatedProcedure.query(async ({ ctx }) => {
-    const userId = parseInt(ctx.user?.id || "0");
+    const userId = parseUserId(ctx.user.id);
 
-    // Get counts with category information
-    const linkCounts = await ctx.db.links.groupBy({
-      by: ["categoryId"],
-      where: { userId },
-      _count: {
-        id: true,
-      },
-    });
-
-    // Get category names for each categoryId
-    const categoryIds = linkCounts.map((item) => item.categoryId);
     const categories = await ctx.db.categories.findMany({
-      where: {
-        id: { in: categoryIds },
-      },
+      where: { userId },
       select: {
         id: true,
         title: true,
+        _count: { select: { links: true } },
       },
     });
 
-    // Combine the data
-    const result = linkCounts.map((linkCount) => {
-      const category = categories.find(
-        (cat) => cat.id === linkCount.categoryId,
-      );
-      return {
-        categoryId: linkCount.categoryId,
-        categoryName: category?.title || "Unknown",
-        count: linkCount._count.id,
-      };
-    });
-
-    return result;
+    return categories.map((c) => ({
+      categoryId: c.id,
+      categoryName: c.title,
+      count: c._count.links,
+    }));
   }),
 
   get: authenticatedProcedure
     .input(z.number())
     .query(async ({ ctx, input }) => {
       return ctx.db.links.findUnique({
-        where: { id: input, userId: parseInt(ctx.user.id) },
+        where: { id: input, userId: parseUserId(ctx.user.id) },
       });
     }),
 
@@ -188,7 +168,7 @@ export const linkRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { id, ...updateData } = input;
 
-      const userId = parseInt(ctx.user.id);
+      const userId = parseUserId(ctx.user.id);
 
       const existingLink = await ctx.db.links.findUnique({
         where: { id, userId },
@@ -214,7 +194,7 @@ export const linkRouter = createTRPCRouter({
       return ctx.db.links.deleteMany({
         where: {
           id: { in: input },
-          userId: parseInt(ctx.user.id), // Additional security check
+          userId: parseUserId(ctx.user.id), // Additional security check
         },
       });
     }),

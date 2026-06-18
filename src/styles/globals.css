@@ -196,59 +196,8 @@
     background: var(--gradient-hero);
   }
 
-  .pokemon-card {
-    @apply bg-card border border-border rounded-xl p-4 transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
-    box-shadow: var(--shadow-card);
-  }
-
-  .pokemon-card:hover {
-    box-shadow: var(--shadow-pokemon);
-  }
-
   .type-badge {
     @apply px-3 py-1 rounded-full text-sm font-medium text-white;
   }
 }
 
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}

@@ -19,8 +19,7 @@ export const categoryTitleSchemaWithUniqueness = (
     try {
       return await checkUniqueness(title);
     } catch {
-      // If API call fails, skip validation to avoid blocking form
-      return true;
+      return false;
     }
   },
   {

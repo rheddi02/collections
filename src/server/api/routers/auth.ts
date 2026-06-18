@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createTRPCRouter, authenticatedProcedure, publicProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, authenticatedProcedure, publicProcedure, parseUserId } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { Resend } from 'resend';
 import nodemailer from 'nodemailer';
@@ -131,7 +131,7 @@ export const authRouter = createTRPCRouter({
       try {
         // Rate-limit: don't send a new OTP if one is already valid
         const existing = await ctx.db.users.findUnique({
-          where: { id: parseInt(ctx.session.user.id) },
+          where: { id: parseUserId(ctx.session.user.id) },
           select: { verificationCodeExpires: true },
         });
         if (existing?.verificationCodeExpires && existing.verificationCodeExpires > new Date()) {
@@ -145,7 +145,7 @@ export const authRouter = createTRPCRouter({
         const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
         await ctx.db.users.update({
-          where: { id: parseInt(ctx.session.user.id) },
+          where: { id: parseUserId(ctx.session.user.id) },
           data: {
             verificationCode: otp,
             verificationCodeExpires: expiresAt,
@@ -175,7 +175,7 @@ export const authRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       try {
         const user = await ctx.db.users.findUnique({
-          where: { id: parseInt(ctx.session.user.id) },
+          where: { id: parseUserId(ctx.session.user.id) },
           select: {
             verificationCode: true,
             verificationCodeExpires: true,
@@ -220,7 +220,7 @@ export const authRouter = createTRPCRouter({
 
         // Mark user as verified and clear the verification code
         await ctx.db.users.update({
-          where: { id: parseInt(ctx.session.user.id) },
+          where: { id: parseUserId(ctx.session.user.id) },
           data: {
             isVerified: true,
             verificationCode: null,
@@ -253,7 +253,7 @@ export const authRouter = createTRPCRouter({
       try {
         // Get user's current password from database
         const user = await ctx.db.users.findUnique({
-          where: { id: parseInt(ctx.session.user.id) },
+          where: { id: parseUserId(ctx.session.user.id) },
           select: { password: true },
         });
 
@@ -290,7 +290,7 @@ export const authRouter = createTRPCRouter({
 
         // Update password in database
         await ctx.db.users.update({
-          where: { id: parseInt(ctx.session.user.id) },
+          where: { id: parseUserId(ctx.session.user.id) },
           data: { password: hashedNewPassword },
         });
 

@@ -66,9 +66,10 @@ const Nav = ({
     <div className={cn("relative flex flex-col gap-1")}>
       {navLists.map((navigation) => (
         <Fragment key={navigation.route}>
-          <div
+          <button
+            type="button"
             className={twMerge(
-              "group flex items-center justify-between rounded-md p-2 capitalize hover:cursor-pointer text-muted-foreground hover:text-foreground hover:bg-muted",
+              "group flex w-full items-center justify-between rounded-md p-2 capitalize text-muted-foreground hover:bg-muted hover:text-foreground",
               segment === navigation.title.toLowerCase().replaceAll(" ", "-") &&
                 !navigation.subRoute.length &&
                 "bg-muted font-medium text-foreground",
@@ -76,8 +77,8 @@ const Nav = ({
             )}
             onClick={() => handleRoute(navigation)}
           >
-            <Label className="select-none">{navigation.title}</Label>
-          </div>
+            <Label className="select-none pointer-events-none">{navigation.title}</Label>
+          </button>
           {!!navigation.subRoute.length && (
             <Nav navLists={navigation.subRoute} isChild={true} />
           )}

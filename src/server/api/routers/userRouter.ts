@@ -1,8 +1,8 @@
-import { createTRPCRouter, authenticatedProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, authenticatedProcedure, parseUserId } from "~/server/api/trpc";
 
 export const userRouter = createTRPCRouter({
   me: authenticatedProcedure.query(async ({ ctx }) => {
-    const userId = parseInt(ctx.user.id);
+    const userId = parseUserId(ctx.user.id);
 
     const user = await ctx.db.users.findUnique({
       where: { id: userId },

@@ -6,7 +6,7 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { initTRPC } from "@trpc/server";
+import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
@@ -90,6 +90,13 @@ export const createCallerFactory = t.createCallerFactory;
  * @see https://trpc.io/docs/router
  */
 export const createTRPCRouter = t.router;
+
+/** Parse a user ID string to a number, throwing UNAUTHORIZED if invalid. */
+export function parseUserId(id: string | undefined): number {
+  const n = parseInt(id ?? "", 10);
+  if (isNaN(n)) throw new TRPCError({ code: "UNAUTHORIZED" });
+  return n;
+}
 
 /**
  * Public (unauthenticated) procedure
