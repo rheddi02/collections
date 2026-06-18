@@ -8,6 +8,7 @@ interface Props {
 
 export default function YouTubeEmbed({ videoId }: Props) {
   const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
 
   return (
     <div style={{ maxWidth: "800px", width: "100%" }}>
@@ -19,7 +20,7 @@ export default function YouTubeEmbed({ videoId }: Props) {
           backgroundColor: isLoading ? "#f0f0f0" : "transparent",
         }}
       >
-        {isLoading && (
+        {isLoading && !hasError && (
           <div
             style={{
               position: "absolute",
@@ -51,22 +52,39 @@ export default function YouTubeEmbed({ videoId }: Props) {
             `}</style>
           </div>
         )}
-        <iframe
-          src={`https://www.youtube.com/embed/${videoId}`}
-          title="YouTube video player"
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            zIndex: 2,
-          }}
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          onLoad={() => setIsLoading(false)}
-        />
+        {hasError ? (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "#f0f0f0",
+            }}
+          >
+            <p style={{ color: "#666" }}>Video unavailable</p>
+          </div>
+        ) : (
+          <iframe
+            src={`https://www.youtube.com/embed/${videoId}`}
+            title="YouTube video player"
+            aria-label="YouTube video player"
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              zIndex: 2,
+            }}
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            onLoad={() => setIsLoading(false)}
+            onError={() => { setIsLoading(false); setHasError(true); }}
+          />
+        )}
       </div>
     </div>
   );

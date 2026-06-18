@@ -61,7 +61,7 @@ export default function RootLayout({
             }
           }}
         />
-        <ThemeProvider defaultTheme="dark" storageKey="pokemon-explorer-theme">
+        <ThemeProvider defaultTheme="dark" storageKey="collections-theme">
           <SessionProvider>
             <TRPCReactProvider>
               <GlobalDialogProvider>

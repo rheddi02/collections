@@ -53,15 +53,12 @@ export const linkRouter = createTRPCRouter({
           },
         });
       } catch (error) {
-        if (
-          error instanceof Error &&
-          error.message.toLowerCase().includes("unique constraint failed")
-        ) {
+        if ((error as any)?.code === "P2002") {
           throw new Error("Link with this URL already exists");
-        } else
-          throw new Error(
-            error instanceof Error ? error.message : "Failed to create link",
-          );
+        }
+        throw new Error(
+          error instanceof Error ? error.message : "Failed to create link",
+        );
       }
     }),
 

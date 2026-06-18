@@ -93,7 +93,10 @@ export default function DataTable<TData, TValue>({
 
       if (columnId) {
         if (isMobile) {
-          visibility[columnId] = columnId === "mobile";
+          const hasMobileColumn = columns.some(
+            (c) => (c.id ?? (c as any).accessorKey) === "mobile",
+          );
+          visibility[columnId] = hasMobileColumn ? columnId === "mobile" : true;
         } else {
           visibility[columnId] = columnId !== "mobile";
         }

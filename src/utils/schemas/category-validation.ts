@@ -4,7 +4,7 @@ import { z } from "zod"
 export const categoryTitleSchema = z
   .string()
   .min(1, "Category name is required")
-  .max(40, "Category name must be less than 50 characters")
+  .max(40, "Category name must be less than 40 characters")
   .regex(
     /^[a-zA-Z0-9.\s-]+$/,
     "Category name can only contain letters, numbers, spaces, hyphens (-), and periods (.)",

@@ -83,11 +83,12 @@ export default function DataTableCompact<TData, TValue>({
       
       if (columnId) {
         if (isMobile) {
-          // On mobile: show ONLY mobile column, hide all others
-          visibility[columnId] = columnId === 'mobile';
+          const hasMobileColumn = columns.some(
+            (c) => (c.id ?? (c as any).accessorKey) === "mobile",
+          );
+          visibility[columnId] = hasMobileColumn ? columnId === "mobile" : true;
         } else {
-          // On desktop: hide ONLY mobile column, show all others
-          visibility[columnId] = columnId !== 'mobile';
+          visibility[columnId] = columnId !== "mobile";
         }
       }
     });
