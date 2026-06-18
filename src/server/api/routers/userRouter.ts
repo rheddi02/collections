@@ -21,9 +21,11 @@ export const userRouter = createTRPCRouter({
       ctx.db.categories.count({ where: { userId } }),
     ]);
 
+    const { password, ...userWithoutPassword } = user ?? {};
+
     return {
-      ...user,
-      hasPassword: Boolean(user?.password),
+      ...userWithoutPassword,
+      hasPassword: Boolean(password),
       linkCount,
       categoryCount,
     };

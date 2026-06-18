@@ -1,5 +1,6 @@
 import { Role } from "@/prisma/generated/enums";
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, authenticatedProcedure } from "~/server/api/trpc";
 import { paginationSchema } from "~/utils/schemas";
 
@@ -37,11 +38,18 @@ export const linkRouter = createTRPCRouter({
           }
         }
 
+        const category = await ctx.db.categories.findUnique({
+          where: { id: input.categoryId, userId },
+        });
+        if (!category) {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Category not found" });
+        }
+
         await ctx.db.links.create({
           data: {
             ...input,
             slug: input.title.toLowerCase().replace(/\s+/g, "-"), // Generate slug from title
-            userId: parseInt(ctx.user.id),
+            userId,
           },
         });
       } catch (error) {
@@ -183,9 +191,10 @@ export const linkRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { id, ...updateData } = input;
 
-      // Check if link exists
+      const userId = parseInt(ctx.user.id);
+
       const existingLink = await ctx.db.links.findUnique({
-        where: { id },
+        where: { id, userId },
       });
 
       if (!existingLink) {
@@ -193,11 +202,11 @@ export const linkRouter = createTRPCRouter({
       }
 
       return await ctx.db.links.update({
-        where: { id },
+        where: { id, userId },
         data: {
           ...updateData,
-          slug: updateData.title.toLowerCase().replace(/\s+/g, "-"), // Generate slug from title
-          userId: parseInt(ctx.user.id), // Ensure userId is set
+          slug: updateData.title.toLowerCase().replace(/\s+/g, "-"),
+          userId,
         },
       });
     }),

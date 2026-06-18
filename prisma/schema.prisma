@@ -29,7 +29,7 @@ model Categories {
 
   // Relations
   userId        Int
-  user          Users           @relation(fields: [userId], references: [id])
+  user          Users           @relation(fields: [userId], references: [id], onDelete: Cascade)
   links         Links[]
   shareId       String?         @unique // for public sharing
   collaborators Collaborators[]
@@ -49,9 +49,9 @@ model Links {
   description String
   url         String
   userId      Int
-  user        Users      @relation(fields: [userId], references: [id])
+  user        Users      @relation(fields: [userId], references: [id], onDelete: Cascade)
   categoryId  Int
-  category    Categories @relation(fields: [categoryId], references: [id])
+  category    Categories @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   tags      LinkTags[]
   favorites Favorites[]
@@ -102,7 +102,7 @@ model LinkTags {
   linkId Int
   tagId  Int
 
-  link Links @relation(fields: [linkId], references: [id])
+  link Links @relation(fields: [linkId], references: [id], onDelete: Cascade)
   tag  Tags  @relation(fields: [tagId], references: [id])
 
   @@id([linkId, tagId])
@@ -112,8 +112,8 @@ model Favorites {
   userId Int
   linkId Int
 
-  user Users @relation(fields: [userId], references: [id])
-  link Links @relation(fields: [linkId], references: [id])
+  user Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+  link Links @relation(fields: [linkId], references: [id], onDelete: Cascade)
 
   @@id([userId, linkId])
 }
@@ -125,8 +125,8 @@ model Collaborators {
   userId     Int
   categoryId Int
 
-  user     Users      @relation(fields: [userId], references: [id])
-  category Categories @relation(fields: [categoryId], references: [id])
+  user     Users      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category Categories @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 }
@@ -137,5 +137,5 @@ model Session {
   token     String   @unique
   expiresAt DateTime
 
-  user Users @relation(fields: [userId], references: [id])
+  user Users @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

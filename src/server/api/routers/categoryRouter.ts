@@ -211,10 +211,10 @@ export const categoryRouter = createTRPCRouter({
       }
 
       return await ctx.db.categories.update({
-        where: { id },
+        where: { id, userId },
         data: {
           ...updateData,
-          slug: updateData.title.toLowerCase().replace(/\s+/g, "-"), // Generate slug from title
+          slug: updateData.title.toLowerCase().replace(/\s+/g, "-"),
         },
       });
     }),

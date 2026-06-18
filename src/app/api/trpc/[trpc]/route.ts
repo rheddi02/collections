@@ -15,8 +15,10 @@ const createContext = async (req: NextRequest) => {
   // Get session directly in the API route handler
   const session = await getServerSession(authOptions);
   
-  console.log("API Route - Session:", session ? "✅ Found" : "❌ Not found");
-  console.log("API Route - User:", session?.user?.email || "No user");
+  if (env.NODE_ENV === "development") {
+    console.log("API Route - Session:", session ? "✅ Found" : "❌ Not found");
+    console.log("API Route - User:", session?.user?.email || "No user");
+  }
   
   // Use the createTRPCContext function with session data
   return createTRPCContext({

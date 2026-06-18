@@ -75,7 +75,9 @@ const sendEmailWithFallback = async (to: string, otp: string) => {
     }
   }
 
-  // If both fail, just log for development
+  if (process.env.NODE_ENV !== 'development') {
+    throw new Error("Email delivery failed. Please try again later.");
+  }
   console.log(`⚠️ Email services unavailable. OTP for ${to}: ${otp}`);
   return { method: 'console', success: false };
 };
@@ -127,12 +129,21 @@ export const authRouter = createTRPCRouter({
   sendOTP: authenticatedProcedure
     .mutation(async ({ ctx }) => {
       try {
+        // Rate-limit: don't send a new OTP if one is already valid
+        const existing = await ctx.db.users.findUnique({
+          where: { id: parseInt(ctx.session.user.id) },
+          select: { verificationCodeExpires: true },
+        });
+        if (existing?.verificationCodeExpires && existing.verificationCodeExpires > new Date()) {
+          return { success: true, message: "A verification code was already sent. Please check your email." };
+        }
+
         // Generate a 6-digit OTP
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
-        
+
         // Store OTP in database with expiration time (10 minutes)
-        const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
-        
+        const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
         await ctx.db.users.update({
           where: { id: parseInt(ctx.session.user.id) },
           data: {
@@ -236,7 +247,7 @@ export const authRouter = createTRPCRouter({
   changePassword: authenticatedProcedure
     .input(z.object({
       currentPassword: z.string().min(1, "Current password is required"),
-      newPassword: z.string().min(6, "New password must be at least 6 characters"),
+      newPassword: z.string().min(8, "New password must be at least 8 characters"),
     }))
     .mutation(async ({ input, ctx }) => {
       try {
@@ -320,6 +331,18 @@ export const authRouter = createTRPCRouter({
           };
         }
 
+        // Rate-limit: only one OTP per 10-minute window per email
+        const existingOtp = await ctx.db.users.findUnique({
+          where: { id: user.id },
+          select: { verificationCodeExpires: true },
+        });
+        if (existingOtp?.verificationCodeExpires && existingOtp.verificationCodeExpires > new Date()) {
+          return {
+            success: true,
+            message: "If an account with this email exists, you will receive a password reset code.",
+          };
+        }
+
         // Generate a 6-digit OTP
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         
@@ -357,7 +380,7 @@ export const authRouter = createTRPCRouter({
       email: z.string().email("Invalid email address"),
       otp: z.string().length(6, "OTP must be exactly 6 digits"),
       newPassword: z.string()
-        .min(6, "Password must be at least 6 characters")
+        .min(8, "Password must be at least 8 characters")
         .regex(/[a-z]/, "Password must contain at least one lowercase letter")
         .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
         .regex(/[0-9]/, "Password must contain at least one number"),
@@ -395,8 +418,12 @@ export const authRouter = createTRPCRouter({
           });
         }
 
-        // Verify OTP
+        // Verify OTP — invalidate on wrong guess to prevent brute-force
         if (user.verificationCode !== input.otp) {
+          await ctx.db.users.update({
+            where: { id: user.id },
+            data: { verificationCode: null, verificationCodeExpires: null },
+          });
           throw new TRPCError({
             code: "BAD_REQUEST",
             message: "Invalid verification code",
