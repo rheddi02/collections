@@ -38,9 +38,9 @@ The Prisma schema has models for Tags, LinkTags, Favorites, and Collaborators �
 - [x] **MEDIUM** — Password minimum was 6 chars — too short to satisfy the complexity rules also enforced (`user-validation.ts`, `auth.ts`)
 - [x] **MEDIUM** — No cascade deletes on any foreign key; deleting a user left orphaned rows in Links, Categories, etc. (`schema.prisma` + migration)
 - [x] **LOW** — Missing security headers: `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy` (`middleware.ts`)
-- [ ] **LOW** — No Content-Security-Policy header (requires careful policy tuning per embedded domains)
-- [ ] **LOW** — `useSecureCookies` not explicitly set in NextAuth config (`lib/auth-config.ts`) — NextAuth defaults are likely fine but worth making explicit
-- [ ] **MEDIUM** — No rate limiting on registration endpoint (`/api/auth/register`) — open to account enumeration and email flooding (requires Upstash or edge middleware)
+- [x] **LOW** — No Content-Security-Policy header — added via `next.config.js` headers for all routes
+- [x] **LOW** — `useSecureCookies` not explicitly set in NextAuth config — now explicit in `lib/auth-config.ts`
+- [x] **MEDIUM** — No rate limiting on registration endpoint — added IP-based in-process limiter (5/hr per IP); note: resets on cold start, use Upstash for cross-instance persistence
 - [ ] **ACTION REQUIRED (manual)** — Rotate all credentials that lived in `.env`: Neon DB password, `NEXTAUTH_SECRET`, Google OAuth client secret, Gmail app password
 
 ---
@@ -83,7 +83,7 @@ The Prisma schema has models for Tags, LinkTags, Favorites, and Collaborators �
 
 - [ ] `.pokemon-card` and `.logo` CSS classes in `globals.css` — dead code leftover from a template
 - [ ] Inline hex color strings (`#f0f0f0`, `#3b82f6`) in embed components instead of Tailwind tokens (`youtube-embed.tsx`, `facebook-reel.tsx`)
-- [ ] Auth env vars (`NEXTAUTH_SECRET`, `GOOGLE_CLIENT_ID`, `GMAIL_USER`) are not validated in `src/env.js` — only `DATABASE_URL` is validated
+- [x] Auth env vars (`NEXTAUTH_SECRET`, `GOOGLE_CLIENT_ID`, `GMAIL_USER`, etc.) added to `src/env.js` validation schema
 
 ---
 

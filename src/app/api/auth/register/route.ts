@@ -4,7 +4,37 @@ import { db } from '~/lib/db';
 import { z } from 'zod';
 import { registerApiSchema } from '~/utils/schemas';
 
+// In-process rate limiter: 5 registrations per IP per hour.
+// Note: resets on cold start — use Upstash for cross-instance persistence.
+const attempts = new Map<string, { count: number; resetAt: number }>();
+const LIMIT = 5;
+const WINDOW_MS = 60 * 60 * 1000;
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const entry = attempts.get(ip);
+  if (!entry || now > entry.resetAt) {
+    attempts.set(ip, { count: 1, resetAt: now + WINDOW_MS });
+    return false;
+  }
+  if (entry.count >= LIMIT) return true;
+  entry.count++;
+  return false;
+}
+
 export async function POST(request: NextRequest) {
+  const ip =
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    request.headers.get('x-real-ip') ??
+    '127.0.0.1';
+
+  if (isRateLimited(ip)) {
+    return NextResponse.json(
+      { error: 'Too many registration attempts. Please try again later.' },
+      { status: 429 },
+    );
+  }
+
   try {
     const body = await request.json();
     
