@@ -184,39 +184,36 @@ export const createListColumns = ({
                 Deleting...
               </div>
             ) : (
-              <ToggleGroup type="single" size="sm">
-                <ToggleGroupItem
-                  value="edit"
-                  aria-label="Toggle edit"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEdit(row.original);
-                  }}
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  aria-label="Edit"
+                  className="flex h-9 w-9 items-center justify-center rounded-md hover:bg-muted"
+                  onClick={(e) => { e.stopPropagation(); onEdit(row.original); }}
                 >
-                  <Pencil1Icon className="flex size-4 hover:cursor-pointer hover:text-red-600" />
-                </ToggleGroupItem>
-                <ToggleGroupItem
-                  value="delete"
-                  aria-label="Toggle delete"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDelete(row.original);
-                  }}
+                  <Pencil1Icon className="size-4" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Delete"
+                  className="flex h-9 w-9 items-center justify-center rounded-md hover:bg-muted"
+                  onClick={(e) => { e.stopPropagation(); onDelete(row.original); }}
                 >
-                  <TrashIcon className="flex size-4 hover:cursor-pointer hover:text-red-600" />
-                </ToggleGroupItem>
-                <ToggleGroupItem
-                  value="copy"
+                  <TrashIcon className="size-4 text-destructive" />
+                </button>
+                <button
+                  type="button"
                   aria-label="Copy URL"
+                  className="flex h-9 w-9 items-center justify-center rounded-md hover:bg-muted"
                   onClick={(e) => {
                     e.stopPropagation();
                     navigator.clipboard.writeText(row.original.url ?? "");
                     onCopy?.();
                   }}
                 >
-                  <CopyIcon className="flex size-4 hover:cursor-pointer" />
-                </ToggleGroupItem>
-              </ToggleGroup>
+                  <CopyIcon className="size-4" />
+                </button>
+              </div>
             )}
             {!deletingIds.includes(row.getValue("id")) && (
               <DropdownMenu>

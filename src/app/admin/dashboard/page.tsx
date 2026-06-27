@@ -147,7 +147,7 @@ const Dashboard = () => {
           .filter(
             ({ title }) => title !== "dashboard" && title !== "Categories",
           )
-          .map(({ title, route }) => (
+          .map(({ title, route, isPinned }) => (
             <CardTemplate
               key={title}
               fetching={isFetching}
@@ -158,6 +158,7 @@ const Dashboard = () => {
               size={!isMobile ? "default" : "compact"}
               label={title}
               url={route}
+              isPinned={isPinned}
             />
           ))}
       </div>

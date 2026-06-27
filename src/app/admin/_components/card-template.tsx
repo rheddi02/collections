@@ -1,5 +1,5 @@
 "use client";
-import { ReloadIcon } from "@radix-ui/react-icons";
+import { DrawingPinFilledIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { Link as LinkIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
@@ -18,6 +18,7 @@ const CardTemplate = ({
   fetching,
   size = "default",
   icon,
+  isPinned,
 }: {
   count: number;
   label: string;
@@ -26,6 +27,7 @@ const CardTemplate = ({
   fetching: boolean;
   size?: "default" | "compact";
   icon?: React.ReactNode;
+  isPinned?: boolean;
 }) => {
   const router = useRouter();
   const handleRoute = () => {
@@ -51,6 +53,7 @@ const CardTemplate = ({
         <CardTitle className="flex items-center justify-between text-foreground">
           <span className={`font-semibold tracking-tight ${isCompact ? "text-sm" : ""}`}>
             <span className="mr-2 inline-flex items-center gap-2">
+              {isPinned && <DrawingPinFilledIcon className="h-3 w-3 shrink-0 text-primary" />}
               {icon ? <span className="text-muted-foreground">{icon}</span> : null}
               {label}
             </span>

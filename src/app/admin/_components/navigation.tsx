@@ -79,7 +79,6 @@ const Nav = ({
   const updateMutation = api.categories.update.useMutation({
     onSuccess: async () => {
       await utils.categories.listAll.invalidate();
-      await utils.links.count.invalidate();
     },
   });
 
