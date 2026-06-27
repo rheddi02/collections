@@ -82,6 +82,7 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
     perPage,
     setPageCount,
     filters,
+    categories,
   } = useAppStore((state) => ({
     modal: state.modal,
     setModal: state.setModal,
@@ -95,6 +96,7 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
     perPage: state.perPage,
     setPageCount: state.setPageCount,
     filters: state.filters,
+    categories: state.categories,
   }));
 
   // Ensure confirm function is available
@@ -186,6 +188,16 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
     }
   };
 
+  const handleMove = (link: UpdateLinkValues, targetCategoryId: number) => {
+    updateLinkMutation({
+      id: link.id,
+      title: link.title,
+      url: link.url,
+      categoryId: targetCategoryId,
+      description: link.description || "",
+    });
+  };
+
   const handlePlayVideo = (link: UpdateLinkValues) => {
     // const url = link.url;
     setPlayUrl(link);
@@ -201,7 +213,10 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
     onDelete: handleDelete,
     deletingIds: deleteId,
     onPlay: handlePlayVideo,
-    isAdmin: session?.user.role === Role.ADMIN
+    isAdmin: session?.user.role === Role.ADMIN,
+    onMove: handleMove,
+    categories,
+    currentCategoryId: category.id,
   });
 
   const { mutate: createLinkMutation, isPending: pendingCreate } =

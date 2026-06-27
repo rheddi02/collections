@@ -13,25 +13,37 @@ import { ToggleGroup } from "~/components/ui/toggle-group";
 import { ToggleGroupItem } from "@radix-ui/react-toggle-group";
 import { Checkbox } from "~/components/ui/checkbox";
 import { getSource, isPlayableVideo, truncateText } from "~/utils/helpers";
-import { UpdateLinkValues } from "~/utils/schemas";
-import { PlaySquareIcon } from "lucide-react";
+import { UpdateCategoryValues, UpdateLinkValues } from "~/utils/schemas";
+import { CopyIcon, FolderInputIcon, PlaySquareIcon } from "lucide-react";
 import { Tooltip } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
 
 interface ColumnsProps {
   onEdit: (link: UpdateLinkValues) => void;
   onDelete: (link: UpdateLinkValues) => void;
   onPlay?: (link: UpdateLinkValues) => void;
+  onMove: (link: UpdateLinkValues, categoryId: number) => void;
   deletingIds: number[];
   isAdmin?: boolean;
+  categories: UpdateCategoryValues[];
+  currentCategoryId: number;
 }
 
 export const createListColumns = ({
   onEdit,
   onDelete,
   onPlay,
+  onMove,
   deletingIds,
   isAdmin,
+  categories,
+  currentCategoryId,
 }: ColumnsProps): ColumnDef<UpdateLinkValues>[] => [
   {
     id: "select",
@@ -162,7 +174,6 @@ export const createListColumns = ({
         <div className="flex justify-between gap-2 p-1">
           <div className="flex flex-col">
             <Label className="text-xl">{row.getValue("title")}</Label>
-            <div>{row.getValue("description")}</div>
           </div>
           <div className="flex justify-between">
             {deletingIds.includes(row.getValue("id")) ? (
@@ -192,7 +203,45 @@ export const createListColumns = ({
                 >
                   <TrashIcon className="flex size-5 hover:cursor-pointer hover:text-red-600" />
                 </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="copy"
+                  aria-label="Copy URL"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigator.clipboard.writeText(row.original.url ?? "");
+                  }}
+                >
+                  <CopyIcon className="flex size-5 hover:cursor-pointer" />
+                </ToggleGroupItem>
               </ToggleGroup>
+            )}
+            {!deletingIds.includes(row.getValue("id")) && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    onClick={(e) => e.stopPropagation()}
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-input bg-transparent text-sm shadow-sm hover:bg-accent hover:text-accent-foreground"
+                    aria-label="Move to category"
+                  >
+                    <FolderInputIcon className="size-5" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {categories
+                    .filter((c) => c.id !== currentCategoryId)
+                    .map((cat) => (
+                      <DropdownMenuItem
+                        key={cat.id}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onMove(row.original, cat.id);
+                        }}
+                      >
+                        {cat.title}
+                      </DropdownMenuItem>
+                    ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
           </div>
         </div>
