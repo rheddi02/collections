@@ -106,6 +106,7 @@ const Nav = ({
 
   const startLongPress = (nav: NavigationType) => {
     if (nav.title === "dashboard") return;
+    setContextTarget(null);
     touchMoved.current = false;
     longPressTimer.current = setTimeout(() => {
       if (!touchMoved.current) {
