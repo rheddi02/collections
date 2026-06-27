@@ -7,7 +7,7 @@ import { UpdateCategoryValues } from "~/utils/schemas";
 // Hook to get navigation lists that watches for categories changes
 export const useNavigationLists = (): NavigationType[] => {
   const categories = useAppStore((state) => state.categories)
-  
+
   return useMemo(() => [
     {
       id: 0,
@@ -16,11 +16,14 @@ export const useNavigationLists = (): NavigationType[] => {
       subRoute: [],
       image: "",
     },
-    ...categories.map((category: UpdateCategoryValues) => ({
-      id: category.id,
-      title: category.title,
-      route: "/admin/" + category.slug,
-      subRoute: [],
-    })),
+    ...[...categories]
+      .sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0))
+      .map((category: UpdateCategoryValues) => ({
+        id: category.id,
+        title: category.title,
+        route: "/admin/" + category.slug,
+        subRoute: [],
+        isPinned: category.isPinned ?? false,
+      })),
   ], [categories]);
 };

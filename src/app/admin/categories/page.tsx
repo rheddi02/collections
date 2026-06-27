@@ -69,6 +69,24 @@ const CategoryManagementPage = () => {
     }
   }, [categories, setPageCount]);
 
+  const pinCategoryMutation = api.categories.update.useMutation({
+    onSuccess: async () => {
+      await utils.categories.listAll.invalidate();
+      await utils.categories.list.invalidate();
+    },
+    onError: (error) => {
+      setToastType({ type: ToastTypes.ERROR, data: error.message });
+    },
+  });
+
+  const handlePin = (category: UpdateCategoryValues) => {
+    pinCategoryMutation.mutate({
+      id: category.id,
+      title: category.title,
+      isPinned: !category.isPinned,
+    });
+  };
+
   const deleteCategoryMutation = api.categories.delete.useMutation({
     onSuccess: async () => {
       setToastType({ type: ToastTypes.DELETED });
@@ -150,6 +168,7 @@ const CategoryManagementPage = () => {
   const columns = createCategoryColumns({
     onEdit: handleEdit,
     onDelete: handleDelete,
+    onPin: handlePin,
     deletingIds: deleteIdState,
     onView: handleView,
   });

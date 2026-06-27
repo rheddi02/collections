@@ -5,6 +5,7 @@ export type NavigationType = {
   image?: string
   subRoute: NavigationType[]
   description?: string
+  isPinned?: boolean
 }
 export type PageType = {
   page: number

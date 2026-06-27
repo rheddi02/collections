@@ -126,13 +126,12 @@ export const categoryRouter = createTRPCRouter({
         id: true,
         title: true,
         slug: true,
+        isPinned: true,
         _count: {
           select: { links: true },
         },
       },
-      orderBy: {
-        title: "asc", // Sort categories alphabetically
-      },
+      orderBy: [{ isPinned: "desc" }, { title: "asc" }],
     });
 
     return categories.map((category) => ({

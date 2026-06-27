@@ -1,6 +1,6 @@
 "use client";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Pencil1Icon, TrashIcon, ReloadIcon, Link1Icon } from "@radix-ui/react-icons";
+import { DrawingPinFilledIcon, DrawingPinIcon, Pencil1Icon, TrashIcon, ReloadIcon, Link1Icon } from "@radix-ui/react-icons";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 // import type { categoryListAllOutput } from "~/server/api/client/types";
@@ -12,6 +12,7 @@ import { UpdateCategoryValues } from "~/utils/schemas";
 interface CategoryColumnsProps {
   onEdit: (category: UpdateCategoryValues) => void;
   onDelete: (category: UpdateCategoryValues) => void;
+  onPin: (category: UpdateCategoryValues) => void;
   deletingIds: number[];
   onView?: (category: UpdateCategoryValues) => void;
 }
@@ -19,6 +20,7 @@ interface CategoryColumnsProps {
 export const createCategoryColumns = ({
   onEdit,
   onDelete,
+  onPin,
   deletingIds,
   onView,
 }: CategoryColumnsProps): ColumnDef<UpdateCategoryValues>[] => [
@@ -86,6 +88,22 @@ export const createCategoryColumns = ({
             </div>
           ) : (
             <>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onPin(row.original);
+                }}
+                className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground hover:bg-muted"
+                title={row.original.isPinned ? "Unpin category" : "Pin category"}
+              >
+                {row.original.isPinned ? (
+                  <DrawingPinFilledIcon className="h-4 w-4 text-primary" />
+                ) : (
+                  <DrawingPinIcon className="h-4 w-4" />
+                )}
+              </Button>
               <Button
                 variant="ghost"
                 size="sm"
