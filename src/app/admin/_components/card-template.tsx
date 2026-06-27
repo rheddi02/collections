@@ -49,7 +49,7 @@ const CardTemplate = ({
     >
       <CardHeader className={`relative capitalize ${isCompact ? "p-3" : ""}`}>
         <CardTitle className="flex items-center justify-between text-foreground">
-          <span className={`font-semibold tracking-tight ${isCompact ? "text-base" : ""}`}>
+          <span className={`font-semibold tracking-tight ${isCompact ? "text-sm" : ""}`}>
             <span className="mr-2 inline-flex items-center gap-2">
               {icon ? <span className="text-muted-foreground">{icon}</span> : null}
               {label}
@@ -77,7 +77,7 @@ const CardTemplate = ({
         {fetching ? (
           <ReloadIcon className="h-5 w-5 animate-spin text-muted-foreground" />
         ) : (
-          <p className={`pl-1 font-bold tracking-tight ${isCompact ? "text-xl" : "text-3xl"}`}>
+          <p className={`pl-1 font-bold tracking-tight ${isCompact ? "text-lg" : "text-3xl"}`}>
             {count.toLocaleString()}
           </p>
         )}

@@ -173,7 +173,7 @@ export const createListColumns = ({
       return (
         <div className="flex justify-between gap-2 p-1">
           <div className="flex flex-col">
-            <Label className="text-xl">{row.getValue("title")}</Label>
+            <Label className="text-sm font-medium tracking-tight">{row.getValue("title")}</Label>
           </div>
           <div className="flex justify-between">
             {deletingIds.includes(row.getValue("id")) ? (
@@ -191,7 +191,7 @@ export const createListColumns = ({
                     onEdit(row.original);
                   }}
                 >
-                  <Pencil1Icon className="flex size-5 hover:cursor-pointer hover:text-red-600" />
+                  <Pencil1Icon className="flex size-4 hover:cursor-pointer hover:text-red-600" />
                 </ToggleGroupItem>
                 <ToggleGroupItem
                   value="delete"
@@ -201,7 +201,7 @@ export const createListColumns = ({
                     onDelete(row.original);
                   }}
                 >
-                  <TrashIcon className="flex size-5 hover:cursor-pointer hover:text-red-600" />
+                  <TrashIcon className="flex size-4 hover:cursor-pointer hover:text-red-600" />
                 </ToggleGroupItem>
                 <ToggleGroupItem
                   value="copy"
@@ -211,7 +211,7 @@ export const createListColumns = ({
                     navigator.clipboard.writeText(row.original.url ?? "");
                   }}
                 >
-                  <CopyIcon className="flex size-5 hover:cursor-pointer" />
+                  <CopyIcon className="flex size-4 hover:cursor-pointer" />
                 </ToggleGroupItem>
               </ToggleGroup>
             )}
@@ -220,10 +220,10 @@ export const createListColumns = ({
                 <DropdownMenuTrigger asChild>
                   <button
                     onClick={(e) => e.stopPropagation()}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-input bg-transparent text-sm shadow-sm hover:bg-accent hover:text-accent-foreground"
+                    className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-input bg-transparent text-sm shadow-sm hover:bg-accent hover:text-accent-foreground"
                     aria-label="Move to category"
                   >
-                    <FolderInputIcon className="size-5" />
+                    <FolderInputIcon className="size-4" />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
