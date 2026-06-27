@@ -177,7 +177,7 @@ export const createListColumns = ({
           <div className="flex flex-col">
             <Label className="text-sm font-medium tracking-tight">{row.getValue("title")}</Label>
           </div>
-          <div className="flex justify-between">
+          <div className="flex items-center gap-2">
             {deletingIds.includes(row.getValue("id")) ? (
               <div className="flex items-center gap-1">
                 <ReloadIcon className="animate-spin" />
@@ -220,7 +220,7 @@ export const createListColumns = ({
                 <DropdownMenuTrigger asChild>
                   <button
                     onClick={(e) => e.stopPropagation()}
-                    className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-input bg-transparent text-sm shadow-sm hover:bg-accent hover:text-accent-foreground"
+                    className="flex h-9 w-9 items-center justify-center rounded-md hover:bg-muted"
                     aria-label="Move to category"
                   >
                     <FolderInputIcon className="size-4" />
