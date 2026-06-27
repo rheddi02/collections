@@ -4,6 +4,8 @@
  */
 await import("./src/env.js");
 
+import withPWA from "@ducanh2912/next-pwa";
+
 const contentSecurityPolicy = [
   "default-src 'self'",
   // Next.js App Router requires unsafe-inline for hydration scripts.
@@ -21,7 +23,7 @@ const contentSecurityPolicy = [
 ].join("; ");
 
 /** @type {import("next").NextConfig} */
-const config = {
+const nextConfig = {
   async headers() {
     return [
       {
@@ -62,7 +64,13 @@ const config = {
             pathname: '/**'
         },
     ],
-},
+  },
 };
 
-export default config;
+export default withPWA({
+  dest: "public",
+  cacheOnFrontEndNav: true,
+  aggressiveFrontEndNavCaching: true,
+  reloadOnOnline: true,
+  disable: process.env.NODE_ENV === "development",
+})(nextConfig);
