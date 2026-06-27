@@ -129,11 +129,13 @@ const Nav = ({
 
   const handlePin = () => {
     if (!contextTarget?.id) return;
-    updateMutation.mutate({
-      id: contextTarget.id,
-      title: contextTarget.title,
-      isPinned: !contextTarget.isPinned,
-    });
+    const newIsPinned = !contextTarget.isPinned;
+    const targetId = contextTarget.id;
+
+    const { categories, setCategories } = useAppStore.getState();
+    setCategories(categories.map(c => c.id === targetId ? { ...c, isPinned: newIsPinned } : c));
+
+    updateMutation.mutate({ id: targetId, title: contextTarget.title, isPinned: newIsPinned });
     setContextTarget(null);
   };
 
