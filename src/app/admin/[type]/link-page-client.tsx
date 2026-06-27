@@ -333,6 +333,7 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
         onClose={() => setViewLink(null)}
         onEdit={(link) => { setViewLink(null); handleEdit(link); }}
         onDelete={(link) => { setViewLink(null); handleDelete(link); }}
+        onCopy={() => setToastType({ type: ToastTypes.COPIED })}
       />
       <CustomDialog
         {...{

@@ -1,5 +1,6 @@
 "use client";
 import { ExternalLinkIcon, Pencil1Icon, TrashIcon } from "@radix-ui/react-icons";
+import { CopyIcon } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "~/components/ui/dialog";
 import { Button } from "~/components/ui/button";
 import { getSource } from "~/utils/helpers";
@@ -10,9 +11,10 @@ interface Props {
   onClose: () => void;
   onEdit: (link: UpdateLinkValues) => void;
   onDelete: (link: UpdateLinkValues) => void;
+  onCopy?: () => void;
 }
 
-const LinkDetailDialog = ({ link, onClose, onEdit, onDelete }: Props) => {
+const LinkDetailDialog = ({ link, onClose, onEdit, onDelete, onCopy }: Props) => {
   return (
     <Dialog open={!!link} onOpenChange={(open) => { if (!open) onClose(); }}>
       <DialogContent className="max-w-md">
@@ -28,15 +30,28 @@ const LinkDetailDialog = ({ link, onClose, onEdit, onDelete }: Props) => {
           </div>
           <div className="flex flex-col gap-1">
             <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">URL</span>
-            <a
-              href={link?.url ?? "#"}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1 break-all text-sm text-blue-600 hover:underline dark:text-blue-400"
-            >
-              {link?.url}
-              <ExternalLinkIcon className="size-3 shrink-0" />
-            </a>
+            <div className="flex items-center gap-2">
+              <a
+                href={link?.url ?? "#"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex min-w-0 items-center gap-1 break-all text-sm text-blue-600 hover:underline dark:text-blue-400"
+              >
+                {link?.url}
+                <ExternalLinkIcon className="size-3 shrink-0" />
+              </a>
+              <button
+                type="button"
+                className="shrink-0 rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+                aria-label="Copy URL"
+                onClick={() => {
+                  navigator.clipboard.writeText(link?.url ?? "");
+                  onCopy?.();
+                }}
+              >
+                <CopyIcon className="size-4" />
+              </button>
+            </div>
           </div>
           {link?.description && (
             <div className="flex flex-col gap-1">
