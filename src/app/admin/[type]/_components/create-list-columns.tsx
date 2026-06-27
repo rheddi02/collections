@@ -12,7 +12,7 @@ import { Label } from "~/components/ui/label";
 import { ToggleGroup } from "~/components/ui/toggle-group";
 import { ToggleGroupItem } from "@radix-ui/react-toggle-group";
 import { Checkbox } from "~/components/ui/checkbox";
-import { getSource, isPlayableVideo, truncateText } from "~/utils/helpers";
+import { copyToClipboard, getSource, isPlayableVideo, truncateText } from "~/utils/helpers";
 import { UpdateCategoryValues, UpdateLinkValues } from "~/utils/schemas";
 import { CopyIcon, FolderInputIcon, PlaySquareIcon } from "lucide-react";
 import { Tooltip } from "~/components/ui/tooltip";
@@ -207,7 +207,7 @@ export const createListColumns = ({
                   className="flex h-9 w-9 items-center justify-center rounded-md hover:bg-muted"
                   onClick={(e) => {
                     e.stopPropagation();
-                    navigator.clipboard.writeText(row.original.url ?? "");
+                    copyToClipboard(row.original.url ?? "");
                     onCopy?.();
                   }}
                 >

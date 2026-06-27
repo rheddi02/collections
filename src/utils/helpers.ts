@@ -68,6 +68,22 @@ export const truncateText = (text: string, limit: number) => {
     : text;
 }
 
+export const copyToClipboard = (text: string): void => {
+  if (navigator.clipboard?.writeText) {
+    void navigator.clipboard.writeText(text);
+    return;
+  }
+  // Fallback for non-secure contexts (HTTP)
+  const el = document.createElement("textarea");
+  el.value = text;
+  el.style.position = "fixed";
+  el.style.opacity = "0";
+  document.body.appendChild(el);
+  el.focus();
+  el.select();
+  try { document.execCommand("copy"); } finally { document.body.removeChild(el); }
+};
+
 export const isPlayableVideo = (url: string): boolean => {
   try {
     const parsedUrl = new URL(url);

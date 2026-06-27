@@ -3,7 +3,7 @@ import { ExternalLinkIcon, Pencil1Icon, TrashIcon } from "@radix-ui/react-icons"
 import { CopyIcon } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "~/components/ui/dialog";
 import { Button } from "~/components/ui/button";
-import { getSource } from "~/utils/helpers";
+import { copyToClipboard, getSource } from "~/utils/helpers";
 import { UpdateLinkValues } from "~/utils/schemas";
 
 interface Props {
@@ -45,7 +45,7 @@ const LinkDetailDialog = ({ link, onClose, onEdit, onDelete, onCopy }: Props) =>
                 className="shrink-0 rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
                 aria-label="Copy URL"
                 onClick={() => {
-                  navigator.clipboard.writeText(link?.url ?? "");
+                  copyToClipboard(link?.url ?? "");
                   onCopy?.();
                 }}
               >
