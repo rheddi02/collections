@@ -5,7 +5,7 @@ import { Button } from "~/components/ui/button";
 import { api } from "~/trpc/react";
 import { useNavigationLists } from "~/hooks/useNavigationLists";
 import { InputOTPForm } from "../_components/otp-code";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PageHeader from "../_components/page-header";
 import useAppStore from "~/store/app.store";
 import { isMobile } from "react-device-detect";
@@ -27,6 +27,8 @@ const DashboardSkeleton = () => (
 const Dashboard = () => {
   const { data: session, status } = useSession();
   const [isSent, setIsSent] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => { setIsClient(true); }, []);
   const navList = useNavigationLists(); // Now reactive to category changes
   const { isLoading: isCategoriesLoading } = api.categories.listAll.useQuery();
   const { setOpenMenu, openMenu } = useAppStore((state) => ({
@@ -60,7 +62,7 @@ const Dashboard = () => {
   };
 
   if (status === "loading") {
-    if (isMobile) return <DashboardSkeleton />;
+    if (isClient && isMobile) return <DashboardSkeleton />;
     return (
       <div className="flex h-screen flex-col items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-gray-900"></div>
@@ -92,7 +94,7 @@ const Dashboard = () => {
 
   if (status === "authenticated") {
     if (isCategoriesLoading) {
-      if (isMobile) return <DashboardSkeleton />;
+      if (isClient && isMobile) return <DashboardSkeleton />;
       return (
         <div className="flex h-screen flex-col items-center justify-center">
           <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-gray-900"></div>
@@ -155,7 +157,7 @@ const Dashboard = () => {
                 counts?.find((count) => count.categoryName === title)?.count ??
                 0
               }
-              size={!isMobile ? "default" : "compact"}
+              size={isClient && isMobile ? "compact" : "default"}
               label={title}
               url={route}
               isPinned={isPinned}
