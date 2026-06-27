@@ -127,7 +127,7 @@ const Dashboard = () => {
       <div className="pl-5 pt-5 sm:hidden">
         <PageHeader setOpenMenu={() => setOpenMenu(!openMenu)} title="Dashboard" />
       </div>
-      <div className="grid grid-cols-2 gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2 p-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {navList
           .filter(
             ({ title }) => title !== "dashboard" && title !== "Categories",

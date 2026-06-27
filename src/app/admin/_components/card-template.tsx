@@ -47,7 +47,7 @@ const CardTemplate = ({
       onClick={handleRoute}
       className="group overflow-hidden rounded-xl border bg-card transition-colors hover:bg-muted/50"
     >
-      <CardHeader className={`relative capitalize ${isCompact ? "p-3" : ""}`}>
+      <CardHeader className={`relative capitalize ${isCompact ? "p-2" : ""}`}>
         <CardTitle className="flex items-center justify-between text-foreground">
           <span className={`font-semibold tracking-tight ${isCompact ? "text-sm" : ""}`}>
             <span className="mr-2 inline-flex items-center gap-2">
@@ -57,14 +57,14 @@ const CardTemplate = ({
           </span>
           <button
             type="button"
-            className="rounded-full p-2 text-muted-foreground transition-colors group-hover:text-foreground hover:bg-muted"
+            className="rounded-full p-1 text-muted-foreground transition-colors group-hover:text-foreground hover:bg-muted"
             aria-label="Open category"
             onClick={(e) => {
               e.stopPropagation();
               handleRoute();
             }}
           >
-            <LinkIcon className="h-4 w-4" />
+            <LinkIcon className="h-3 w-3" />
           </button>
         </CardTitle>
         {description && !isCompact && (
@@ -73,11 +73,11 @@ const CardTemplate = ({
           </CardDescription>
         )}
       </CardHeader>
-      <CardContent className={`flex items-end justify-between ${isCompact ? "p-3" : "p-4"}`}>
+      <CardContent className={`flex items-end justify-between ${isCompact ? "p-2 pt-1" : "p-4"}`}>
         {fetching ? (
           <ReloadIcon className="h-5 w-5 animate-spin text-muted-foreground" />
         ) : (
-          <p className={`pl-1 font-bold tracking-tight ${isCompact ? "text-lg" : "text-3xl"}`}>
+          <p className={`pl-1 font-bold tracking-tight ${isCompact ? "text-base" : "text-3xl"}`}>
             {count.toLocaleString()}
           </p>
         )}
