@@ -10,6 +10,20 @@ import PageHeader from "../_components/page-header";
 import useAppStore from "~/store/app.store";
 import { isMobile } from "react-device-detect";
 
+const DashboardSkeleton = () => (
+  <div className="grid grid-cols-2 gap-2 p-3">
+    {Array.from({ length: 4 }).map((_, i) => (
+      <div key={i} className="rounded-xl border bg-card p-2">
+        <div className="mb-3 flex items-center justify-between">
+          <div className="h-4 w-20 animate-pulse rounded bg-muted" />
+          <div className="h-4 w-4 animate-pulse rounded bg-muted" />
+        </div>
+        <div className="h-6 w-12 animate-pulse rounded bg-muted" />
+      </div>
+    ))}
+  </div>
+);
+
 const Dashboard = () => {
   const { data: session, status } = useSession();
   const [isSent, setIsSent] = useState(false);
@@ -45,8 +59,8 @@ const Dashboard = () => {
     sendOTPMutation.mutate();
   };
 
-  // Show loading state while authentication is being checked
   if (status === "loading") {
+    if (isMobile) return <DashboardSkeleton />;
     return (
       <div className="flex h-screen flex-col items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-gray-900"></div>
@@ -78,6 +92,7 @@ const Dashboard = () => {
 
   if (status === "authenticated") {
     if (isCategoriesLoading) {
+      if (isMobile) return <DashboardSkeleton />;
       return (
         <div className="flex h-screen flex-col items-center justify-center">
           <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-gray-900"></div>

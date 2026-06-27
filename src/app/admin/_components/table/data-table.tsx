@@ -179,6 +179,20 @@ export default function DataTable<TData, TValue>({
   });
 
   const TableRowActions = (props: { type: "loading" | "empty" }) => {
+    if (props.type === "loading" && isMobile && isClient) {
+      return (
+        <>
+          {Array.from({ length: 5 }).map((_, i) => (
+            <TableRow key={i}>
+              <TableCell colSpan={columns.length} className="p-3">
+                <div className="h-4 w-full animate-pulse rounded bg-muted" />
+              </TableCell>
+            </TableRow>
+          ))}
+        </>
+      );
+    }
+
     const actions = {
       loading: (
         <TableRow>

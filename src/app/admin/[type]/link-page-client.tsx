@@ -24,6 +24,7 @@ import PageFilters from "../_components/page-filters";
 import FacebookReel from "~/components/facebook-reel";
 import PlaybackDialog from "../_components/playback-dialog";
 import { useSession } from "next-auth/react";
+import { keepPreviousData } from "@tanstack/react-query";
 import { Role } from "@/prisma/generated/enums";
 
 // Type for individual link data from the list
@@ -105,7 +106,7 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
   const isConfirmReady = Boolean(safeConfirm);
 
   // Dynamic API calls based on tip type with server-side auth
-  const { data, isFetched, isFetching, refetch } = api.links.list.useQuery(
+  const { data, isFetched, isFetching, isLoading, refetch } = api.links.list.useQuery(
     {
       categoryTitle: initialData.title,
       page,
@@ -113,8 +114,9 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
       filters,
     },
     {
-      staleTime: 5 * 60 * 1000, // 5 minutes
+      staleTime: 5 * 60 * 1000,
       refetchOnWindowFocus: false,
+      placeholderData: keepPreviousData,
     },
   );
 
@@ -382,7 +384,7 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
           <PageTable
             data={data?.data || []}
             columns={columns}
-            loading={isFetching}
+            loading={isLoading}
             onRowChange={handleRowSelectionChange}
             onRowClick={handleRowClick}
             selectedRows={selectedLinks}

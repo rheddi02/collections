@@ -12,6 +12,7 @@ import PageHeader from "../_components/page-header";
 import CreateCategoryPopover from "./_components/create-category-popover";
 import EditCategoryPopover from "./_components/edit-category-popover";
 import { useState, useEffect } from "react";
+import { keepPreviousData } from "@tanstack/react-query";
 import { useApiUtils } from "~/hooks/useApiUtils";
 import { Button } from "~/components/ui/button";
 import { ToastTypes } from "~/utils/types";
@@ -55,8 +56,9 @@ const CategoryManagementPage = () => {
     isFetching,
     refetch,
   } = api.categories.list.useQuery({ page, perPage, filters },{
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
+    placeholderData: keepPreviousData,
   });
   const utils = useApiUtils();
 
@@ -80,11 +82,12 @@ const CategoryManagementPage = () => {
   });
 
   const handlePin = (category: UpdateCategoryValues) => {
-    pinCategoryMutation.mutate({
-      id: category.id,
-      title: category.title,
-      isPinned: !category.isPinned,
-    });
+    const newIsPinned = !category.isPinned;
+
+    const { categories, setCategories } = useAppStore.getState();
+    setCategories(categories.map(c => c.id === category.id ? { ...c, isPinned: newIsPinned } : c));
+
+    pinCategoryMutation.mutate({ id: category.id, title: category.title, isPinned: newIsPinned });
   };
 
   const deleteCategoryMutation = api.categories.delete.useMutation({
