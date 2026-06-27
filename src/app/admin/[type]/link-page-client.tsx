@@ -3,6 +3,7 @@ import useAppStore from "~/store/app.store";
 import type { Row } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 import CustomDialog from "~/app/admin/[type]/_components/create-list-dialog";
+import LinkDetailDialog from "~/app/admin/[type]/_components/link-detail-dialog";
 import { api } from "~/trpc/react";
 import { ToastTypes } from "~/utils/types";
 import PageTable from "../_components/table/page-table";
@@ -63,6 +64,7 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
 
   const [isClient, setIsClient] = useState(false);
   const [playUrl, setPlayUrl] = useState<UpdateLinkValues | null>(null);
+  const [viewLink, setViewLink] = useState<UpdateLinkValues | null>(null);
 
   // Set client flag after hydration
   useEffect(() => {
@@ -186,6 +188,10 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
     } catch (error) {
       console.error("Error opening confirm dialog:", error);
     }
+  };
+
+  const handleRowClick = (row: Row<UpdateLinkValues>) => {
+    setViewLink(row.original);
   };
 
   const handleMove = (link: UpdateLinkValues, targetCategoryId: number) => {
@@ -319,6 +325,12 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
         </div>
       )}
       <PlaybackDialog link={playUrl} />
+      <LinkDetailDialog
+        link={viewLink}
+        onClose={() => setViewLink(null)}
+        onEdit={(link) => { setViewLink(null); handleEdit(link); }}
+        onDelete={(link) => { setViewLink(null); handleDelete(link); }}
+      />
       <CustomDialog
         {...{
           initialData: initialFormValues,
@@ -372,6 +384,7 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
             columns={columns}
             loading={isFetching}
             onRowChange={handleRowSelectionChange}
+            onRowClick={handleRowClick}
             selectedRows={selectedLinks}
           />
         </div>

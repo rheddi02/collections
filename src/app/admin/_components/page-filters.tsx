@@ -34,9 +34,11 @@ const PageFilters = ({ className, placeholder }: { className?: string, placehold
   return (
     <div className={cn("flex items-center gap-2", className)}>
       <div className="w-full flex items-center gap-2">
-        <Form {...form}>
-          <TextInput name="keyword" placeholder={placeholder} />
-        </Form>
+        <div className="max-sm:flex-1">
+          <Form {...form}>
+            <TextInput name="keyword" placeholder={placeholder} />
+          </Form>
+        </div>
         <Button
           type="button"
           variant="outline"
