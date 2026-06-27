@@ -29,6 +29,7 @@ interface ColumnsProps {
   onDelete: (link: UpdateLinkValues) => void;
   onPlay?: (link: UpdateLinkValues) => void;
   onMove: (link: UpdateLinkValues, categoryId: number) => void;
+  onCopy?: () => void;
   deletingIds: number[];
   isAdmin?: boolean;
   categories: UpdateCategoryValues[];
@@ -40,6 +41,7 @@ export const createListColumns = ({
   onDelete,
   onPlay,
   onMove,
+  onCopy,
   deletingIds,
   isAdmin,
   categories,
@@ -209,6 +211,7 @@ export const createListColumns = ({
                   onClick={(e) => {
                     e.stopPropagation();
                     navigator.clipboard.writeText(row.original.url ?? "");
+                    onCopy?.();
                   }}
                 >
                   <CopyIcon className="flex size-4 hover:cursor-pointer" />

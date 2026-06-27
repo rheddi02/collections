@@ -223,6 +223,7 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
     onPlay: handlePlayVideo,
     isAdmin: session?.user.role === Role.ADMIN,
     onMove: handleMove,
+    onCopy: () => setToastType({ type: ToastTypes.COPIED }),
     categories,
     currentCategoryId: category.id,
   });

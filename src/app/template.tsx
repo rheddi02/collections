@@ -44,6 +44,10 @@ const Template = ({ children }: { children: ReactNode }) => {
         toastData.title = "Deleted";
         toastData.description = "Record has been deleted successfully.";
         break;
+      case ToastTypes.COPIED:
+        toastData.title = "Copied";
+        toastData.description = "Link copied successfully.";
+        break;
       case ToastTypes.ERROR:
         toastData.title = 'Error'
         toastData.description = toastType.data || "An error occurred.";

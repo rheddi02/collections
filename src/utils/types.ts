@@ -18,4 +18,5 @@ export enum ToastTypes {
   DELETED = 'deleted',
   DEFAULT = 'default',
   ERROR = 'error',
+  COPIED = 'copied',
 }
