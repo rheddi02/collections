@@ -29,6 +29,8 @@ interface User {
   id: string;
   email: string;
   name?: string;
+  role?: string;
+  isVerified?: boolean;
 }
 
 // Simple context that receives session from the API route
@@ -118,13 +120,23 @@ export const authenticatedProcedure = t.procedure.use(async ({ ctx, next }) => {
     console.error("UNAUTHORIZED: No session or user found");
     throw new Error("UNAUTHORIZED: Please sign in to access this resource");
   }
-  
+
   return next({
     ctx: {
       ...ctx,
       session: ctx.session,
-      user: ctx.user, // Type-safe user access
+      user: ctx.user,
     },
   });
+});
+
+export const adminProcedure = t.procedure.use(async ({ ctx, next }) => {
+  if (!ctx.session || !ctx.user) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  if (ctx.user.role !== "ADMIN") {
+    throw new TRPCError({ code: "FORBIDDEN", message: "Admin access required" });
+  }
+  return next({ ctx: { ...ctx, session: ctx.session, user: ctx.user } });
 });
 

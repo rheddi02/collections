@@ -3,20 +3,22 @@ import { NextResponse } from "next/server"
 
 export default withAuth(
   function middleware(req) {
-    // Add any additional logic here if needed
     const token = req.nextauth.token
     const { pathname } = req.nextUrl
 
+    // Super-admin routes require ADMIN role
+    if (pathname.startsWith('/super-admin')) {
+      if (token?.role !== 'ADMIN') {
+        return NextResponse.redirect(new URL("/admin/dashboard", req.url))
+      }
+    }
+
     const isVerified = token?.isVerified === true
 
-    // If user is NOT verified
-    if (!isVerified) {
+    // Unverified users are restricted within /admin
+    if (pathname.startsWith('/admin') && !isVerified) {
       const allowedRoutes = ["/admin/dashboard", "/admin/profile"]
-
-      const isAllowed = allowedRoutes.some(route =>
-        pathname.startsWith(route)
-      )
-
+      const isAllowed = allowedRoutes.some(route => pathname.startsWith(route))
       if (!isAllowed) {
         return NextResponse.redirect(new URL("/admin/dashboard", req.url))
       }
@@ -30,25 +32,15 @@ export default withAuth(
   },
   {
     callbacks: {
-      authorized: ({ token, req }) => {
-        // Check if user is authenticated
-        if (!token) {
-          return false
-        }
-        // Add additional authorization logic here if needed
-        // For example, role-based access control
-        return true
-      },
+      authorized: ({ token }) => !!token,
     },
   }
 )
 
 export const config = {
   matcher: [
-    // Protect all admin routes
     '/admin/:path*',
-    // Protect API routes if needed
+    '/super-admin/:path*',
     '/api/admin/:path*',
-    // Add other protected routes as needed
   ]
 }
