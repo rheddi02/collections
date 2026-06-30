@@ -18,6 +18,7 @@ enum Role {
   COLLABORATOR
   GUEST
   ADMIN
+  SUPER_ADMIN
 }
 
 model Categories {

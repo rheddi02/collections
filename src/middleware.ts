@@ -6,11 +6,16 @@ export default withAuth(
     const token = req.nextauth.token
     const { pathname } = req.nextUrl
 
-    // Super-admin routes require ADMIN role
+    // Super-admin panel: SUPER_ADMIN only
     if (pathname.startsWith('/super-admin')) {
-      if (token?.role !== 'ADMIN') {
+      if (token?.role !== 'SUPER_ADMIN') {
         return NextResponse.redirect(new URL("/admin/dashboard", req.url))
       }
+    }
+
+    // Admin workspace: SUPER_ADMIN has no access here
+    if (pathname.startsWith('/admin') && token?.role === 'SUPER_ADMIN') {
+      return NextResponse.redirect(new URL("/super-admin/dashboard", req.url))
     }
 
     const isVerified = token?.isVerified === true

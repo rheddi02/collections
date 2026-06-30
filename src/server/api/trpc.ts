@@ -134,7 +134,7 @@ export const adminProcedure = t.procedure.use(async ({ ctx, next }) => {
   if (!ctx.session || !ctx.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
-  if (ctx.user.role !== "ADMIN") {
+  if (ctx.user.role !== "SUPER_ADMIN") {
     throw new TRPCError({ code: "FORBIDDEN", message: "Admin access required" });
   }
   return next({ ctx: { ...ctx, session: ctx.session, user: ctx.user } });

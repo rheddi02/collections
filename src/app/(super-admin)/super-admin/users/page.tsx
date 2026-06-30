@@ -42,6 +42,7 @@ const ROLE_OPTIONS = [
   { value: Role.ADMIN, label: "Admin" },
   { value: Role.COLLABORATOR, label: "Collaborator" },
   { value: Role.GUEST, label: "Guest" },
+  { value: Role.SUPER_ADMIN, label: "Super Admin" },
 ];
 
 const ROLE_BADGE: Record<string, string> = {
@@ -49,6 +50,7 @@ const ROLE_BADGE: Record<string, string> = {
   USER: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
   COLLABORATOR: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
   GUEST: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400",
+  SUPER_ADMIN: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
 };
 
 export default function UsersPage() {
