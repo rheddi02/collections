@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { signIn, useSession } from "next-auth/react"
+import { signIn, useSession, getSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { useForm } from "react-hook-form"
@@ -27,10 +27,10 @@ export default function SignIn() {
     },
   })
 
-  // Redirect authenticated users to dashboard
+  // Redirect authenticated users to their respective dashboard
   useEffect(() => {
     if (status === "authenticated" && session) {
-      router.push("/admin/dashboard")
+      router.push(session.user.role === 'SUPER_ADMIN' ? "/super-admin/dashboard" : "/admin/dashboard")
     }
   }, [status, session, router])
 
@@ -60,8 +60,8 @@ export default function SignIn() {
           title: "Success",
           description: "Signed in successfully",
         })
-        // Successful login - redirect to admin dashboard
-        router.push("/admin/dashboard")
+        const freshSession = await getSession()
+        router.push(freshSession?.user?.role === 'SUPER_ADMIN' ? "/super-admin/dashboard" : "/admin/dashboard")
       }
     } catch (error) {
       toast({
