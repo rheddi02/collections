@@ -6,17 +6,35 @@ await import("./src/env.js");
 
 import withPWA from "@ducanh2912/next-pwa";
 
+// react-player embed SDKs (YouTube, Vimeo, Facebook, Twitch, SoundCloud) each
+// load their own player script and/or iframe from their own domain.
+const VIDEO_PLAYER_SCRIPT_ORIGINS = [
+  "https://www.youtube.com",
+  "https://connect.facebook.net",
+  "https://player.vimeo.com",
+  "https://player.twitch.tv",
+  "https://w.soundcloud.com",
+];
+const VIDEO_PLAYER_FRAME_ORIGINS = [
+  "https://www.youtube.com",
+  "https://www.facebook.com",
+  "https://player.vimeo.com",
+  "https://player.twitch.tv",
+  "https://w.soundcloud.com",
+];
+
 const contentSecurityPolicy = [
   "default-src 'self'",
   // Next.js App Router requires unsafe-inline for hydration scripts.
   // Remove unsafe-eval if the production build works without it.
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com",
+  `script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com ${VIDEO_PLAYER_SCRIPT_ORIGINS.join(" ")}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: https: blob:",
   "font-src 'self' data:",
-  // YouTube and Facebook iframes
-  "frame-src https://www.youtube.com https://www.facebook.com",
-  "connect-src 'self' https://accounts.google.com",
+  // Direct video/audio file links played via react-player's FilePlayer
+  "media-src 'self' https: blob:",
+  `frame-src ${VIDEO_PLAYER_FRAME_ORIGINS.join(" ")}`,
+  `connect-src 'self' https://accounts.google.com ${VIDEO_PLAYER_SCRIPT_ORIGINS.join(" ")}`,
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
