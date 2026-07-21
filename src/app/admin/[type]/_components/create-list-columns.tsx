@@ -31,7 +31,6 @@ interface ColumnsProps {
   onMove: (link: UpdateLinkValues, categoryId: number) => void;
   onCopy?: () => void;
   deletingIds: number[];
-  isAdmin?: boolean;
   categories: UpdateCategoryValues[];
   currentCategoryId: number;
 }
@@ -43,7 +42,6 @@ export const createListColumns = ({
   onMove,
   onCopy,
   deletingIds,
-  isAdmin,
   categories,
   currentCategoryId,
 }: ColumnsProps): ColumnDef<UpdateLinkValues>[] => [
@@ -128,23 +126,21 @@ export const createListColumns = ({
                   }}
                 />
               </Tooltip>
-              {isAdmin && (
-                <Tooltip label="Play link">
-                  <PlaySquareIcon
-                    className={cn(
-                      "size-5 hover:cursor-pointer hover:text-green-600 group-hover:flex",
-                      !isPlayableVideo(row.original.url) &&
-                        "cursor-not-allowed opacity-50",
-                    )}
-                    onClick={(e) => {
-                      if (!isPlayableVideo(row.original.url)) return;
-                      e.preventDefault();
-                      e.stopPropagation();
-                      onPlay && onPlay(row.original);
-                    }}
-                  />
-                </Tooltip>
-              )}
+              <Tooltip label="Play link">
+                <PlaySquareIcon
+                  className={cn(
+                    "size-5 hover:cursor-pointer hover:text-green-600 group-hover:flex",
+                    !isPlayableVideo(row.original.url) &&
+                      "cursor-not-allowed opacity-50",
+                  )}
+                  onClick={(e) => {
+                    if (!isPlayableVideo(row.original.url)) return;
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onPlay && onPlay(row.original);
+                  }}
+                />
+              </Tooltip>
               <Tooltip label="Delete record">
                 <TrashIcon
                   className=" size-5 hover:cursor-pointer hover:text-red-600 group-hover:flex "

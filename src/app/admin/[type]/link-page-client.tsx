@@ -21,11 +21,8 @@ import { isMobile } from "react-device-detect";
 import { Button } from "~/components/ui/button";
 import { useConfirmDialog } from "~/hooks";
 import PageFilters from "../_components/page-filters";
-import FacebookReel from "~/components/facebook-reel";
 import PlaybackDialog from "../_components/playback-dialog";
-import { useSession } from "next-auth/react";
 import { keepPreviousData } from "@tanstack/react-query";
-import { Role } from "@/prisma/generated/enums";
 
 // Type for individual link data from the list
 
@@ -38,7 +35,6 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
   const utils = useApiUtils();
   const confirmDialog = useConfirmDialog();
   const confirm = confirmDialog?.confirm;
-  const { data: session } = useSession();
 
   // Fallback confirm function in case the hook fails
   const fallbackConfirm = (options: any) => {
@@ -207,12 +203,7 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
   };
 
   const handlePlayVideo = (link: UpdateLinkValues) => {
-    // const url = link.url;
     setPlayUrl(link);
-    // if (url.includes("facebook.com")) {
-    //   // Open Facebook Reel in a new tab
-    //   window.open(url, "_blank");
-    // }
   };
 
   // Create columns with handlers
@@ -221,7 +212,6 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
     onDelete: handleDelete,
     deletingIds: deleteId,
     onPlay: handlePlayVideo,
-    isAdmin: session?.user.role === Role.ADMIN,
     onMove: handleMove,
     onCopy: () => setToastType({ type: ToastTypes.COPIED }),
     categories,
@@ -333,6 +323,7 @@ const LinkPageClient = ({ initialData, pageTitle }: LinkPageClientProps) => {
         onClose={() => setViewLink(null)}
         onEdit={(link) => { setViewLink(null); handleEdit(link); }}
         onDelete={(link) => { setViewLink(null); handleDelete(link); }}
+        onPlay={(link) => { setViewLink(null); handlePlayVideo(link); }}
         onCopy={() => setToastType({ type: ToastTypes.COPIED })}
       />
       <CustomDialog

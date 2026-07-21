@@ -1,3 +1,5 @@
+import ReactPlayer from "react-player";
+
 const platformMap: Record<string, string> = {
   'youtube.com': 'YouTube',
   'youtu.be': 'YouTube',
@@ -35,33 +37,6 @@ export const getSource = (url: string): string => {
   }
 }
 
-export const getYouTubeId = (url: string): string | null => {
-  try {
-    const parsedUrl = new URL(url);
-    const hostname = parsedUrl.hostname.toLowerCase();
-
-    // Handle youtu.be short links
-    if (hostname.includes('youtu.be')) {
-      return parsedUrl.pathname.slice(1) || null; // Remove leading slash
-    }
-
-    // Handle youtube.com and www.youtube.com
-    if (hostname.includes('youtube.com')) {
-      const videoId = parsedUrl.searchParams.get('v');
-      if (videoId) return videoId;
-
-      // Handle embed URLs like youtube.com/embed/VIDEO_ID
-      const match = parsedUrl.pathname.match(/\/embed\/([^/?]+)/);
-      if (match && match[1]) return match[1];
-    }
-
-    return null;
-  } catch (error) {
-    console.error("Invalid URL:", url, error);
-    return null;
-  }
-}
-
 export const truncateText = (text: string, limit: number) => {
   return text.length > limit
     ? text.substring(0, limit) + "..."
@@ -86,9 +61,8 @@ export const copyToClipboard = (text: string): void => {
 
 export const isPlayableVideo = (url: string): boolean => {
   try {
-    const parsedUrl = new URL(url);
-    const hostname = parsedUrl.hostname.toLowerCase();
-    return Object.keys(platformMap).some(platform => hostname.includes(platform));
+    new URL(url);
+    return ReactPlayer.canPlay(url);
   } catch (error) {
     console.error("Invalid URL:", url, error);
     return false;

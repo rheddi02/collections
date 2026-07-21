@@ -1,9 +1,9 @@
 "use client";
 import { ExternalLinkIcon, Pencil1Icon, TrashIcon } from "@radix-ui/react-icons";
-import { CopyIcon } from "lucide-react";
+import { CopyIcon, PlaySquareIcon } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "~/components/ui/dialog";
 import { Button } from "~/components/ui/button";
-import { copyToClipboard, getSource } from "~/utils/helpers";
+import { copyToClipboard, getSource, isPlayableVideo } from "~/utils/helpers";
 import { UpdateLinkValues } from "~/utils/schemas";
 
 interface Props {
@@ -11,10 +11,11 @@ interface Props {
   onClose: () => void;
   onEdit: (link: UpdateLinkValues) => void;
   onDelete: (link: UpdateLinkValues) => void;
+  onPlay?: (link: UpdateLinkValues) => void;
   onCopy?: () => void;
 }
 
-const LinkDetailDialog = ({ link, onClose, onEdit, onDelete, onCopy }: Props) => {
+const LinkDetailDialog = ({ link, onClose, onEdit, onDelete, onPlay, onCopy }: Props) => {
   return (
     <Dialog open={!!link} onOpenChange={(open) => { if (!open) onClose(); }}>
       <DialogContent className="max-w-md">
@@ -61,6 +62,17 @@ const LinkDetailDialog = ({ link, onClose, onEdit, onDelete, onCopy }: Props) =>
           )}
         </div>
         <div className="flex justify-end gap-2 pt-2">
+          {link && onPlay && isPlayableVideo(link.url) && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5"
+              onClick={() => onPlay(link)}
+            >
+              <PlaySquareIcon className="size-4 text-green-600" />
+              Play
+            </Button>
+          )}
           <Button
             variant="outline"
             size="sm"

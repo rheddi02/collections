@@ -1,6 +1,6 @@
 'use client";'
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
-import FacebookReel from "~/components/facebook-reel";
 import {
   Dialog,
   DialogContent,
@@ -10,9 +10,10 @@ import {
   DialogFooter,
 } from "~/components/ui/dialog";
 import { Button } from "~/components/ui/button";
-import YouTubeEmbed from "~/components/youtube-embed";
-import { getSource, getYouTubeId } from "~/utils/helpers";
+import { isPlayableVideo } from "~/utils/helpers";
 import { UpdateLinkValues } from "~/utils/schemas";
+
+const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 
 type Props = {
   link: UpdateLinkValues | null;
@@ -28,22 +29,19 @@ const sizeMap: Record<VideoSize, { width: string; maxWidth: string }> = {
 
 const PlaybackDialog = ({ link }: Props) => {
   const [open, setOpen] = useState<boolean>(false)
-  const [source, setSource] = useState('')
   const [size, setSize] = useState<VideoSize>("medium")
 
   useEffect(() => {
     setOpen(!!link?.url)
-    const sourceName = getSource(link?.url || '').toLocaleLowerCase()
-    setSource(sourceName)
     return () => {
       setOpen(false)
-      setSource('')
     }
   }, [link])
 
   if (!link) return null;
-  
+
   const sizeStyles = sizeMap[size];
+  const playable = isPlayableVideo(link.url || '');
 
   return (
       <Dialog open={open} onOpenChange={setOpen}>
@@ -53,9 +51,20 @@ const PlaybackDialog = ({ link }: Props) => {
             <DialogDescription>{link.description}</DialogDescription>
           </DialogHeader>
           <div style={sizeStyles} className="mx-auto">
-            {source=='facebook' ? <FacebookReel url={link.url || ''} />
-            : source=='youtube' ? <YouTubeEmbed videoId={getYouTubeId(link.url) || ''} />
-            : <div>Playback not available for this source</div>}
+            {playable ? (
+              <div style={{ position: "relative", paddingBottom: "56.25%", height: 0 }}>
+                <ReactPlayer
+                  url={link.url}
+                  controls
+                  playing
+                  width="100%"
+                  height="100%"
+                  style={{ position: "absolute", top: 0, left: 0 }}
+                />
+              </div>
+            ) : (
+              <div>Playback not available for this source</div>
+            )}
           </div>
           <DialogFooter className="flex gap-2 justify-center">
             <Button 
