@@ -174,7 +174,7 @@ export const createListColumns = ({
             <Label className="text-sm font-medium tracking-tight">{row.getValue("title")}</Label>
           </div>
           <div className="flex items-center gap-2">
-            {deletingIds.includes(row.getValue("id")) ? (
+            {deletingIds.includes(row.original.id) ? (
               <div className="flex items-center gap-1">
                 <ReloadIcon className="animate-spin" />
                 Deleting...
@@ -209,9 +209,24 @@ export const createListColumns = ({
                 >
                   <CopyIcon className="size-4" />
                 </button>
+                <button
+                  type="button"
+                  aria-label="Open"
+                  className="flex h-9 w-9 items-center justify-center rounded-md hover:bg-muted"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (isPlayableVideo(row.original.url)) {
+                      onPlay?.(row.original);
+                    } else if (row.original.url) {
+                      window.open(row.original.url, "_blank", "noopener,noreferrer");
+                    }
+                  }}
+                >
+                  <ExternalLinkIcon className="size-4" />
+                </button>
               </div>
             )}
-            {!deletingIds.includes(row.getValue("id")) && (
+            {!deletingIds.includes(row.original.id) && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button

@@ -7,9 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
 } from "~/components/ui/dialog";
-import { Button } from "~/components/ui/button";
 import { isPlayableVideo } from "~/utils/helpers";
 import { UpdateLinkValues } from "~/utils/schemas";
 
@@ -19,17 +17,8 @@ type Props = {
   link: UpdateLinkValues | null;
 };
 
-type VideoSize = "small" | "medium" | "large";
-
-const sizeMap: Record<VideoSize, { width: string; maxWidth: string }> = {
-  small: { width: "100%", maxWidth: "400px" },
-  medium: { width: "100%", maxWidth: "700px" },
-  large: { width: "100%", maxWidth: "100%" },
-};
-
 const PlaybackDialog = ({ link }: Props) => {
   const [open, setOpen] = useState<boolean>(false)
-  const [size, setSize] = useState<VideoSize>("medium")
 
   useEffect(() => {
     setOpen(!!link?.url)
@@ -40,17 +29,16 @@ const PlaybackDialog = ({ link }: Props) => {
 
   if (!link) return null;
 
-  const sizeStyles = sizeMap[size];
   const playable = isPlayableVideo(link.url || '');
 
   return (
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-4xl">
+        <DialogContent className="max-w-[95vw] w-[95vw] max-h-[95vh]">
           <DialogHeader>
             <DialogTitle>{link.title}</DialogTitle>
             <DialogDescription>{link.description}</DialogDescription>
           </DialogHeader>
-          <div style={sizeStyles} className="mx-auto">
+          <div className="mx-auto w-full">
             {playable ? (
               <div style={{ position: "relative", paddingBottom: "56.25%", height: 0 }}>
                 <ReactPlayer
@@ -66,26 +54,6 @@ const PlaybackDialog = ({ link }: Props) => {
               <div>Playback not available for this source</div>
             )}
           </div>
-          <DialogFooter className="flex gap-2 justify-center">
-            <Button 
-              variant={size === "small" ? "default" : "outline"}
-              onClick={() => setSize("small")}
-            >
-              Small
-            </Button>
-            <Button 
-              variant={size === "medium" ? "default" : "outline"}
-              onClick={() => setSize("medium")}
-            >
-              Medium
-            </Button>
-            <Button 
-              variant={size === "large" ? "default" : "outline"}
-              onClick={() => setSize("large")}
-            >
-              Large
-            </Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
   );
