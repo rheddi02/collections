@@ -73,7 +73,7 @@ export interface State extends UIState, DataState, ToastState, UIActions, DataAc
 const createStore: StateCreator<State, [], [], State> = (set, get) => ({
   // UI State
   modal: false,
-  openMenu: true,
+  openMenu: false,
   isLoading: false,
   confirmDialog: null,
   // Data State

@@ -42,15 +42,28 @@ export default function Navigation() {
   }, [isMobile]);
 
   return (
-    <nav className={cn(openMenu ? "w-72" : "hidden", "sm:w-72 sm:block")}>
-      <div className="flex h-screen w-full flex-col gap-2 p-2">
-        <UserProfile />
-        <div className="custom-scrollbar h-auto flex-1 overflow-y-auto overscroll-none">
-          <Nav navLists={navLists} />
+    <>
+      {openMenu && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 sm:hidden"
+          onClick={() => setOpenMenu(false)}
+        />
+      )}
+      <nav
+        className={cn(
+          "fixed inset-y-0 left-0 z-50 w-72 -translate-x-full bg-background transition-transform duration-200 sm:static sm:z-auto sm:w-72 sm:translate-x-0 sm:block",
+          openMenu && "translate-x-0",
+        )}
+      >
+        <div className="flex h-screen w-full flex-col gap-2 p-2">
+          <UserProfile />
+          <div className="custom-scrollbar h-auto flex-1 overflow-y-auto overscroll-none">
+            <Nav navLists={navLists} />
+          </div>
+          <ThemeToggle />
         </div>
-        <ThemeToggle />
-      </div>
-    </nav>
+      </nav>
+    </>
   );
 }
 
